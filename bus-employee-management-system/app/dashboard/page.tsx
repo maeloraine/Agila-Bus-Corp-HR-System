@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 
-// app/page.tsx -> landing page which is yung login
-export default function LoginPage() {
+// app/dashboard/page.tsx
+export default function DashboardPage() {
   return (
     <div
       style={{
@@ -13,8 +13,7 @@ export default function LoginPage() {
         color: '#000'
       }}
       >
-      <h1>This is the Home Page</h1>
-      <Link href="/dashboard">Login</Link>
+      <h1>This is the Dashboard Page</h1>
       {/* Just your page content */}
     </div>
   );
