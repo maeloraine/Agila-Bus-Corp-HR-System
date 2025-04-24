@@ -9,16 +9,24 @@ export default function EmployeePage() {
       <div className={styles.employeeContainer}>
         <h1>Employee List</h1>
 
+        {/* Status Filter */}
         <div className={styles.headerSection}>
           <select className={styles.filterDropdown}>
-            <option value="">Status</option>
+            <option value="" defaultChecked disabled>Status</option>
             <option value="Active">Active</option>
-            <option value="Inactive">Inactive</option>
-            <option value="Deactivated">Deactivated</option>
+            <option value="On Leave">On Leave</option>
+            <option value="Resigned">Resigned</option>
           </select>
-          <input type="text" placeholder="Search employees..." className={styles.searchBar} />
+
+          {/* Search */}
+          <input type="text" className={styles.searchBar} placeholder="Search employees..."/>
+          <div className={styles.searchButton}>
+          <button><img src="/assets/images/search-icon.png" /></button>
+          </div>
+          
+          {/* Department Filter */}
           <select className={styles.filterDropdown}>
-            <option value="">All Departments</option>
+            <option value="" defaultChecked disabled>All Departments</option>
             <option value="Accounting">Accounting</option>
             <option value="HR">Human Resource</option>
             <option value="Inventory">Inventory</option>
@@ -51,118 +59,83 @@ export default function EmployeePage() {
                 <td>Operations</td>
                 <td>Driver</td>
                 <td className={styles.actionCell}>
-                <button className={styles.editButton}>Edit</button>
-                <button className={styles.deleteButton}><img src="/assets/images/delete.png"/></button>
+                  <button className={styles.editButton}>Edit</button>
+                  <button className={styles.deleteButton}>
+                    <img src="/assets/images/delete.png" />
+                  </button>
                 </td>
               </tr>
               <tr>
                 <td className={styles.firstColumn}>2</td>
-                <td>Active</td>
-                <td>Juan Dela Cruz</td>
-                <td>2023-01-15</td>
-                <td>Operations</td>
-                <td>Driver</td>
+                <td>On Leave</td>
+                <td>Mark Reyes</td>
+                <td>2023-03-10</td>
+                <td>Human Resource</td>
+                <td>Supervisor</td>
                 <td className={styles.actionCell}>
-                <button className={styles.editButton}>Edit</button>
-                <button className={styles.deleteButton}><img src="/assets/images/delete.png"/></button>
+                  <button className={styles.editButton}>Edit</button>
+                  <button className={styles.deleteButton}>
+                    <img src="/assets/images/delete.png" />
+                  </button>
                 </td>
               </tr>
               <tr>
                 <td className={styles.firstColumn}>3</td>
-                <td>On Leave</td>
-                <td>Juan Dela Cruz</td>
-                <td>2023-01-15</td>
-                <td>Operations</td>
-                <td>Driver</td>
+                <td>Active</td>
+                <td>Ana Santos</td>
+                <td>2022-11-05</td>
+                <td>Inventory</td>
+                <td>Warehouse Staff</td>
                 <td className={styles.actionCell}>
-                <button className={styles.editButton}>Edit</button>
-                <button className={styles.deleteButton}><img src="/assets/images/delete.png"/></button>
+                  <button className={styles.editButton}>Edit</button>
+                  <button className={styles.deleteButton}>
+                    <img src="/assets/images/delete.png" />
+                  </button>
                 </td>
               </tr>
               <tr>
                 <td className={styles.firstColumn}>4</td>
-                <td>Active</td>
-                <td>Maria Batumbakal</td>
-                <td>2024-08-12</td>
-                <td>Accounting</td>
-                <td>Accountant</td>
+                <td>On Leave</td>
+                <td>Ramon Cruz</td>
+                <td>2024-01-22</td>
+                <td>Operations</td>
+                <td>Dispatcher</td>
                 <td className={styles.actionCell}>
-                <button className={styles.editButton}>Edit</button>
-                <button className={styles.deleteButton}><img src="/assets/images/delete.png"/></button>
+                  <button className={styles.editButton}>Edit</button>
+                  <button className={styles.deleteButton}>
+                    <img src="/assets/images/delete.png" />
+                  </button>
                 </td>
               </tr>
               <tr>
                 <td className={styles.firstColumn}>5</td>
-                <td>Active</td>
-                <td>Maria Batumbakal</td>
-                <td>2024-08-12</td>
-                <td>Accounting</td>
-                <td>Accountant</td>
+                <td>Resigned</td>
+                <td>Elaine Torres</td>
+                <td>2023-06-18</td>
+                <td>Human Resource</td>
+                <td>Recruiter</td>
                 <td className={styles.actionCell}>
-                <button className={styles.editButton}>Edit</button>
-                <button className={styles.deleteButton}><img src="/assets/images/delete.png"/></button>
+                  <button className={styles.editButton}>Edit</button>
+                  <button className={styles.deleteButton}>
+                    <img src="/assets/images/delete.png" />
+                  </button>
                 </td>
               </tr>
               <tr>
                 <td className={styles.firstColumn}>6</td>
-                <td>On Leave</td>
-                <td>Maria Batumbakal</td>
-                <td>2024-08-12</td>
-                <td>Accounting</td>
-                <td>Accountant</td>
-                <td className={styles.actionCell}>
-                <button className={styles.editButton}>Edit</button>
-                <button className={styles.deleteButton}><img src="/assets/images/delete.png"/></button>
-                </td>
-              </tr>
-              <tr>
-                <td className={styles.firstColumn}>7</td>
-                <td>On Leave</td>
-                <td>Maria Batumbakal</td>
-                <td>2024-08-12</td>
-                <td>Accounting</td>
-                <td>Accountant</td>
-                <td className={styles.actionCell}>
-                <button className={styles.editButton}>Edit</button>
-                <button className={styles.deleteButton}><img src="/assets/images/delete.png"/></button>
-                </td>
-              </tr>
-              <tr>
-                <td className={styles.firstColumn}>8</td>
-                <td>Resigned</td>
-                <td>Maria Batumbakal</td>
-                <td>2024-08-12</td>
-                <td>Accounting</td>
-                <td>Accountant</td>
-                <td className={styles.actionCell}>
-                <button className={styles.editButton}>Edit</button>
-                <button className={styles.deleteButton}><img src="/assets/images/delete.png"/></button>
-                </td>
-              </tr>
-              <tr>
-                <td className={styles.firstColumn}>9</td>
                 <td>Active</td>
                 <td>Maria Batumbakal</td>
                 <td>2024-08-12</td>
                 <td>Accounting</td>
-                <td>Accountant</td>
+                <td>Auditor</td>
                 <td className={styles.actionCell}>
-                <button className={styles.editButton}>Edit</button>
-                <button className={styles.deleteButton}><img src="/assets/images/delete.png"/></button>
+                  <button className={styles.editButton}>Edit</button>
+                  <button className={styles.deleteButton}>
+                    <img src="/assets/images/delete.png" />
+                  </button>
                 </td>
               </tr>
-              <tr>
-                <td className={styles.firstColumn}>10</td>
-                <td>Active</td>
-                <td>Maria Batumbakal</td>
-                <td>2024-08-12</td>
-                <td>Accounting</td>
-                <td>Accountant</td>
-                <td className={styles.actionCell}>
-                <button className={styles.editButton}>Edit</button>
-                <button className={styles.deleteButton}><img src="/assets/images/delete.png"/></button>
-                </td>
-              </tr>
+              {/* Keep or update remaining rows if needed */}
             </tbody>
           </table>
         </div>

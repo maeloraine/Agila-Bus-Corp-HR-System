@@ -12,6 +12,22 @@
   box-shadow: 0 0 10px rgba(0,0,0,0.05);
 }
 
+
+.searchButton button {
+  background-color: #961C1E;
+  color: white;
+  padding-top: 0.2rem;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.searchButton button:hover {
+  background-color: #571415 !important;
+  color: white;
+}
+
 .addEmployeeButton {
   background-color: #9F0F19;
   color: white;
@@ -21,13 +37,23 @@
   cursor: pointer;
 }
 
+.addEmployeeButton:hover {
+  background-color: #571415 !important;
+  color: white;
+}
+
 .importButton {
-  background-color: #9F0F19;
+  background-color: #961C1E;
   color: white;
   border: none;
   padding: 0.5rem 1rem;
   border-radius: 5px;
   cursor: pointer;
+}
+
+.importButton:hover {
+  background-color: #571415 !important;
+  color: white;
 }
 
 .headerSection {

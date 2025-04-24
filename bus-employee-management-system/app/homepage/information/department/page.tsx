@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import styles from './department.module.css';
 import DepartmentModal from '@/components/modal/information/DepartmentModal';
 import ConfirmMessage from '@/components/modal/ConfirmMessage';
+import MessagePrompt from '@/components/modal/MessagePrompt';
 
 const DepartmentPage = () => {
   const [showAddModal, setShowAddModal] = useState(false);
@@ -18,6 +19,9 @@ const DepartmentPage = () => {
 
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deptToDelete, setDeptToDelete] = useState('');
+
+  const [showMessagePrompt, setShowMessagePrompt] = useState(false);
+  const [promptMessage, setPromptMessage] = useState('');
 
   const handleAdd = (newName: string) => {
     setDepartments([
@@ -37,9 +41,24 @@ const DepartmentPage = () => {
     );
   };
 
+  // Error prompt kapag may employee pa sa Department
+  const handleDeleteRequest = (deptName: string) => {
+    const dept = departments.find((d) => d.name === deptName);
+    if (dept && dept.employees > 0) {
+      setPromptMessage('This department cannot be deleted because it still contains employees.');
+      setShowMessagePrompt(true);
+      setShowDeleteConfirm(false);
+      return;
+    }
+    setDeptToDelete(deptName);
+    setShowDeleteConfirm(true);
+  };
+
   const handleDelete = () => {
     setDepartments((prev) => prev.filter((d) => d.name !== deptToDelete));
     setShowDeleteConfirm(false);
+    setPromptMessage('Department deleted successfully.');
+    setShowMessagePrompt(true);
   };
 
   return (
@@ -48,14 +67,20 @@ const DepartmentPage = () => {
         <h1>Department List</h1>
 
         <div className={styles.headerSection}>
-          <input type="text" placeholder="Search department..." className={styles.searchBar} />
+          {/* Search */}
+          <input type="text" className={styles.searchBar} placeholder="Search department..." />
+          <div className={styles.searchButton}>
+            <button><img src="/assets/images/search-icon.png" /></button>
+          </div>
+
+          {/* Filter by No. of Employees */}
           <select className={styles.filterDropdown}>
-            <option value="">No. of Employees</option>
+            <option value="" defaultChecked disabled>No. of Employees</option>
             <option value="1-20">1-20</option>
             <option value="21-40">21-40</option>
             <option value="41-60">41-60</option>
             <option value="61-80">61-80</option>
-            <option value="81-100">more than 100</option>
+            <option value="81-100">81-100</option>
             <option value="101+">more than 100</option>
           </select>
           <button onClick={() => setShowAddModal(true)} className={styles.addDepartmentButton}>
@@ -95,10 +120,7 @@ const DepartmentPage = () => {
                     </button>
                     <button
                       className={styles.deleteButton}
-                      onClick={() => {
-                        setDeptToDelete(dept.name);
-                        setShowDeleteConfirm(true);
-                      }}
+                      onClick={() => handleDeleteRequest(dept.name)}
                     >
                       <img src="/assets/images/delete.png" />
                     </button>
@@ -133,6 +155,13 @@ const DepartmentPage = () => {
             message="Are you sure you want to delete?"
             onConfirm={handleDelete}
             onCancel={() => setShowDeleteConfirm(false)}
+          />
+        )}
+
+        {showMessagePrompt && (
+          <MessagePrompt
+            message={promptMessage}
+            onClose={() => setShowMessagePrompt(false)}
           />
         )}
       </div>
