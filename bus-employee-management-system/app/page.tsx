@@ -8,12 +8,12 @@ export default function LoginPage() {
   const router = useRouter();
   const [formData, setFormData] = useState({
     role: '',
-    username: '',
+    employeeID: '',
     password: ''
   });
   const [errors, setErrors] = useState({
     role: '',
-    username: '',
+    employeeID: '',
     password: '',
     general: ''
   });
@@ -39,7 +39,7 @@ export default function LoginPage() {
     let valid = true;
     const newErrors = {
       role: '',
-      username: '',
+      employeeID: '',
       password: '',
       general: ''
     };
@@ -50,12 +50,12 @@ export default function LoginPage() {
       valid = false;
     }
 
-    // Username validation (4-20 chars, alphanumeric + some symbols)
-    if (!formData.username) {
-      newErrors.username = 'Username is required';
+    // Employee ID validation (4-20 chars, alphanumeric + some symbols)
+    if (!formData.employeeID) {
+      newErrors.employeeID = 'Employee ID is required';
       valid = false;
-    } else if (!/^[a-zA-Z0-9@._-]{4,20}$/.test(formData.username)) {
-      newErrors.username = 'Username must be 4-20 characters and can contain letters, numbers, @, ., _, or -';
+    } else if (!/^[a-zA-Z0-9@._-]{4,20}$/.test(formData.employeeID)) {
+      newErrors.employeeID = 'Employee ID must be 4-20 characters and can contain letters, numbers, @, ., _, or -'; //pakichange ng error prompt for Employee ID
       valid = false;
     }
 
@@ -87,20 +87,20 @@ export default function LoginPage() {
       
       // Mock authentication - in a real app, this would be an API call
       const mockUsers = [
-        { role: 'Admin', username: 'admin123', password: 'Password@123' },
-        { role: 'HR Manager', username: 'hr123', password: 'Hr@12345' },
-        { role: 'Accountant', username: 'accountant123', password: 'Account@123' }
+        { role: 'Admin', employeeID: 'admin123', password: 'Password@123' },
+        { role: 'HR Manager', employeeID: 'hr123', password: 'Hr@12345' },
+        { role: 'Accountant', employeeID: 'accountant123', password: 'Account@123' }
       ];
 
       const user = mockUsers.find(
         u => u.role === formData.role && 
-             u.username === formData.username && 
+             u.employeeID === formData.employeeID && 
              u.password === formData.password
       );
 
       if (user) {
-        // Successful login - redirect to dashboard
-        router.push('/dashboard');
+        // Successful login - redirect to homepage (dashboard)
+        router.push('/homepage');
       } else {
         setErrors(prev => ({
           ...prev,
@@ -250,7 +250,7 @@ export default function LoginPage() {
           )}
 
           <label
-            htmlFor="username"
+            htmlFor="employeeID"
             style={{
               fontSize: '0.75rem',
               fontWeight: 600,
@@ -258,18 +258,18 @@ export default function LoginPage() {
               fontFamily: 'Arial, sans-serif',
             }}
           >
-            Username
+            Employee ID
           </label>
           <input
             type="text"
-            id="username"
-            name="username"
-            value={formData.username}
+            id="employeeID"
+            name="employeeID"
+            value={formData.employeeID}
             onChange={handleChange}
-            placeholder="Username here..."
+            placeholder="Employee ID here..."
             required
             style={{
-              border: errors.username ? '1px solid #ef4444' : '1px solid #d1d5db',
+              border: errors.employeeID ? '1px solid #ef4444' : '1px solid #d1d5db',
               borderRadius: '0.375rem',
               fontSize: '0.75rem',
               padding: '0.5rem 0.75rem',
@@ -283,12 +283,12 @@ export default function LoginPage() {
             }}
             onBlur={e => {
               e.currentTarget.style.boxShadow = 'none';
-              e.currentTarget.style.borderColor = errors.username ? '#ef4444' : '#d1d5db';
+              e.currentTarget.style.borderColor = errors.employeeID ? '#ef4444' : '#d1d5db';
             }}
           />
-          {errors.username && (
+          {errors.employeeID && (
             <p style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '-0.5rem', marginBottom: '0.5rem' }}>
-              {errors.username}
+              {errors.employeeID}
             </p>
           )}
 

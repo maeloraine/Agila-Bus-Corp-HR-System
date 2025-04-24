@@ -49,6 +49,7 @@ const ResetPassword = () => {
           <label htmlFor="EmailForResetPass">Email: </label>
           <input
             type="text"
+            className={styles.input}
             name="EmailForResetPass"
             id="EmailForResetPass"
             placeholder="juandelacruz@gmail.com"
