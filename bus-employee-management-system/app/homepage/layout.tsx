@@ -1,20 +1,30 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import Sidebar from '@/components/Sidebar';
-import Topbar from '@/components/Topbar';
-import '@/styles/style.css';
-// import './globals.css'
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+import Sidebar from "@/components/Sidebar";
+import Topbar from "@/components/Topbar";
+import "@/styles/globals.css";
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
+
+  useEffect(() => {
+    // Check if user is authenticated (you'll need to implement this)
+    const isAuthenticated = localStorage.getItem('isAuthenticated');
+    if (!isAuthenticated) {
+      router.push('/dashboard');
+    }
+  }, []);
 
   return (
-    <div className={`app-wrapper ${isCollapsed ? 'collapsed' : ''}`}>
-      <Sidebar isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
+    <div className="app-wrapper">
+      <Sidebar />
       <div className="layout-right">
         <Topbar />
-        <div className="layout-content">{children}</div>
+        <div className="content">
+          {children}
+        </div>
       </div>
     </div>
   );

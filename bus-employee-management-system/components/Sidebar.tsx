@@ -1,145 +1,163 @@
-'use client';
+"use client";
 
-import Link from 'next/link'; // Importing the `Link` component from Next.js for navigation, so you can link to different pages.
-import { useState } from 'react'; // Importing `useState` from React to manage component state.
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import { usePathname } from 'next/navigation';
+import "@/styles/sidebar.css";
 
-interface SidebarProps {
-  isCollapsed: boolean;
-  setIsCollapsed: (val: boolean) => void;
-}
+const Sidebar = () => {
+    const pathname = usePathname();
+    const [activeItem, setActiveItem] = useState<string | null>(null);
+    const [expandedMenus, setExpandedMenus] = useState({
+        attendance: false,
+        employee: false,
+        requests: false
+    });
 
-// This defines the type for the `Sidebar` component's props. It expects `isCollapsed` (boolean for sidebar state) and `setIsCollapsed` (function to update the state).
-const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, setIsCollapsed }) => {
-  const [openSubMenu, setOpenSubMenu] = useState<string | null>(null);   // Declares the `openSubMenu` state variable, which tracks which submenu is open.
-  const [activeItem, setActiveItem] = useState<string | null>(null);   // Declares the `activeItem` state variable to track which menu item is currently active.
+    // Menu structure data
+    const menuItems = [
+        {
+            path: '/',
+            name: 'Dashboard',
+            icon: 'ri-dashboard-line',
+            key: 'dashboard'
+        },
+        {
+            path: '/onboarding',
+            name: 'Onboarding',
+            icon: 'ri-user-add-line',
+            key: 'onboarding'
+        },
+        {
+            name: 'Attendance',
+            icon: 'ri-time-line',
+            key: 'attendance',
+            subItems: [
+                { path: '/attendance/time-in-out', name: 'Time-in/Time-out', key: 'time-in-out' },
+                { path: '/attendance/daily-report', name: 'Daily Attendance Report', key: 'daily-report' }
+            ]
+        },
+        {
+            name: 'Information',
+            icon: 'ri-team-line',
+            key: 'employee',
+            subItems: [
+                { path: '/dashboard/information/employee', name: 'Employee List', key: 'employee-list' },
+                { path: '/dashboard/information/department', name: 'Department List', key: 'departments' }
+            ]
+        },
+        {
+            name: 'Requests',
+            icon: 'ri-file-list-line',
+            key: 'requests',
+            subItems: [
+                { path: '/requests/leave', name: 'Leave', key: 'leave' },
+                { path: '/requests/resignation', name: 'Resignation', key: 'resignation' }
+            ]
+        },
+        {
+            path: '/documents',
+            name: 'Documents',
+            icon: 'ri-folder-line',
+            key: 'documents'
+        },
+        {
+            path: '/settings',
+            name: 'Settings',
+            icon: 'ri-settings-line',
+            key: 'settings'
+        }
+    ];
 
-  const toggleSubMenu = (id: string) => {
-    setOpenSubMenu(prev => (prev === id ? null : id));
-  };
+    // Set active item and expand menus based on current route
+    useEffect(() => {
+        // Find active main menu item
+        const active = menuItems.find(item => 
+            item.path === pathname || 
+            item.subItems?.some(subItem => subItem.path === pathname)
+        );
+        
+        // Find active sub-item
+        const activeSubItem = menuItems
+            .flatMap(item => item.subItems || [])
+            .find(subItem => subItem.path === pathname);
+    
+        setActiveItem(activeSubItem?.key || active?.key || null);
+    
+        // Auto-expand parent menus when sub-item is active
+        setExpandedMenus({
+            attendance: menuItems[2].subItems?.some(item => pathname.startsWith(item.path)) || false,
+            employee: menuItems[3].subItems?.some(item => pathname.startsWith(item.path)) || false,
+            requests: menuItems[4].subItems?.some(item => pathname.startsWith(item.path)) || false
+        });
+    }, [pathname]);
 
-  // Function to toggle the sidebar's collapsed state.
-  const toggleSidebar = () => {
-    setIsCollapsed(!isCollapsed);
-  };
+    const toggleMenu = (menuKey: string) => {
+        setExpandedMenus(prev => ({
+            ...prev,
+            [menuKey]: !prev[menuKey as keyof typeof prev]
+        }));
+    };
 
+    return (
+        <div className="sidebar shadow-lg">
+            <div className="sidebar-content">
+                <div className="logo-img">
+                    <img src="/assets/images/agila logo.png" alt="logo" />
+                </div>
 
-  return (
-    // This is the main `div` for the sidebar. It applies the `'collapsed'` class if the sidebar is collapsed.
-    <div className={`sidebar ${isCollapsed ? 'collapsed' : ''}`} id="sidebar">
-      <div>
-        <div className="logo">
-          <img src="/assets/images/agilalogo.png" alt="Agila Logo" />
-        </div>
+                <div className="nav-links">
+                    {menuItems.map((item) => (
+                        <div key={item.key} className="nav-parent">
+                            {item.path ? (
+                                // Regular menu item with direct link
+                                <Link
+                                    href={item.path}
+                                    className={`nav-item ${activeItem === item.key ? 'active' : ''}`}
+                                >
+                                    <i className={item.icon} />
+                                    <span>{item.name}</span>
+                                </Link>
+                            ) : (
+                                // Menu item with sub-items
+                                <>
+                                    <div 
+                                        className={`nav-item ${item.subItems?.some(subItem => activeItem === subItem.key) ? 'active' : ''}`}
+                                        onClick={() => toggleMenu(item.key)}
+                                    >
+                                        <i className={item.icon} />
+                                        <span>{item.name}</span>
+                                        <i className={`ri-arrow-down-s-line dropdown-icon ${expandedMenus[item.key as keyof typeof expandedMenus] ? 'rotate' : ''}`} />
+                                    </div>
+                                    
+                                    {expandedMenus[item.key as keyof typeof expandedMenus] && (
+                                        <div className="sub-menu">
+                                            {item.subItems?.map((subItem) => (
+                                                <Link
+                                                    key={subItem.key}
+                                                    href={subItem.path}
+                                                    className={`sub-item ${activeItem === subItem.key ? 'active' : ''}`}
+                                                >
+                                                    {subItem.name}
+                                                </Link>
+                                            ))}
+                                        </div>
+                                    )}
+                                </>
+                            )}
+                        </div>
+                    ))}
+                </div>
 
-        <div className="nav-links">
-          {/* Assignment */}
-          <div
-            className={`nav-item module ${openSubMenu === 'assignment-submenu' ? 'active' : ''} ${activeItem === 'assignment' ? 'active' : ''}`}
-            onClick={() => {
-              toggleSubMenu('assignment-submenu');
-              setActiveItem('assignment');
-            }}
-          >
-            <img src="/assets/images/assignmentbus.png" alt="Assignment" className="nav-icon" />
-            <span className="nav-text">Assignment</span>
-          </div>
-
-          {openSubMenu === 'assignment-submenu' && (
-            <div className="sub-menu active">
-              <Link
-                href="/dashboard/bus-assignment"
-                className={`sub-item ${activeItem === 'bus-assignment' ? 'active' : ''}`}
-                onClick={() => setActiveItem('bus-assignment')}
-              >
-                Bus Driver/Conductor Assignment
-              </Link>
-              <Link
-                href="/dashboard/bus-route-assignment"
-                className={`sub-item ${activeItem === 'bus-route-assignment' ? 'active' : ''}`}
-                onClick={() => setActiveItem('bus-route-assignment')}
-              >
-                Bus Route Assignment
-              </Link>
-              <Link
-                href="/dashboard/qouta-assignment"
-                className={`sub-item ${activeItem === 'qouta-assignment' ? 'active' : ''}`}
-                onClick={() => setActiveItem('qouta-assignment')}
-              >
-                Quota Assignment
-              </Link>
+                <div className="logout">
+                    <a href="#">
+                        <i className="ri-logout-box-r-line" />
+                        <span>Logout</span>
+                    </a>
+                </div>
             </div>
-          )}
-
-          {/* Route Management */}
-          <Link
-            href="/dashboard/route-management"
-            className={`nav-item ${activeItem === 'route-management' ? 'active' : ''}`}
-            onClick={() => setActiveItem('route-management')}
-          >
-            <img src="/assets/images/routemanagement.png" alt="Route Management" className="nav-icon" />
-            <span className="nav-text">Route Management</span>
-          </Link>
-
-          {/* GPS */}
-          <Link
-            href="/dashboard/gps"
-            className={`nav-item ${activeItem === 'gps' ? 'active' : ''}`}
-            onClick={() => setActiveItem('gps')}
-          >
-            <img src="/assets/images/GPS.png" alt="GPS" className="nav-icon" />
-            <span className="nav-text">GPS</span>
-          </Link>
-
-          {/* Bus Operation */}
-          <Link
-            href="/dashboard/bus-operation"
-            className={`nav-item ${activeItem === 'bus-operation' ? 'active' : ''}`}
-            onClick={() => setActiveItem('bus-operation')}
-          >
-            <img src="/assets/images/busoperation.png" alt="Bus Operation" className="nav-icon" />
-            <span className="nav-text">Bus Operation</span>
-          </Link>
-
-          {/* Bus Rental */}
-          <Link
-            href="/dashboard/bus-rental"
-            className={`nav-item ${activeItem === 'bus-rental' ? 'active' : ''}`}
-            onClick={() => setActiveItem('bus-rental')}
-          >
-            <img src="/assets/images/busrental.png" alt="Bus Rental" className="nav-icon" />
-            <span className="nav-text">Bus Rental</span>
-          </Link>
-
-          {/* Performance Report */}
-          <Link
-            href="/dashboard/performance-report"
-            className={`nav-item ${activeItem === 'performance-report' ? 'active' : ''}`}
-            onClick={() => setActiveItem('performance-report')}
-          >
-            <img src="/assets/images/performancereport.png" alt="Performance Report" className="nav-icon" />
-            <span className="nav-text">Performance Report</span>
-          </Link>
         </div>
-      </div>
-
-      {/* Logout */}
-      <div className="logout">
-        <a href="#">
-          <img src="/assets/images/logout.png" alt="Logout" className="nav-icon" />
-          <span className="nav-text">Logout</span>
-        </a>
-      </div>
-
-      {/* Sidebar Toggle Button */}
-      <div className="toggle-btn" onClick={toggleSidebar}>
-        <img 
-          src={isCollapsed ? '/assets/images/arrow-right-line.png' : '/assets/images/arrow-left-line.png'} 
-          alt="Sidebar Toggle" 
-          id="arrow" 
-        />
-      </div>
-    </div>
-  );
+    );
 };
 
 export default Sidebar;

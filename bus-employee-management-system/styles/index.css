@@ -1,0 +1,62 @@
+/* ----- LAYOUT WRAPPER ----- */
+.app-wrapper {
+    display: flex;
+    height: 100vh;
+    transition: all 0.3s ease;
+}
+
+.layout-right {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.3s ease;
+}
+
+.content {
+    flex: 1;
+    padding: 16px;
+    background-color: var(--background-color);
+    overflow-y: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.card {
+    width: calc(100% * 24 / 26);
+    height: calc(100% * 19 / 21);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background-color: var(--foreground-color);
+    border-radius: 8px;
+    box-shadow: var(--box-shadow);
+    padding: 25px;
+    /* overflow: hidden; */
+}
+
+.card .title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.card .elements {
+    height: 100%;
+}
+
+.card .entries {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+
+
+
+
+
+
+
