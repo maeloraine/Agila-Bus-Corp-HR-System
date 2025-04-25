@@ -38,12 +38,12 @@ const Sidebar = () => {
             ]
         },
         {
-            name: 'Employee',
+            name: 'Information',
             icon: 'ri-team-line',
             key: 'employee',
             subItems: [
-                { path: '/employee/list', name: 'Employee List', key: 'employee-list' },
-                { path: '/employee/departments', name: 'Department List', key: 'departments' }
+                { path: '/dashboard/information/employee', name: 'Employee List', key: 'employee-list' },
+                { path: '/dashboard/information/department', name: 'Department List', key: 'departments' }
             ]
         },
         {
