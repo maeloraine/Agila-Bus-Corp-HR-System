@@ -42,8 +42,8 @@ const Sidebar = () => {
             icon: 'ri-team-line',
             key: 'employee',
             subItems: [
-                { path: '/dashboard/information/employee', name: 'Employee List', key: 'employee-list' },
-                { path: '/dashboard/information/department', name: 'Department List', key: 'departments' }
+                { path: '/homepage/information/employee', name: 'Employee List', key: 'employee-list' },
+                { path: '/homepage/information/department', name: 'Department List', key: 'departments' }
             ]
         },
         {

@@ -13,7 +13,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     // Check if user is authenticated (you'll need to implement this)
     const isAuthenticated = localStorage.getItem('isAuthenticated');
     if (!isAuthenticated) {
-      router.push('/dashboard');
+      router.push('/homepage');
     }
   }, []);
 
