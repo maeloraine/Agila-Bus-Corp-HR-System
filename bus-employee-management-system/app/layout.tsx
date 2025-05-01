@@ -1,45 +1,19 @@
-//ITO INITAL TEMPLATE
+"use client";
 
-// 'use client';
-
-// export default function RootLayout({
-//   children,
-// }: {
-//   children: React.ReactNode
-// }) {
-//   return (
-//     <html lang="en">
-//       <body>
-//         {/* Layout UI */}
-//         {/* Place children where you want to render a page or nested layout */}
-//         <main>{children}</main>
-//       </body>
-//     </html>
-//   )
-// }
-
-//SA LOOB NA TO NG SYSTEM
-'use client';
-
-import { useState } from 'react';
-import Sidebar from '@/components/Sidebar';
-import Topbar from '@/components/Topbar';
-import '@/styles/style.css';
-import './globals.css'
+import "@/styles/globals.css";
+import "@/styles/index.css";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  const [isCollapsed, setIsCollapsed] = useState(false);
-
   return (
     <html lang="en">
+      <head>
+        <title>Agila Bus Transport Corp. System</title>
+        <link rel="icon" href="/favicon.ico" />
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.css" rel="stylesheet" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
+      </head>
       <body>
-        <div className={`app-wrapper ${isCollapsed ? 'collapsed' : ''}`}>
-          <Sidebar isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
-          <div className="layout-right">
-            <Topbar />
-            <div className="layout-content">{children}</div>
-          </div>
-        </div>
+        {children}
       </body>
     </html>
   );
