@@ -20,14 +20,23 @@ exports.AuthMsModule = AuthMsModule;
 exports.AuthMsModule = AuthMsModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            config_1.ConfigModule.forRoot({ isGlobal: true, envFilePath: 'apps/auth-ms/.env', }),
+            config_1.ConfigModule.forRoot({ isGlobal: true, envFilePath: 'apps/auth-ms/.env' }),
             passport_1.PassportModule,
             jwt_1.JwtModule.registerAsync({
                 imports: [config_1.ConfigModule],
-                useFactory: (config) => ({
-                    secret: config.get('JWT_SECRET'),
-                    signOptions: { expiresIn: config.get('JWT_EXPIRATION') },
-                }),
+                useFactory: (config) => {
+                    const secret = config.get('JWT_SECRET');
+                    const expiresIn = config.get('JWT_EXPIRATION');
+                    console.log('JWT_SECRET:', secret);
+                    console.log('JWT_EXPIRATION:', expiresIn);
+                    if (!secret) {
+                        throw new Error('JWT_SECRET is not defined in .env');
+                    }
+                    return {
+                        secret,
+                        signOptions: { expiresIn: expiresIn || '1h' },
+                    };
+                },
                 inject: [config_1.ConfigService],
             }),
         ],

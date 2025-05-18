@@ -11,12 +11,15 @@ const common_1 = require("@nestjs/common");
 const microservices_1 = require("@nestjs/microservices");
 const app_controller_1 = require("./app.controller");
 const app_service_1 = require("./app.service");
+const auth_controller_1 = require("./auth/auth.controller");
+const axios_1 = require("@nestjs/axios");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
         imports: [
+            axios_1.HttpModule,
             microservices_1.ClientsModule.register([
                 {
                     name: 'AUTH_SERVICE',
@@ -28,7 +31,7 @@ exports.AppModule = AppModule = __decorate([
                 },
             ]),
         ],
-        controllers: [app_controller_1.AppController],
+        controllers: [app_controller_1.AppController, auth_controller_1.AuthController],
         providers: [app_service_1.AppService],
     })
 ], AppModule);

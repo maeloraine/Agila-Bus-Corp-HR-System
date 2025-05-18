@@ -1,9 +1,8 @@
 'use client';
 
-import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import styles from "./login.module.css";
+import LoginForm from "./LoginForm";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -26,7 +25,6 @@ export default function LoginPage() {
       ...prev,
       [name]: value
     }));
-    // Clear error when user types
     if (errors[name as keyof typeof errors]) {
       setErrors(prev => ({
         ...prev,
@@ -45,13 +43,11 @@ export default function LoginPage() {
       general: ''
     };
 
-    // Role validation
     if (!formData.role) {
       newErrors.role = 'Please select your role';
       valid = false;
     }
 
-    // Employee ID validation (4-20 chars, alphanumeric + some symbols)
     if (!formData.employeeID) {
       newErrors.employeeID = 'Employee ID is required';
       valid = false;
@@ -60,7 +56,6 @@ export default function LoginPage() {
       valid = false;
     }
 
-    // Password validation (8-20 chars, at least one uppercase, one lowercase, one number, one symbol)
     if (!formData.password) {
       newErrors.password = 'Password is required';
       valid = false;
@@ -83,32 +78,26 @@ export default function LoginPage() {
     }
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Mock authentication - in a real app, this would be an API call
-      const mockUsers = [
-        { role: 'Admin', employeeID: 'admin123', password: 'Password@123' },
-        { role: 'HR Manager', employeeID: 'hr123', password: 'Hr@12345' },
-        { role: 'Accountant', employeeID: 'accountant123', password: 'Account@123' }
-      ];
+      const response = await fetch('http://localhost:3001/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+        credentials: 'include',
+      });
 
-      const user = mockUsers.find(
-        u => u.role === formData.role && 
-             u.employeeID === formData.employeeID && 
-             u.password === formData.password
-      );
-
-      if (user) {
-        // Successful login - redirect to homepage (dashboard)
+      if (response.ok) {
         router.push('/homepage');
       } else {
+        const errorData = await response.json();
         setErrors(prev => ({
           ...prev,
-          general: 'Invalid credentials. Please try again.'
+          general: errorData.message || 'Invalid credentials. Please try again.'
         }));
       }
     } catch (error) {
+      console.error("Login error:", error);
       setErrors(prev => ({
         ...prev,
         general: 'An error occurred. Please try again later.'
@@ -119,108 +108,12 @@ export default function LoginPage() {
   };
 
   return (
-    <div className={styles.container}>
-      <div className={styles.formContainer}>
-        <div style={{ flex: 1 }}></div>
-        <form onSubmit={handleSubmit} className={styles.form}>
-          <img
-            src="/assets/images/agila logo.png"
-            alt="Agila Bus Corporation Logo"
-            width={150}
-            height={150}
-            className={styles.logo}
-          />
-
-          <h2 className={styles.title}>
-            AGILA Bus Transportation
-          </h2>
-          <p className={styles.subtitle}>
-            Login your credentials
-          </p>
-
-          {errors.general && (
-            <div className={styles.errorMessage}>
-              {errors.general}
-            </div>
-          )}
-
-          <label htmlFor="role" className={styles.label}>
-            Role
-          </label>
-          <select
-            id="role"
-            name="role"
-            value={formData.role}
-            onChange={handleChange}
-            required
-            className={`${styles.input} ${errors.role ? styles.inputError : ''}`}
-          >
-            <option value="" disabled>
-              Select your role
-            </option>
-            <option value="Admin">Admin</option>
-            <option value="HR Manager">HR Manager</option>
-            <option value="Accountant">Accountant</option>
-          </select>
-          {errors.role && (
-            <p className={styles.errorText}>
-              {errors.role}
-            </p>
-          )}
-
-          <label htmlFor="employeeID" className={styles.label}>
-            Employee ID
-          </label>
-          <input
-            type="text"
-            id="employeeID"
-            name="employeeID"
-            value={formData.employeeID}
-            onChange={handleChange}
-            placeholder="Employee ID here..."
-            required
-            className={`${styles.input} ${errors.employeeID ? styles.inputError : ''}`}
-          />
-          {errors.employeeID && (
-            <p className={styles.errorText}>
-              {errors.employeeID}
-            </p>
-          )}
-
-          <label htmlFor="password" className={styles.label}>
-            Password
-          </label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            placeholder="Password here..."
-            required
-            className={`${styles.input} ${errors.password ? styles.inputError : ''}`}
-          />
-          {errors.password && (
-            <p className={styles.errorText}>
-              {errors.password}
-            </p>
-          )}
-
-          <Link href="/authentication/reset-password" passHref>
-            <div className={styles.resetPassword}>
-              Reset password?
-            </div>
-          </Link>
-
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className={styles.submitButton}
-          >
-            {isSubmitting ? 'Logging in...' : 'Login'}
-          </button>
-        </form>
-      </div>
-    </div>
+    <LoginForm
+      formData={formData}
+      errors={errors}
+      isSubmitting={isSubmitting}
+      handleChange={handleChange}
+      handleSubmit={handleSubmit}
+    />
   );
 }
