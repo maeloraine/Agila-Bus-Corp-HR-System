@@ -1,0 +1,174 @@
+.base {
+  width: 100%;
+}
+
+.employeeContainer {
+  max-width: auto;
+  height: 100%;
+  padding: 2rem;
+  padding-top: 0.01rem;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.05);
+}
+
+.searchButton button {
+  background-color: #961C1E;
+  color: white;
+  padding-top: 0.2rem;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.searchButton button:hover {
+  background-color: #571415 !important;
+  color: white;
+}
+
+.addEmployeeButton {
+  background-color: #9F0F19;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.addEmployeeButton:hover {
+  background-color: #571415 !important;
+  color: white;
+}
+
+.importButton {
+  background-color: #961C1E;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.importButton:hover {
+  background-color: #571415 !important;
+  color: white;
+}
+
+.headerSection {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.searchBar {
+  padding: 0.5rem;
+  flex: 1;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.filterDropdown {
+  padding: 0.5rem;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.firstColumn {
+  width: 75px;
+}
+
+.actionCell {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.editButton {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+}
+
+.editButton img {
+  width: 25px;
+  height: 25px;
+  object-fit: contain;
+}
+
+
+.deleteButton {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+}
+
+.deleteButton img {
+  width: 25px;
+  height: 25px;
+  object-fit: contain;
+}
+
+.commentButton {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+}
+
+.commentButton img {
+  width: 25px;
+  height: 25px;
+  object-fit: contain;
+}
+
+.tableWrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.employeeTable {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  text-align: center;
+}
+
+.employeeTable thead th {
+  position: sticky;
+  top: 0;
+  background: #fff;
+  z-index: 2;
+  border-bottom: 2px solid #ddd;
+  padding: 10px;
+}
+
+.employeeTable tbody {
+  display: block;
+  max-height: 300px; /* scroll height */
+  overflow-y: auto;
+  width: 100%;
+}
+
+.employeeTable thead,
+.employeeTable tbody tr {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
+
+.employeeTable tbody td {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+}
