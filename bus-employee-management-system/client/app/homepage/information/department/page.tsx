@@ -1,65 +1,36 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import styles from './department.module.css';
 import DepartmentModal from '@/components/modal/information/DepartmentModal';
 import ConfirmMessage from '@/components/modal/ConfirmMessage';
 import MessagePrompt from '@/components/modal/MessagePrompt';
+import { DepartmentLogic } from './departmentLogic';
 
 const DepartmentPage = () => {
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [selectedDept, setSelectedDept] = useState('');
-  const [departments, setDepartments] = useState([
-    { name: 'Accounting', employees: 8 },
-    { name: 'Human Resource', employees: 6 },
-    { name: 'Inventory', employees: 16 },
-    { name: 'Operations', employees: 20 },
-  ]);
-
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [deptToDelete, setDeptToDelete] = useState('');
-
-  const [showMessagePrompt, setShowMessagePrompt] = useState(false);
-  const [promptMessage, setPromptMessage] = useState('');
-
-  const handleAdd = (newName: string) => {
-    setDepartments([
-      ...departments,
-      {
-        name: newName,
-        employees: 0,
-      },
-    ]);
-  };
-
-  const handleEdit = (updatedName: string) => {
-    setDepartments((prev) =>
-      prev.map((dept) =>
-        dept.name === selectedDept ? { ...dept, name: updatedName } : dept
-      )
-    );
-  };
-
-  // Error prompt kapag may employee pa sa Department
-  const handleDeleteRequest = (deptName: string) => {
-    const dept = departments.find((d) => d.name === deptName);
-    if (dept && dept.employees > 0) {
-      setPromptMessage('This department cannot be deleted because it still contains employees.');
-      setShowMessagePrompt(true);
-      setShowDeleteConfirm(false);
-      return;
-    }
-    setDeptToDelete(deptName);
-    setShowDeleteConfirm(true);
-  };
-
-  const handleDelete = () => {
-    setDepartments((prev) => prev.filter((d) => d.name !== deptToDelete));
-    setShowDeleteConfirm(false);
-    setPromptMessage('Department deleted successfully.');
-    setShowMessagePrompt(true);
-  };
+  const {
+    filteredDepartments,
+    searchTerm,
+    setSearchTerm,
+    employeeFilter,
+    setEmployeeFilter,
+    showAddModal,
+    setShowAddModal,
+    showEditModal,
+    setShowEditModal,
+    selectedDept,
+    setSelectedDept,
+    departments,
+    showDeleteConfirm,
+    setShowDeleteConfirm,
+    handleAdd,
+    handleEdit,
+    handleDeleteRequest,
+    handleDelete,
+    showMessagePrompt,
+    setShowMessagePrompt,
+    promptMessage,
+  } = DepartmentLogic();
 
   return (
     <div className={styles.base}>
@@ -67,15 +38,27 @@ const DepartmentPage = () => {
         <h1>Department List</h1>
 
         <div className={styles.headerSection}>
-          {/* Search */}
-          <input type="text" className={styles.searchBar} placeholder="Search department..." />
+          {/* <input type="text" className={styles.searchBar} placeholder="Search department..." />
           <div className={styles.searchButton}>
             <button><img src="/assets/images/search-icon.png" /></button>
-          </div>
+          </div> */}
 
-          {/* Filter by No. of Employees */}
-          <select className={styles.filterDropdown}>
-            <option value="" defaultChecked disabled>No. of Employees</option>
+          {/* Search */}
+          <input
+            type="text"
+            className={styles.searchBar}
+            placeholder="Search department..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+
+          {/* No. of Employees Filter */}
+          <select
+            className={styles.filterDropdown}
+            value={employeeFilter}
+            onChange={(e) => setEmployeeFilter(e.target.value)}
+          >
+            <option value="">No. of Employees</option>
             <option value="1-20">1-20</option>
             <option value="21-40">21-40</option>
             <option value="41-60">41-60</option>
@@ -101,7 +84,7 @@ const DepartmentPage = () => {
               </tr>
             </thead>
             <tbody>
-              {departments.map((dept, index) => (
+              {filteredDepartments.map((dept, index) => (
                 <tr key={dept.name}>
                   <td className={styles.firstColumn}>{index + 1}</td>
                   <td>{dept.name}</td>
