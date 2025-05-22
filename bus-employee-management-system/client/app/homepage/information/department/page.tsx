@@ -2,7 +2,7 @@
 
 import React from 'react';
 import styles from './department.module.css';
-import DepartmentModal from '@/components/modal/information/DepartmentModal';
+import DepartmentModal from '@/components/modal/information/DepartmentModalLogic';
 import ConfirmMessage from '@/components/modal/ConfirmMessage';
 import MessagePrompt from '@/components/modal/MessagePrompt';
 import { DepartmentLogic } from './departmentLogic';

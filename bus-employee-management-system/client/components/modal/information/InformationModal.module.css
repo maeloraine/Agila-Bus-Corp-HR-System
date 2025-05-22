@@ -30,6 +30,11 @@
     border-radius: 8px;
     margin-top: 1rem;
   }
+
+  .inputField:focus {
+  box-shadow: 0 0 0 1px #8b1c1c;
+  border-color: #8b1c1c;
+  }
   
   .buttonGroup {
     display: flex;
