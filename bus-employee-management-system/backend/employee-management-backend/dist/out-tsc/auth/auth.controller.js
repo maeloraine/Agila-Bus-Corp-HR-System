@@ -14,23 +14,15 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthController = void 0;
 const common_1 = require("@nestjs/common");
-const axios_1 = require("@nestjs/axios");
-const rxjs_1 = require("rxjs");
+const auth_service_1 = require("./auth.service");
+const login_dto_1 = require("./dto/login.dto");
 let AuthController = class AuthController {
-    httpService;
-    constructor(httpService) {
-        this.httpService = httpService;
+    authService;
+    constructor(authService) {
+        this.authService = authService;
     }
     async login(credentials) {
-        try {
-            const response = await (0, rxjs_1.firstValueFrom)(this.httpService.post('http://localhost:4000/auth/login', credentials, {
-                withCredentials: true,
-            }));
-            return response.data;
-        }
-        catch (error) {
-            throw new common_1.HttpException(error?.response?.data || 'Auth Service Error', error?.response?.status || common_1.HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        return this.authService.login(credentials);
     }
 };
 exports.AuthController = AuthController;
@@ -38,11 +30,11 @@ __decorate([
     (0, common_1.Post)('login'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [login_dto_1.LoginDto]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "login", null);
 exports.AuthController = AuthController = __decorate([
     (0, common_1.Controller)('auth'),
-    __metadata("design:paramtypes", [axios_1.HttpService])
+    __metadata("design:paramtypes", [auth_service_1.AuthService])
 ], AuthController);
 //# sourceMappingURL=auth.controller.js.map
