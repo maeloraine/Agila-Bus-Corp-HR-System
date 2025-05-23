@@ -1,0 +1,12 @@
+{
+  "dependencies": {
+    "@nestjs/jwt": "^11.0.0",
+    "@nestjs/passport": "^11.0.5",
+    "cookie": "^1.0.2",
+    "passport": "^0.7.0",
+    "passport-jwt": "^4.0.1"
+  },
+  "devDependencies": {
+    "@types/cookie": "^0.6.0"
+  }
+}

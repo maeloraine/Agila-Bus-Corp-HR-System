@@ -4,9 +4,12 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import "@/styles/sidebar.css";
+import { useRouter } from 'next/navigation';
+import { logout } from '@/app/utils/logout';
 
 const Sidebar = () => {
     const pathname = usePathname();
+    const router = useRouter();
     const [activeItem, setActiveItem] = useState<string | null>(null);
     const [expandedMenus, setExpandedMenus] = useState({
         attendance: false,
@@ -17,7 +20,7 @@ const Sidebar = () => {
     // Menu structure data
     const menuItems = [
         {
-            path: '/',
+            path: '/homepage',
             name: 'Dashboard',
             icon: 'ri-dashboard-line',
             key: 'dashboard'
@@ -102,6 +105,13 @@ const Sidebar = () => {
         }));
     };
 
+    const handleLogout = async () => {
+        await logout();
+        // Optionally, clear any local state here
+        router.push('authentication/login'); // redirect to login page
+    };
+
+
     return (
         <div className="sidebar shadow-lg">
             <div className="sidebar-content">
@@ -153,10 +163,10 @@ const Sidebar = () => {
                 </div>
 
                 <div className="logout">
-                    <a href="#">
+                    <button onClick={handleLogout} className="nav-item logout-btn">
                         <i className="ri-logout-box-r-line" />
                         <span>Logout</span>
-                    </a>
+                    </button>
                 </div>
             </div>
         </div>
