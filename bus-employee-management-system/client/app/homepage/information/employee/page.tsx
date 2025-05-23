@@ -23,6 +23,8 @@ export default function EmployeePage() {
     handleDelete,
     showMessagePrompt,
     setShowMessagePrompt,
+    isReadOnlyView,
+    setIsReadOnlyView,
     promptMessage,
     searchTerm,
     setSearchTerm,
@@ -106,22 +108,34 @@ export default function EmployeePage() {
             </thead>
             <tbody>
               {filteredEmployees.map((emp, index) => (
-                <tr key={emp.name + index}>
+                <tr key={`${emp.firstName}-${emp.lastName}-${index}`}>
                   <td className={styles.firstColumn}>{index + 1}</td>
                   <td>{emp.status}</td>
-                  <td>{emp.name}</td>
+                  <td>{`${emp.firstName} ${emp.middleName} ${emp.lastName}`}</td>
                   <td>{emp.dateHired}</td>
                   <td>{emp.department}</td>
                   <td>{emp.position}</td>
                   <td className={styles.actionCell}>
                     <button
-                      className={styles.editButton}
+                      className={styles.viewButton}
                       onClick={() => {
                         setSelectedEmployee(emp);
+                        setIsReadOnlyView(true);
                         setShowEditModal(true);
                       }}
                     >
-                      Edit
+                      View
+                    </button>
+
+                    <button
+                      className={styles.editButton}
+                      onClick={() => {
+                        setSelectedEmployee(emp);
+                        setIsReadOnlyView(false);
+                        setShowEditModal(true);
+                      }}
+                    >
+                      <img src="/assets/images/edit.png" />
                     </button>
                     <button
                       className={styles.deleteButton}
@@ -170,6 +184,18 @@ export default function EmployeePage() {
             onClose={() => setShowMessagePrompt(false)}
           />
         )}
+
+        {showEditModal && selectedEmployee && (
+          <EmployeeModal
+            isEdit={!isReadOnlyView}
+            isReadOnly={isReadOnlyView}
+            defaultValue={selectedEmployee}
+            existingEmployees={employees}
+            onClose={() => setShowEditModal(false)}
+            onSubmit={handleEdit}
+          />
+        )}
+        
       </div>
     </div>
   );

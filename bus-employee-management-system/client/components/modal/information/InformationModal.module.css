@@ -20,6 +20,21 @@
     max-width: 90%;
     text-align: center;
     animation: fadeIn 0.3s ease-in-out;
+    max-height: 90vh;
+    min-width: 150vh;
+    overflow-y: auto;
+    padding: 1.5rem;
+    background: #fff;
+    border-radius: 10px;
+  }
+
+  .label {
+    text-align: left;
+    padding-top: 1rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #4b5563;
+    font-family: Arial, sans-serif;
   }
   
   .inputField {
@@ -28,10 +43,10 @@
     font-size: 16px;
     border: 1px solid #ccc;
     border-radius: 8px;
-    margin-top: 1rem;
+    margin-top: .5rem;
   }
 
-  .inputField:focus {
+  .inputField :focus {
   box-shadow: 0 0 0 1px #8b1c1c;
   border-color: #8b1c1c;
   }
@@ -102,4 +117,98 @@
       transform: translateY(0);
     }
   }
-  
+
+  .relatedForms {
+  max-width: auto;
+  height: 100%;
+  padding: 2rem;
+  padding-top: 0.01rem;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.05);
+  }
+
+  .firstColumn {
+  width: 75px;
+  }
+
+  .actionCell {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .editButton{
+    background-color: white;
+    border:1px solid #961C1E;
+    color: #961C1E;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    font-weight: bold;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+
+  .editButton:hover {
+    background-color: #961C1E !important;
+    color: white;
+  }
+
+  .deleteButton {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0.25rem;
+    display: flex;
+    align-items: center;
+  }
+
+  .deleteButton img {
+    width: 25px;
+    height: 25px;
+    object-fit: contain;
+  }
+
+  .tableWrapper {
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  .exitDetailsTable, .leaveRequestTable {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    text-align: center;
+  }
+
+  .exitDetailsTable thead th, .leaveRequestTable thead th {
+    position: sticky;
+    top: 0;
+    background: #fff;
+    z-index: 2;
+    border-bottom: 2px solid #ddd;
+    padding: 10px;
+  }
+
+  .exitDetailsTable tbody, .leaveRequestTable tbody {
+    display: block;
+    max-height: 300px; /* scroll height */
+    overflow-y: auto;
+    width: 100%;
+  }
+
+  .exitDetailsTable thead,
+  .exitDetailsTable tbody tr,
+  .leaveRequestTable thead,
+  .leaveRequestTable tbody tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+  }
+
+  .exitDetailsTable tbody td,
+  .leaveRequestTable tbody td {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+  }

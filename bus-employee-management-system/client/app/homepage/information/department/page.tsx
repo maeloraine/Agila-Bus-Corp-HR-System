@@ -38,10 +38,6 @@ const DepartmentPage = () => {
         <h1>Department List</h1>
 
         <div className={styles.headerSection}>
-          {/* <input type="text" className={styles.searchBar} placeholder="Search department..." />
-          <div className={styles.searchButton}>
-            <button><img src="/assets/images/search-icon.png" /></button>
-          </div> */}
 
           {/* Search */}
           <input
