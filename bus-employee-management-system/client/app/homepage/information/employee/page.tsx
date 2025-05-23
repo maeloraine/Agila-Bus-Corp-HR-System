@@ -2,41 +2,97 @@
 
 import React from "react";
 import styles from './employee.module.css';
+import { EmployeeLogic } from './employeeLogic';
+import EmployeeModal from '@/components/modal/information/EmployeeModal';
+import ConfirmMessage from '@/components/modal/ConfirmMessage';
+import MessagePrompt from '@/components/modal/MessagePrompt';
 
 export default function EmployeePage() {
+  const {
+    showAddModal,
+    setShowAddModal,
+    showEditModal,
+    setShowEditModal,
+    selectedEmployee,
+    setSelectedEmployee,
+    showDeleteConfirm,
+    setShowDeleteConfirm,
+    handleAdd,
+    handleEdit,
+    handleDeleteRequest,
+    handleDelete,
+    showMessagePrompt,
+    setShowMessagePrompt,
+    isReadOnlyView,
+    setIsReadOnlyView,
+    promptMessage,
+    searchTerm,
+    setSearchTerm,
+    statusFilter,
+    setStatusFilter,
+    departmentFilter,
+    setDepartmentFilter,
+    positionFilter,
+    setPositionFilter,
+    filteredEmployees,
+    employees
+  } = EmployeeLogic();
+
   return (
     <div className={styles.base}>
       <div className={styles.employeeContainer}>
         <h1>Employee List</h1>
 
-        {/* Status Filter */}
         <div className={styles.headerSection}>
-          <select className={styles.filterDropdown}>
-            <option value="" defaultChecked disabled>Status</option>
+          <select
+            className={styles.filterDropdown}
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+          >
+            <option value="">Status</option>
             <option value="Active">Active</option>
             <option value="On Leave">On Leave</option>
             <option value="Resigned">Resigned</option>
           </select>
 
-          {/* Search */}
-          <input type="text" className={styles.searchBar} placeholder="Search employees..."/>
-          <div className={styles.searchButton}>
-          <button><img src="/assets/images/search-icon.png" /></button>
-          </div>
-          
-          {/* Department Filter */}
-          <select className={styles.filterDropdown}>
-            <option value="" defaultChecked disabled>All Departments</option>
+          <input
+            type="text"
+            className={styles.searchBar}
+            placeholder="Search employees..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+
+          <select
+            className={styles.filterDropdown}
+            value={departmentFilter}
+            onChange={(e) => setDepartmentFilter(e.target.value)}
+          >
+            <option value="">All Departments</option>
             <option value="Accounting">Accounting</option>
-            <option value="HR">Human Resource</option>
+            <option value="Human Resource">Human Resource</option>
             <option value="Inventory">Inventory</option>
-            <option value="Operational">Operational</option>
+            <option value="Operations">Operations</option>
           </select>
-          <button className={styles.addEmployeeButton}>Add employee</button>
+
+          <select
+            className={styles.filterDropdown}
+            value={positionFilter}
+            onChange={(e) => setPositionFilter(e.target.value)}
+          >
+            <option value="">All Positions</option>
+            <option value="Driver">Driver</option>
+            <option value="Supervisor">Supervisor</option>
+            <option value="Warehouse Staff">Warehouse Staff</option>
+            <option value="Dispatcher">Dispatcher</option>
+            <option value="Recruiter">Recruiter</option>
+            <option value="Auditor">Auditor</option>
+          </select>
+
+          <button className={styles.addEmployeeButton} onClick={() => setShowAddModal(true)}>Add employee</button>
           <button className={styles.importButton}>Import</button>
         </div>
 
-        {/* Employee List Table */}
         <div className={styles.tableWrapper}>
           <table className={styles.employeeTable}>
             <thead>
@@ -51,94 +107,95 @@ export default function EmployeePage() {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td className={styles.firstColumn}>1</td>
-                <td>Active</td>
-                <td>Juan Dela Cruz</td>
-                <td>2023-01-15</td>
-                <td>Operations</td>
-                <td>Driver</td>
-                <td className={styles.actionCell}>
-                  <button className={styles.editButton}>Edit</button>
-                  <button className={styles.deleteButton}>
-                    <img src="/assets/images/delete.png" />
-                  </button>
-                </td>
-              </tr>
-              <tr>
-                <td className={styles.firstColumn}>2</td>
-                <td>On Leave</td>
-                <td>Mark Reyes</td>
-                <td>2023-03-10</td>
-                <td>Human Resource</td>
-                <td>Supervisor</td>
-                <td className={styles.actionCell}>
-                  <button className={styles.editButton}>Edit</button>
-                  <button className={styles.deleteButton}>
-                    <img src="/assets/images/delete.png" />
-                  </button>
-                </td>
-              </tr>
-              <tr>
-                <td className={styles.firstColumn}>3</td>
-                <td>Active</td>
-                <td>Ana Santos</td>
-                <td>2022-11-05</td>
-                <td>Inventory</td>
-                <td>Warehouse Staff</td>
-                <td className={styles.actionCell}>
-                  <button className={styles.editButton}>Edit</button>
-                  <button className={styles.deleteButton}>
-                    <img src="/assets/images/delete.png" />
-                  </button>
-                </td>
-              </tr>
-              <tr>
-                <td className={styles.firstColumn}>4</td>
-                <td>On Leave</td>
-                <td>Ramon Cruz</td>
-                <td>2024-01-22</td>
-                <td>Operations</td>
-                <td>Dispatcher</td>
-                <td className={styles.actionCell}>
-                  <button className={styles.editButton}>Edit</button>
-                  <button className={styles.deleteButton}>
-                    <img src="/assets/images/delete.png" />
-                  </button>
-                </td>
-              </tr>
-              <tr>
-                <td className={styles.firstColumn}>5</td>
-                <td>Resigned</td>
-                <td>Elaine Torres</td>
-                <td>2023-06-18</td>
-                <td>Human Resource</td>
-                <td>Recruiter</td>
-                <td className={styles.actionCell}>
-                  <button className={styles.editButton}>Edit</button>
-                  <button className={styles.deleteButton}>
-                    <img src="/assets/images/delete.png" />
-                  </button>
-                </td>
-              </tr>
-              <tr>
-                <td className={styles.firstColumn}>6</td>
-                <td>Active</td>
-                <td>Maria Batumbakal</td>
-                <td>2024-08-12</td>
-                <td>Accounting</td>
-                <td>Auditor</td>
-                <td className={styles.actionCell}>
-                  <button className={styles.editButton}>Edit</button>
-                  <button className={styles.deleteButton}>
-                    <img src="/assets/images/delete.png" />
-                  </button>
-                </td>
-              </tr>
-              {/* Keep or update remaining rows if needed */}
+              {filteredEmployees.map((emp, index) => (
+                <tr key={`${emp.firstName}-${emp.lastName}-${index}`}>
+                  <td className={styles.firstColumn}>{index + 1}</td>
+                  <td>{emp.status}</td>
+                  <td>{`${emp.firstName} ${emp.middleName} ${emp.lastName}`}</td>
+                  <td>{emp.dateHired}</td>
+                  <td>{emp.department}</td>
+                  <td>{emp.position}</td>
+                  <td className={styles.actionCell}>
+                    <button
+                      className={styles.viewButton}
+                      onClick={() => {
+                        setSelectedEmployee(emp);
+                        setIsReadOnlyView(true);
+                        setShowEditModal(true);
+                      }}
+                    >
+                      View
+                    </button>
+
+                    <button
+                      className={styles.editButton}
+                      onClick={() => {
+                        setSelectedEmployee(emp);
+                        setIsReadOnlyView(false);
+                        setShowEditModal(true);
+                      }}
+                    >
+                      <img src="/assets/images/edit.png" />
+                    </button>
+                    <button
+                      className={styles.deleteButton}
+                      onClick={() => handleDeleteRequest(emp)}
+                    >
+                      <img src="/assets/images/delete.png" />
+                    </button>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
+
+        {/* Modals */}
+        {showAddModal && (
+          <EmployeeModal
+            isEdit={false}
+            existingEmployees={employees}
+            onClose={() => setShowAddModal(false)}
+            onSubmit={handleAdd}
+          />
+        )}
+
+        {showEditModal && selectedEmployee && (
+          <EmployeeModal
+            isEdit={true}
+            defaultValue={selectedEmployee}
+            existingEmployees={employees}
+            onClose={() => setShowEditModal(false)}
+            onSubmit={handleEdit}
+          />
+        )}
+
+        {showDeleteConfirm && (
+          <ConfirmMessage
+            message="Are you sure you want to delete this employee?"
+            onConfirm={handleDelete}
+            onCancel={() => setShowDeleteConfirm(false)}
+          />
+        )}
+
+        {showMessagePrompt && (
+          <MessagePrompt
+            message={promptMessage}
+            onClose={() => setShowMessagePrompt(false)}
+          />
+        )}
+
+        {showEditModal && selectedEmployee && (
+          <EmployeeModal
+            isEdit={!isReadOnlyView}
+            isReadOnly={isReadOnlyView}
+            defaultValue={selectedEmployee}
+            existingEmployees={employees}
+            onClose={() => setShowEditModal(false)}
+            onSubmit={handleEdit}
+          />
+        )}
+        
       </div>
     </div>
   );
