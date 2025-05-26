@@ -9,15 +9,13 @@ export interface Employee {
   birthdate: string;
   email: string;
   contact: string;
-  address:string;
+  address: string;
   status: string;
   dateHired: string;
   department: string;
   position: string;
 }
 
-
-// Age Validation
 const isAtLeast18 = (birthdate: string) => {
   const birth = new Date(birthdate);
   const today = new Date();
@@ -26,8 +24,8 @@ const isAtLeast18 = (birthdate: string) => {
   return age > 18 || (age === 18 && m >= 0);
 };
 
-// Format Validation
-const isValidEmail = (email: string) => /^[a-zA-Z0-9]+([._-][a-zA-Z0-9]+)*@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$/.test(email);
+const isValidEmail = (email: string) =>
+  /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email);
 const isValidContact = (contact: string) => /^\d{11}$/.test(contact);
 const isValidPhilippineContact = (contact: string) => /^(09)\d{9}$/.test(contact);
 const isValidDateHired = (date: string) => new Date(date) <= new Date();
@@ -40,60 +38,62 @@ export const useEmployeeModal = (
   onClose: () => void
 ) => {
   const [employee, setEmployee] = useState<Employee>({
-    status: '',
     firstName: '',
     middleName: '',
     lastName: '',
     birthdate: '',
+    email: '',
     contact: '',
+    address: '',
+    status: '',
     dateHired: '',
     department: '',
     position: '',
-    email:'',
-    address:'',
     ...defaultValue,
   });
 
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [showConfirm, setShowConfirm] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<{ [key in keyof Employee]?: string }>({});
 
   const validateInput = () => {
-    if (!employee.firstName.trim() || !employee.lastName.trim() ||
-        !employee.status || !employee.birthdate || !employee.contact || !employee.address ||
-        !employee.dateHired || !employee.department || !employee.position.trim()) {
-      setError('All fields are required.');
-      return false;
+    const errors: typeof fieldErrors = {};
+
+    if (!employee.firstName.trim()) errors.firstName = 'This field is required.';
+    if (!employee.lastName.trim()) errors.lastName = 'This field is required.';
+    if (!employee.birthdate) errors.birthdate = 'This field is required.';
+    if (!employee.status) errors.status = 'This field is required.';
+    if (!employee.contact) errors.contact = 'This field is required.';
+    if (!employee.address) errors.address = 'This field is required.';
+    if (!employee.dateHired) errors.dateHired = 'This field is required.';
+    if (!employee.department) errors.department = 'This field is required.';
+    if (!employee.position.trim()) errors.position = 'This field is required.';
+
+    if (!employee.email || !isValidEmail(employee.email)) {
+      errors.email = 'Invalid email address.';
     }
+
+    if (!isValidContact(employee.contact) || !isValidPhilippineContact(employee.contact)) {
+      errors.contact = 'Invalid contact number.';
+    }
+
     if (!isAtLeast18(employee.birthdate)) {
-      setError('Employee must be at least 18 years old.');
-      return false;
-    }
-
-    if (!isValidEmail(employee.email)) {
-      setError('Invalid email format');
-      return false;
-    }
-
-    if (!isValidContact(employee.contact)) {
-      setError('Contact number must be 11 digits.');
-      return false;
-    }
-
-    if (!isValidPhilippineContact(employee.contact)) {
-      setError('Invalid contact number format.');
-      return false;
+      errors.birthdate = 'Employee must be at least 18 years old.';
     }
 
     if (!isValidDateHired(employee.dateHired)) {
-      setError('Date hired cannot be a future date.');
-      return false;
+      errors.dateHired = 'Date hired cannot be a future date.';
     }
-    return true;
+
+    setFieldErrors(errors);
+    setError(Object.keys(errors).length > 0 ? 'All fields are required. Please fill highlighted fields.' : '');
+    return Object.keys(errors).length === 0;
   };
 
   const handleChange = (field: keyof Employee, value: string) => {
     setEmployee((prev) => ({ ...prev, [field]: value }));
+    setFieldErrors((prev) => ({ ...prev, [field]: undefined }));
   };
 
   const handleSubmit = () => {
@@ -107,14 +107,11 @@ export const useEmployeeModal = (
 
     if (isDuplicate) {
       setError('Employee already exists.');
-      setSuccess('');
       return;
     }
 
     onSubmit(employee);
     setSuccess(isEdit ? 'Employee updated successfully.' : 'Employee added successfully.');
-    setError('');
-
     setTimeout(() => {
       setSuccess('');
       onClose();
@@ -128,13 +125,9 @@ export const useEmployeeModal = (
 
   const handleConfirmedSubmit = () => {
     setShowConfirm(false);
-
     if (!validateInput()) return;
-
     onSubmit(employee);
     setSuccess('Employee updated successfully.');
-    setError('');
-
     setTimeout(() => {
       setSuccess('');
       onClose();
@@ -145,6 +138,7 @@ export const useEmployeeModal = (
     employee,
     error,
     success,
+    fieldErrors,
     showConfirm,
     handleChange,
     handleSubmit,
