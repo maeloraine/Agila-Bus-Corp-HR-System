@@ -1,0 +1,35 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable prettier/prettier */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable prettier/prettier */
+import { Injectable } from '@nestjs/common';
+import * as nodemailer from 'nodemailer';
+
+@Injectable()
+export class EmailService {
+    private transporter;
+
+    constructor() {
+        // Create a transporter object using the default SMTP transport
+        this.transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: process.env.STMP_USER,
+                pass: process.env.STMP_PASS,
+            },
+        });
+    }
+    
+    async sendResetEmail(to: string, token: string){
+        const resetLink = `http://localhost:3000/reset-password?token=${token}`;
+
+        await this.transporter.sendMail({
+            from: `"Agila Bus Transport Corporation" <${process.env.STMP_USER}>`, // sender address
+            to, 
+            subject: 'Reset your Agila Bus Transport Corporation Password', // Subject line
+            html: `<p>Click the link below to reset your password. This will expire soon:</p>
+                   <a href="${resetLink}">${resetLink}</a>`,
+        });
+    }
+    }

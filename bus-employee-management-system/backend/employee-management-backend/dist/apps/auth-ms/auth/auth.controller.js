@@ -20,11 +20,14 @@ const client_1 = require("@prisma/client");
 const argon2 = require("argon2");
 const crypto = require("crypto");
 const date_fns_1 = require("date-fns");
+const email_service_1 = require("../email/email.service");
 const prisma = new client_1.PrismaClient();
 let AuthController = class AuthController {
     authService;
-    constructor(authService) {
+    emailService;
+    constructor(authService, emailService) {
         this.authService = authService;
+        this.emailService = emailService;
     }
     async login(loginDto, res) {
         const user = await this.authService.validateUser(loginDto.role, loginDto.employeeID, loginDto.password);
@@ -41,16 +44,16 @@ let AuthController = class AuthController {
         return { message: 'Login successful' };
     }
     async register(body) {
-        const { employeeId, role, password } = body;
+        const { employeeId, role, password, email } = body;
         const existing = await prisma.user.findUnique({ where: { employeeId } });
         if (existing) {
             throw new common_1.BadRequestException('User already exists');
         }
         const hash = await argon2.hash(password, { type: argon2.argon2id });
         const user = await prisma.user.create({
-            data: { employeeId, role, password: hash },
+            data: { employeeId, role, password: hash, email },
         });
-        return { message: 'User registered successfully', user: { id: user.id, employeeID: user.employeeId, role: user.role } };
+        return { message: 'User registered successfully', user: { id: user.id, employeeID: user.employeeId, role: user.role, email: user.email } };
     }
     async requestReset(body) {
         const user = await prisma.user.findUnique({ where: { employeeId: body.employeeId } });
@@ -63,6 +66,10 @@ let AuthController = class AuthController {
             where: { employeeId: body.employeeId },
             data: { resetToken: token, resetTokenExpiry: expiry },
         });
+        if (!user.email) {
+            throw new common_1.BadRequestException('User does not have a valid email address');
+        }
+        await this.emailService.sendResetEmail(user.email, token);
         return { message: 'Rest token generated', token };
     }
     async resetPassword(body) {
@@ -141,6 +148,7 @@ __decorate([
 ], AuthController.prototype, "logout", null);
 exports.AuthController = AuthController = __decorate([
     (0, common_1.Controller)('auth'),
-    __metadata("design:paramtypes", [auth_ms_service_1.AuthService])
+    __metadata("design:paramtypes", [auth_ms_service_1.AuthService,
+        email_service_1.EmailService])
 ], AuthController);
 //# sourceMappingURL=auth.controller.js.map
