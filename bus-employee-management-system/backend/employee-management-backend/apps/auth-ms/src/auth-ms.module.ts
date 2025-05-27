@@ -50,6 +50,7 @@ import { AuthService } from './auth-ms.service';
 import { AuthController } from './auth/auth.controller';
 import { JwtStrategy } from './auth/jwt.strategy';
 
+
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true, envFilePath: 'apps/auth-ms/.env' }),

@@ -25,6 +25,13 @@ export default tseslint.config(
     },
   },
   {
+  files: ["*/.ts", "*/.tsx"],
+  rules: {
+    "@typescript-eslint/no-unused-vars": "off",
+    "@typescript-eslint/no-explicit-any": "off", 
+  },
+  },
+  {
     rules: {
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-floating-promises': 'warn',
@@ -32,3 +39,4 @@ export default tseslint.config(
     },
   },
 );
+

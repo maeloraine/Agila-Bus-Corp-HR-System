@@ -98,3 +98,71 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+
+
+## Prisma
+
+✔ Your Prisma schema was created at prisma/schema.prisma
+  You can now open it in your favorite editor.
+
+
+Next steps:
+1. Set the DATABASE_URL in the .env file to point to your existing database. If your database has no tables yet, read https://pris.ly/d/getting-started
+2. Set the provider of the datasource block in schema.prisma to match your database: postgresql, mysql, sqlite, sqlserver, mongodb or cockroachdb.
+3. Run prisma db pull to turn your database schema into a Prisma schema.
+4. Run prisma generate to generate the Prisma Client. You can then start querying your database.
+5. Tip: Explore how you can extend the ORM with scalable connection pooling, global caching, and real-time database events. Read: https://pris.ly/cli/beyond-orm
+
+More information in our documentation:
+https://pris.ly/d/getting-started
+
+
+
+## Backend Commands Used
+
+```NestJs Installation (For creating a project only):
+npm i -g @nestjs/cli`
+nest new employee-management-backend
+mkdir -p apps/gateway`
+mv src apps/gateway/`
+mv test apps/gateway/`
+nest generate app auth-ms`
+nest generate controller auth --flat --path=apps/auth-ms/src`
+```
+```NestJs Installation (From Repo):
+npm install @nestjs/microservices
+npx tsc --build
+npm install @nestjs/config
+npm install class-validator
+npm install @nestjs/axios
+npm i dotenv
+npm install @nestjs/throttler@latest
+npm install @nestjs/jwt @nestjs/passport passport passport-jwt cookie`
+npm install --save-dev @types/cookie
+
+```
+```NestJs Run:
+For Gateway App:
+  npm run build:gateway`
+  npm run start:gateway`
+
+For Auth Microservice:
+  npm run build:auth-ms`
+  npm run start:auth-ms`
+```
+```PrismaORM Installation:
+npm install @prisma/client`
+npm install --save-dev prisma
+npm install date-fns
+
+```
+
+```PrismaORM Generating Project:
+npx prisma init
+npm install @prisma/client
+npx prisma studio
+```
+```PrismaORM Migration:
+npx prisma migrate dev --name init
+
+```
