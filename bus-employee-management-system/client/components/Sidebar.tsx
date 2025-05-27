@@ -59,13 +59,13 @@ const Sidebar = () => {
             ]
         },
         {
-            path: '/documents',
+            path: '/homepage/documents/orgfiles',
             name: 'Documents',
             icon: 'ri-folder-line',
             key: 'documents'
         },
         {
-            path: '/settings',
+            path: '/authentication/new-password',
             name: 'Settings',
             icon: 'ri-settings-line',
             key: 'settings'
