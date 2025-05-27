@@ -67,4 +67,64 @@
     background-color: #571415 !important;
     color: white;
   }
-  
+  .overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.35);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1100;
+}
+
+.modal {
+  background: #ffffff;
+  border-radius: 0.75rem;
+  padding: 1.5rem 2rem;
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.modal p {
+  font-size: 1rem;
+  color: #111827;
+  margin-bottom: 1.25rem;
+}
+
+.buttonGroup {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.cancelButton {
+  padding: 0.5rem 1.25rem;
+  background-color: #ffffff;
+  border: 2px solid #b91c1c;
+  color: #b91c1c;
+  font-weight: 600;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.cancelButton:hover {
+  background-color: #fef2f2;
+}
+
+.confirmButton {
+  padding: 0.5rem 1.25rem;
+  background-color: #b91c1c;
+  border: none;
+  color: #ffffff;
+  font-weight: 600;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.confirmButton:hover {
+  background-color: #991b1b;
+}
