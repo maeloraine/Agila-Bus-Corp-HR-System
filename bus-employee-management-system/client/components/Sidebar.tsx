@@ -105,7 +105,7 @@ const Sidebar = () => {
     const handleLogout = async () => {
         await logout();
         // Optionally, clear any local state here
-        router.push('authentication/login'); // redirect to login page
+        router.push('/authentication/login'); // redirect to login page
     };
 
 

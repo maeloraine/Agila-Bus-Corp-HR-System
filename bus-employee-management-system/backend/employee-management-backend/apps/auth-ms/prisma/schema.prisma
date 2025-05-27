@@ -18,5 +18,7 @@ model User {
   employeeId String   @unique
   role       String
   password   String
+  resetToken String?  // Reset Password Token
+  resetTokenExpiry DateTime?   // Token Expiry
   createdAt  DateTime @default(now())
 }

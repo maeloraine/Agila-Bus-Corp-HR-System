@@ -153,6 +153,7 @@ For Auth Microservice:
 ```PrismaORM Installation:
 npm install @prisma/client`
 npm install --save-dev prisma
+npm install date-fns
 
 ```
 
