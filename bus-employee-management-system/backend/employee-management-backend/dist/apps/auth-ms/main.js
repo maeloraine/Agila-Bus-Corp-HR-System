@@ -14,6 +14,8 @@ async function bootstrap() {
     });
     await app.startAllMicroservices();
     await app.listen(4000);
+    console.log('STMP_USER:', process.env.STMP_USER);
+    console.log('STMP_PASS:', process.env.STMP_PASS ? '*****' : 'MISSING!');
     console.log('Auth service is running on http://localhost:4000');
 }
 bootstrap().catch(err => {

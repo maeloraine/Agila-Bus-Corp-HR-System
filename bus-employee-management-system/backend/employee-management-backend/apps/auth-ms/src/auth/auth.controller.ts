@@ -16,6 +16,7 @@ import * as argon2 from 'argon2';
 import * as crypto from 'crypto';
 // Import addMinutes from date-fns to calculate token expiry times.
 import { addMinutes } from 'date-fns';
+import { EmailService } from '../email/email.service';
 
 // Initialize a single instance of PrismaClient to be used throughout the controller.
 const prisma = new PrismaClient(); // <-- Only need one Prisma client
@@ -24,7 +25,10 @@ const prisma = new PrismaClient(); // <-- Only need one Prisma client
 @Controller('auth')
 export class AuthController {
   // Inject the AuthService into the controller.
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService, 
+    private readonly emailService: EmailService,
+  ){} 
 
   /**
    * Handles user login.
@@ -58,8 +62,8 @@ export class AuthController {
    */
   @Post('register') // Defines this method as a handler for POST requests to '/auth/register'.
   @HttpCode(HttpStatus.CREATED) // Sets the HTTP status code to 201 (Created) for successful responses.
-  async register(@Body() body: { employeeId: string; role: string; password: string }) {
-    const { employeeId, role, password } = body;
+  async register(@Body() body: { employeeId: string; role: string; password: string; email: string }) {
+    const { employeeId, role, password, email } = body;
 
     // Check if a user with the given employeeId already exists in the database.
     const existing = await prisma.user.findUnique({ where: { employeeId } });
@@ -72,11 +76,11 @@ export class AuthController {
     const hash = await argon2.hash(password, { type: argon2.argon2id });
     // Create the new user in the database with the hashed password.
     const user = await prisma.user.create({
-      data: { employeeId, role, password: hash },
+      data: { employeeId, role, password: hash, email },
     });
 
     // Return a success message and the newly created user's basic information.
-    return { message: 'User registered successfully', user: { id: user.id, employeeID: user.employeeId, role: user.role } };
+    return { message: 'User registered successfully', user: { id: user.id, employeeID: user.employeeId, role: user.role, email: user.email } };
   }
 
   /**
@@ -103,6 +107,11 @@ export class AuthController {
       where : { employeeId: body.employeeId },
       data  : { resetToken: token, resetTokenExpiry: expiry },
     });
+
+    if (!user.email) {
+      throw new BadRequestException('User does not have a valid email address');
+    }
+    await this.emailService.sendResetEmail(user.email, token); // Send the reset email to the user.
 
     // Return a success message and the generated token (for sending via email, etc.).
     return { message: 'Rest token generated', token };

@@ -14,12 +14,14 @@ const passport_1 = require("@nestjs/passport");
 const auth_ms_service_1 = require("./auth-ms.service");
 const auth_controller_1 = require("./auth/auth.controller");
 const jwt_strategy_1 = require("./auth/jwt.strategy");
+const email_module_1 = require("./email/email.module");
 let AuthMsModule = class AuthMsModule {
 };
 exports.AuthMsModule = AuthMsModule;
 exports.AuthMsModule = AuthMsModule = __decorate([
     (0, common_1.Module)({
         imports: [
+            email_module_1.EmailModule,
             config_1.ConfigModule.forRoot({ isGlobal: true, envFilePath: 'apps/auth-ms/.env' }),
             passport_1.PassportModule,
             jwt_1.JwtModule.registerAsync({

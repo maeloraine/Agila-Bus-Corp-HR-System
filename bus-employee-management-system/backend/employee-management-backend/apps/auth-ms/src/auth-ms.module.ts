@@ -49,10 +49,12 @@ import { PassportModule } from '@nestjs/passport';
 import { AuthService } from './auth-ms.service';
 import { AuthController } from './auth/auth.controller';
 import { JwtStrategy } from './auth/jwt.strategy';
+import { EmailModule } from './email/email.module';
 
 
 @Module({
   imports: [
+    EmailModule, // Import EmailService to use it in AuthService
     ConfigModule.forRoot({ isGlobal: true, envFilePath: 'apps/auth-ms/.env' }),
     PassportModule,
     JwtModule.registerAsync({
