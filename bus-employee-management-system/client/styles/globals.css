@@ -142,4 +142,6 @@ h6 {
   background: var(--primary-hover-color);
 }
 
-
+.swal-custom-popup { 
+  z-index: 2000 !important; 
+}

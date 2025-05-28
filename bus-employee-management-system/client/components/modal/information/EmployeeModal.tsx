@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import styles from './InformationModal.module.css';
-import ConfirmMessage from '@/components/modal/ConfirmMessage';
+import ConfirmMessage from '@/components/alert/ConfirmMessage';
 import { useEmployeeModal, Employee } from './EmployeeModalLogic';
 
 interface EmployeeModalProps {
@@ -17,15 +17,10 @@ interface EmployeeModalProps {
 const EmployeeModal: React.FC<EmployeeModalProps> = (props) => {
   const {
     employee,
-    error,
-    success,
     fieldErrors,
-    showConfirm,
     handleChange,
     handleSubmit,
     handleUpdateConfirm,
-    handleConfirmedSubmit,
-    setShowConfirm,
   } = useEmployeeModal(
     props.isEdit,
     props.defaultValue,
@@ -271,9 +266,6 @@ const EmployeeModal: React.FC<EmployeeModalProps> = (props) => {
           <br/>
         </div>
 
-        {error && <p className={styles.errorMessage}>{error}</p>}
-        {success && <p className={styles.successMessage}>{success}</p>}
-
         <div className={styles.buttonGroup}>
           {props.isReadOnly ? (
             <button onClick={handleExitClick} className={styles.cancelButton}>Close</button>
@@ -287,14 +279,6 @@ const EmployeeModal: React.FC<EmployeeModalProps> = (props) => {
           )}
         </div>
       </div>
-
-      {showConfirm && (
-        <ConfirmMessage
-          message="Are you sure you want to update this employee?"
-          onConfirm={handleConfirmedSubmit}
-          onCancel={() => setShowConfirm(false)}
-        />
-      )}
 
       {showExitConfirm && (
         <ConfirmMessage

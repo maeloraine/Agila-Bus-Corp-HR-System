@@ -4,8 +4,9 @@ import React from "react";
 import styles from './employee.module.css';
 import { EmployeeLogic } from './employeeLogic';
 import EmployeeModal from '@/components/modal/information/EmployeeModal';
-import ConfirmMessage from '@/components/modal/ConfirmMessage';
-import MessagePrompt from '@/components/modal/MessagePrompt';
+import FilterDropDown, { FilterSection } from '@/components/ui/filterDropdown';
+import "@/styles/filters.css";
+import "@/styles/pagination.css";
 
 export default function EmployeePage() {
   const {
@@ -15,37 +16,30 @@ export default function EmployeePage() {
     setShowEditModal,
     selectedEmployee,
     setSelectedEmployee,
-    showDeleteConfirm,
-    setShowDeleteConfirm,
     handleAdd,
     handleEdit,
     handleDeleteRequest,
-    handleDelete,
-    showMessagePrompt,
-    setShowMessagePrompt,
     isReadOnlyView,
     setIsReadOnlyView,
-    promptMessage,
     searchTerm,
     setSearchTerm,
     statusFilter,
     setStatusFilter,
-    departmentFilter,
-    setDepartmentFilter,
-    positionFilter,
-    setPositionFilter,
     filteredEmployees,
-    employees
+    employees,
+    filterSections,
+    handleApplyFilters
   } = EmployeeLogic();
 
   return (
     <div className={styles.base}>
       <div className={styles.employeeContainer}>
-        <h1>Employee List</h1>
+        <h1 className={styles.title}>Employee List</h1>
 
         <div className={styles.headerSection}>
+          {/* Status Filter */}
           <select
-            className={styles.filterDropdown}
+            className={styles.statusfilterDropdown}
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
           >
@@ -55,42 +49,33 @@ export default function EmployeePage() {
             <option value="Resigned">Resigned</option>
           </select>
 
-          <input
-            type="text"
-            className={styles.searchBar}
-            placeholder="Search employees..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
+          {/* Search */}
+          <div className={styles.search}>
+            <i className='ri-search-line'/>
+            <input
+              type="text"
+              placeholder="Search here..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
 
-          <select
-            className={styles.filterDropdown}
-            value={departmentFilter}
-            onChange={(e) => setDepartmentFilter(e.target.value)}
-          >
-            <option value="">All Departments</option>
-            <option value="Accounting">Accounting</option>
-            <option value="Human Resource">Human Resource</option>
-            <option value="Inventory">Inventory</option>
-            <option value="Operations">Operations</option>
-          </select>
+           {/* Filter Button with Dropdown */}
+          <div className="filter">
+            <FilterDropDown
+              sections={filterSections}
+              onApply={handleApplyFilters}
+            />
+          </div>
 
-          <select
-            className={styles.filterDropdown}
-            value={positionFilter}
-            onChange={(e) => setPositionFilter(e.target.value)}
-          >
-            <option value="">All Positions</option>
-            <option value="Driver">Driver</option>
-            <option value="Supervisor">Supervisor</option>
-            <option value="Warehouse Staff">Warehouse Staff</option>
-            <option value="Dispatcher">Dispatcher</option>
-            <option value="Recruiter">Recruiter</option>
-            <option value="Auditor">Auditor</option>
-          </select>
-
-          <button className={styles.addEmployeeButton} onClick={() => setShowAddModal(true)}>Add employee</button>
-          <button className={styles.importButton}>Import</button>
+          <button className={styles.addEmployeeButton} onClick={() => setShowAddModal(true)}>
+            <i className="ri-add-line"/>
+            Add Employee
+          </button>
+          <button className={styles.importButton}>
+            <i className="ri-import-line"/>
+            Import
+          </button>
         </div>
 
         <div className={styles.tableWrapper}>
@@ -123,8 +108,7 @@ export default function EmployeePage() {
                         setIsReadOnlyView(true);
                         setShowEditModal(true);
                       }}
-                    >
-                      View
+                    > <i className="ri-eye-line"/>
                     </button>
 
                     <button
@@ -134,20 +118,33 @@ export default function EmployeePage() {
                         setIsReadOnlyView(false);
                         setShowEditModal(true);
                       }}
-                    >
-                      <img src="/assets/images/edit.png" />
+                    > <i className="ri-edit-2-line"/> 
                     </button>
                     <button
                       className={styles.deleteButton}
                       onClick={() => handleDeleteRequest(emp)}
-                    >
-                      <img src="/assets/images/delete.png" />
+                    > <i className="ri-delete-bin-line"/>
                     </button>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
+        </div>
+
+        {/* Pagination */}
+        <div className="pagination">
+            <button className="page-btn">
+              <i className="ri-arrow-left-s-line"></i>
+            </button>
+            <button className="page-btn active">1</button>
+            <button className="page-btn">2</button>
+            <button className="page-btn">3</button>
+            <button className="page-btn">4</button>
+            <button className="page-btn">5</button>
+            <button className="page-btn">
+              <i className="ri-arrow-right-s-line"></i>
+            </button>
         </div>
 
         {/* Modals */}
@@ -167,21 +164,6 @@ export default function EmployeePage() {
             existingEmployees={employees}
             onClose={() => setShowEditModal(false)}
             onSubmit={handleEdit}
-          />
-        )}
-
-        {showDeleteConfirm && (
-          <ConfirmMessage
-            message="Are you sure you want to delete this employee?"
-            onConfirm={handleDelete}
-            onCancel={() => setShowDeleteConfirm(false)}
-          />
-        )}
-
-        {showMessagePrompt && (
-          <MessagePrompt
-            message={promptMessage}
-            onClose={() => setShowMessagePrompt(false)}
           />
         )}
 

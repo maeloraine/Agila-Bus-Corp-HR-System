@@ -26,8 +26,9 @@
 .modalContent h1 {
   text-align: center;
   color: #111827;
-  font-weight: 600;
-  margin-bottom: 1.75rem;
+  font-size: 24px;
+  font-weight: 600 (bold);
+  margin-Bottom: 15px;
 }
 
 .modalContent h3 {

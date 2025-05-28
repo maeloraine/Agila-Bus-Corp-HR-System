@@ -1,72 +1,62 @@
 import { useState } from 'react';
+import { showSuccess, showWarning, showConfirmation, showError } from '@/app/utils/swal';
 
 export const DepartmentLogic = () => {
-    const [showAddModal, setShowAddModal] = useState(false);
-    const [showEditModal, setShowEditModal] = useState(false);
-    const [selectedDept, setSelectedDept] = useState('');
-    const [searchTerm, setSearchTerm] = useState('');
-    const [employeeFilter, setEmployeeFilter] = useState('');
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [selectedDept, setSelectedDept] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [employeeFilter, setEmployeeFilter] = useState('');
 
-    const [departments, setDepartments] = useState([
+  const [departments, setDepartments] = useState([
     { name: 'Accounting', employees: 12 },
     { name: 'Human Resource', employees: 25 },
     { name: 'Inventory', employees: 48 },
     { name: 'Operations', employees: 67 },
-    ]);
+  ]);
 
-    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-    const [deptToDelete, setDeptToDelete] = useState('');
-
-    const [showMessagePrompt, setShowMessagePrompt] = useState(false);
-    const [promptMessage, setPromptMessage] = useState('');
-
-    const handleAdd = (newName: string) => {
+  const handleAdd = (newName: string) => {
     setDepartments([...departments, { name: newName, employees: 0 }]);
-    };
+    showSuccess('Success', 'Department added successfully.');
+  };
 
-    const handleEdit = (updatedName: string) => {
+  const handleEdit = (updatedName: string) => {
     setDepartments((prev) =>
-        prev.map((dept) =>
+      prev.map((dept) =>
         dept.name === selectedDept ? { ...dept, name: updatedName } : dept
-        )
+      )
     );
-    };
+    showSuccess('Success', 'Department updated successfully.');
+  };
 
-    const handleDeleteRequest = (deptName: string) => {
+  const handleDeleteRequest = async (deptName: string) => {
     const dept = departments.find((d) => d.name === deptName);
     if (dept && dept.employees > 0) {
-        setPromptMessage('This department cannot be deleted because it still contains employees.');
-        setShowMessagePrompt(true);
-        setShowDeleteConfirm(false);
-        return;
+      return showError('Error', 'This department cannot be deleted because it still contains employees.');
     }
-    setDeptToDelete(deptName);
-    setShowDeleteConfirm(true);
-    };
 
-    const handleDelete = () => {
-    setDepartments((prev) => prev.filter((d) => d.name !== deptToDelete));
-    setShowDeleteConfirm(false);
-    setPromptMessage('Department deleted successfully.');
-    setShowMessagePrompt(true);
-    };
+    const result = await showConfirmation('Are you sure you want to delete this department?');
+    if (result.isConfirmed) {
+      setDepartments((prev) => prev.filter((d) => d.name !== deptName));
+      showSuccess('Success', 'Department deleted successfully.');
+    }
+  };
 
-    const filteredDepartments = departments.filter((dept) => {
+  const filteredDepartments = departments.filter((dept) => {
     const matchesSearch = dept.name.toLowerCase().includes(searchTerm.toLowerCase());
     let matchesFilter = true;
 
     if (employeeFilter) {
-    const [min, max] = employeeFilter === '101+'
+      const [min, max] = employeeFilter === '101+'
         ? [101, Infinity]
         : employeeFilter.split('-').map(Number);
-    matchesFilter = dept.employees >= min && dept.employees <= max;
+      matchesFilter = dept.employees >= min && dept.employees <= max;
     }
 
     return matchesSearch && matchesFilter;
-    });
+  });
 
-
-    return {
+  return {
     searchTerm,
     setSearchTerm,
     employeeFilter,
@@ -79,15 +69,8 @@ export const DepartmentLogic = () => {
     setSelectedDept,
     departments,
     filteredDepartments,
-    showDeleteConfirm,
-    setShowDeleteConfirm,
-    deptToDelete,
     handleAdd,
     handleEdit,
     handleDeleteRequest,
-    handleDelete,
-    showMessagePrompt,
-    setShowMessagePrompt,
-    promptMessage,
-    };
+  };
 };
