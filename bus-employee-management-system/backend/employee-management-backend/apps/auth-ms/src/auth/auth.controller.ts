@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable prettier/prettier */
 // Import necessary modules from NestJS for creating controllers, handling HTTP requests, etc.
@@ -17,6 +18,8 @@ import * as crypto from 'crypto';
 // Import addMinutes from date-fns to calculate token expiry times.
 import { addMinutes } from 'date-fns';
 import { EmailService } from '../email/email.service';
+import { generateEmployeeId, generateRandomPassword } from '../utils/generators';
+
 
 // Initialize a single instance of PrismaClient to be used throughout the controller.
 const prisma = new PrismaClient(); // <-- Only need one Prisma client
@@ -62,8 +65,23 @@ export class AuthController {
    */
   @Post('register') // Defines this method as a handler for POST requests to '/auth/register'.
   @HttpCode(HttpStatus.CREATED) // Sets the HTTP status code to 201 (Created) for successful responses.
-  async register(@Body() body: { employeeId: string; role: string; password: string; email: string }) {
-    const { employeeId, role, password, email } = body;
+  async register(@Body() body: { 
+    employeeId: string; 
+    role: string; 
+    email: string, 
+    birthdate: Date, 
+    firstName: string, 
+    lastName: string,
+    phone?: string,
+    streetAddress?: string,
+    city?: string,
+    province?: string,
+    zipCode?: string,
+    country?: string,
+    securityQuestion?: string,
+    securityAnswerHash?: string,}) {
+    const { employeeId, role, email, birthdate, firstName, lastName, phone, streetAddress, city, province, zipCode, country, securityQuestion, securityAnswerHash } = body;
+    
 
     // Check if a user with the given employeeId already exists in the database.
     const existing = await prisma.user.findUnique({ where: { employeeId } });
@@ -71,16 +89,37 @@ export class AuthController {
     if (existing) {
       throw new BadRequestException('User already exists');
     }
-
+    
+   // Generate a new employee ID if not provided.
+    const tempPassword = generateRandomPassword(); // Generate a random password if not provided.
     // Hash the provided password using argon2 (argon2id algorithm).
-    const hash = await argon2.hash(password, { type: argon2.argon2id });
+    const passwordhash = await argon2.hash(tempPassword, { type: argon2.argon2id });
+    const securityAnswer = body.securityAnswerHash ?? '';
+    const AnswerHash = await argon2.hash(securityAnswer, { type: argon2.argon2id });
     // Create the new user in the database with the hashed password.
     const user = await prisma.user.create({
-      data: { employeeId, role, password: hash, email },
+      data: { employeeId, role, password: passwordhash, email, birthdate, firstName, lastName, phone, streetAddress, city, province, zipCode, country, securityQuestion, securityAnswerHash: AnswerHash },
     });
 
+    await this.emailService.sendWelcomeEmail(user.email, user.employeeId, tempPassword); // Send a welcome email with the temporary password.
     // Return a success message and the newly created user's basic information.
-    return { message: 'User registered successfully', user: { id: user.id, employeeID: user.employeeId, role: user.role, email: user.email } };
+    return { message: 'User registered successfully', user: {
+      id: user.id, 
+      employeeID: user.employeeId, 
+      role: user.role, 
+      email: user.email, 
+      birthdate: user.birthdate, 
+      firstName: user.firstName, 
+      lastName: user.lastName,
+      phone: user.phone,
+      streetAddress: user.streetAddress,
+      city: user.city,
+      province: user.province,
+      zipCode: user.zipCode,
+      country: user.country,
+      securityQuestion: user.securityQuestion,
+      securityAnswerHash: user.securityAnswerHash,
+      message: 'User Registered. Email Sent'} };;
   }
 
   /**
@@ -157,7 +196,27 @@ export class AuthController {
     return { message: 'Password reset Successfully' };
   }
 
+  @Post('first-password-reset')
+  @HttpCode(HttpStatus.OK)
+  async firstPasswordReset(@Body() body: { employeeId: string; newPassword: string }) {
+    const user = await prisma.user.findUnique({
+      where: { employeeId: body.employeeId },
+    });
+    if (!user) throw new BadRequestException('No such user');
 
+    if (!user.mustChangePassword) throw new BadRequestException('Password already set');
+
+    const hash = await argon2.hash(body.newPassword, { type: argon2.argon2id });
+    await prisma.user.update({
+      where: { employeeId: body.employeeId },
+      data: {
+        password: hash,
+        mustChangePassword: false, // Set mustChangePassword to false after the first password reset.
+      },
+    });
+
+    return { message: 'Password reset successfully' };
+  }
   /**
    * Handles user logout.
    * Clears the JWT cookie.

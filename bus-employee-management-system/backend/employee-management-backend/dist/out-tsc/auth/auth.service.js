@@ -29,6 +29,18 @@ let AuthService = class AuthService {
             throw new common_1.HttpException(error?.response?.data || 'Auth Service Error', error?.response?.status || common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    async resetPassword(employeeId, newPassword) {
+        try {
+            const response = await (0, rxjs_1.firstValueFrom)(this.httpService.post('http://localhost:4000/auth/first-password-reset', {
+                employeeId,
+                newPassword,
+            }));
+            return response.data;
+        }
+        catch (error) {
+            throw new common_1.HttpException(error?.response?.data || 'Auth Service Error', error?.response?.status || common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 };
 exports.AuthService = AuthService;
 exports.AuthService = AuthService = __decorate([

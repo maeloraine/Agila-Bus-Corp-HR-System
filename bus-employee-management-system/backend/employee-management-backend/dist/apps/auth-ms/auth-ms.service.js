@@ -20,11 +20,19 @@ let AuthService = class AuthService {
     constructor(jwtService) {
         this.jwtService = jwtService;
     }
-    async validateUser(role, employeeId, passport) {
+    async validateUser(role, employeeId, password) {
         const user = await prisma.user.findUnique({
             where: { employeeId }
         });
-        if (user && user.role === role && await argon2.verify(user.password, passport)) {
+        if (!user)
+            return null;
+        const passwordMatch = await argon2.verify(user.password, password);
+        if (!passwordMatch)
+            return null;
+        if (user.mustChangePassword) {
+            throw new common_1.ForbiddenException('Password must be changed');
+        }
+        if (user.role === role) {
             const { password, ...result } = user;
             return result;
         }

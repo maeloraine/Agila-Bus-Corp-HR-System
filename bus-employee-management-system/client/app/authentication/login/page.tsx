@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
 import { useState } from "react";
@@ -59,7 +60,7 @@ export default function LoginPage() {
     if (!formData.password) {
       newErrors.password = 'Password is required';
       valid = false;
-    } else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,20}$/.test(formData.password)) {
+    } else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+[\]{}|;:,.<>?])[A-Za-z\d!@#$%^&*()_+[\]{}|;:,.<>?]{8,20}$/.test(formData.password)) {
       newErrors.password = 'Password must be 8-20 characters with at least one uppercase, one lowercase, one number, and one special character';
       valid = false;
     }
@@ -90,17 +91,22 @@ export default function LoginPage() {
         credentials: 'include',
       });
 
+      let data = {};
+      try {
+        data = await response.json();
+      } catch {}
+
       if (response.ok) {
         router.push('/homepage');
+      } else if (response.status === 403) {
+        router.push(`/authentication/new-password?first=true&employeeID=${encodeURIComponent(formData.employeeID)}`);
       } else {
-        const errorData = await response.json();
         setErrors(prev => ({
           ...prev,
-          general: errorData.message || 'Invalid credentials. Please try again.'
+          general: (data as any).message || 'Invalid credentials. Please try again.'
         }));
       }
     } catch (error) {
-      console.error("Login error:", error);
       setErrors(prev => ({
         ...prev,
         general: 'An error occurred. Please try again later.'

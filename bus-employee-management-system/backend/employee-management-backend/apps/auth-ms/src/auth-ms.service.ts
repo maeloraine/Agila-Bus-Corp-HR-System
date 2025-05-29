@@ -3,7 +3,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable prettier/prettier */
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { ForbiddenException, Injectable, OnModuleInit } from '@nestjs/common';
 import * as argon2 from 'argon2';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaClient } from '@prisma/client'
@@ -38,10 +38,23 @@ export class AuthService{
 
 
 
-  async validateUser(role: string, employeeId: string, passport: string): Promise<any> {
+  async validateUser(role: string, employeeId: string, password: string): Promise<any> {
     const user = await prisma.user.findUnique({
-      where: { employeeId} });
-    if (user && user.role === role && await argon2.verify(user.password, passport)) {
+      where: { employeeId }
+    });
+    if (!user) return null;
+
+    const passwordMatch = await argon2.verify(user.password, password);
+    if (!passwordMatch) return null;
+
+    if (user.mustChangePassword) {
+      // You could throw a custom error, or return a special object if you prefer
+      throw new ForbiddenException('Password must be changed');
+      // or:
+      // return { mustChangePassword: true, employeeId: user.employeeId };
+    }
+
+    if (user.role === role) {
       const { password, ...result } = user;
       return result;
     }
