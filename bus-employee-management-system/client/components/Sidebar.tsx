@@ -26,18 +26,21 @@ const Sidebar = () => {
             key: 'dashboard'
         },
         {
-            path: '/onboarding',
             name: 'Onboarding',
             icon: 'ri-user-add-line',
-            key: 'onboarding'
+            key: 'onboarding',
+            subItems: [
+                { path: '/homepage/onboarding/candidate', name: 'Candidate Overview', key: 'candidate-overview' },
+                { path: '/homepage/onboarding/interview', name: 'Interview Scheduling', key: 'interview-scheduling' }
+            ]
         },
         {
             name: 'Attendance',
             icon: 'ri-time-line',
             key: 'attendance',
             subItems: [
-                { path: '/attendance/time-in-out', name: 'Time-in/Time-out', key: 'time-in-out' },
-                { path: '/attendance/daily-report', name: 'Daily Attendance Report', key: 'daily-report' }
+                { path: '/homepage/attendance/time-in-out', name: 'Time-in/Time-out', key: 'time-in-out' },
+                { path: '/homepage/attendance/daily-report', name: 'Daily Attendance Report', key: 'daily-report' }
             ]
         },
         {
@@ -59,13 +62,13 @@ const Sidebar = () => {
             ]
         },
         {
-            path: '/documents',
+            path: '/homepage/documents/orgfiles',
             name: 'Documents',
             icon: 'ri-folder-line',
             key: 'documents'
         },
         {
-            path: '/settings',
+            path: '/authentication/new-password',
             name: 'Settings',
             icon: 'ri-settings-line',
             key: 'settings'

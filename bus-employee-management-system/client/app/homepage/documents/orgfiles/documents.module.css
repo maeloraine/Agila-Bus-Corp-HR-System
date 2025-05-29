@@ -1,0 +1,217 @@
+.base {
+  width: 100%;
+}
+
+.tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.tabItem {
+  background-color: #ccc;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem 0.5rem 0 0;
+  cursor: pointer;
+}
+
+.tabItemActive {
+  background-color: #444;
+  color: white;
+}
+
+.documentsContainer {
+  height: 100%;
+  padding: 2rem;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.05);
+}
+
+.headerSection {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.searchBar {
+  flex: 1;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.actionButtons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.buttonIcon {
+  padding: 0.5rem;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  background-color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.headingIcon {
+  width: 20px;
+  height: 20px;
+}
+
+.filesPlaceholder {
+  background-color: #eee;
+  border-radius: 20px;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  height: auto;
+  min-height: 300px;
+  border: 2px dashed #ccc;
+  cursor: pointer;
+}
+
+.uploadedFiles {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: #fafafa;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  width: 100%;
+}
+
+.uploadedFiles ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.uploadedFiles li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #ddd;
+  font-size: 14px;
+}
+
+.uploadedFiles .file-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.uploadedFiles .file-icon {
+  width: 18px;
+  height: 18px;
+  background-color: #ccc;
+  border-radius: 3px;
+  display: inline-block;
+  text-align: center;
+  font-size: 12px;
+  line-height: 18px;
+  font-weight: bold;
+  color: #333;
+}
+
+.uploadedFiles .delete-btn {
+  background: none;
+  border: none;
+  color: #961C1E;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.addFolderButton {
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  border: none;
+  background-color: #961C1E;
+  color: white;
+  cursor: pointer;
+}
+
+.addFolderButton:hover {
+  background-color: #571415;
+}
+
+.placeholderBox {
+  width: 200px;
+  height: 150px;
+  border: 2px solid black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.placeholderBox::before,
+.placeholderBox::after {
+  content: '';
+  position: absolute;
+  background-color: black;
+}
+
+.placeholderBox::before {
+  width: 2px;
+  height: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.placeholderBox::after {
+  height: 2px;
+  width: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.modal-content {
+  background: white;
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+}
+
+.modal-content button {
+  margin: 0 0.5rem;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.modal-content button:first-of-type {
+  background-color: #961C1E;
+  color: white;
+}
+
+.modal-content button:last-of-type {
+  background-color: #ccc;
+}

@@ -87,7 +87,7 @@
   gap: 0.5rem;
 }
 
-.viewButton {
+.editButton{
   background-color: white;
   border:1px solid #961C1E;
   color: #961C1E;
@@ -99,24 +99,9 @@
   transition: background-color 0.2s ease;
 }
 
-.viewButton:hover {
+.editButton:hover {
   background-color: #961C1E !important;
   color: white;
-}
-
-.editButton {
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  padding: 0.25rem;
-  display: flex;
-  align-items: center;
-}
-
-.editButton img {
-  width: 25px;
-  height: 25px;
-  object-fit: contain;
 }
 
 .deleteButton {
