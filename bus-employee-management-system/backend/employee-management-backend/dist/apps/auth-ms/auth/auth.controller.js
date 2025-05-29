@@ -31,7 +31,7 @@ let AuthController = class AuthController {
         this.emailService = emailService;
     }
     async login(loginDto, res) {
-        const user = await this.authService.validateUser(loginDto.role, loginDto.employeeID, loginDto.password);
+        const user = await this.authService.validateUser(Number(loginDto.roleId), loginDto.employeeId, loginDto.password);
         if (!user) {
             throw new common_1.UnauthorizedException('Invalid credentials');
         }
@@ -45,23 +45,24 @@ let AuthController = class AuthController {
         return { message: 'Login successful' };
     }
     async register(body) {
-        const { employeeId, role, email, birthdate, firstName, lastName, phone, streetAddress, city, province, zipCode, country, securityQuestion, securityAnswerHash } = body;
+        const { employeeId, roleId, email, birthdate, firstName, lastName, phone, streetAddress, city, province, zipCode, country, securityQuestionId, securityAnswer } = body;
         const existing = await prisma.user.findUnique({ where: { employeeId } });
         if (existing) {
             throw new common_1.BadRequestException('User already exists');
         }
         const tempPassword = (0, generators_1.generateRandomPassword)();
         const passwordhash = await argon2.hash(tempPassword, { type: argon2.argon2id });
-        const securityAnswer = body.securityAnswerHash ?? '';
-        const AnswerHash = await argon2.hash(securityAnswer, { type: argon2.argon2id });
+        const securityAns = body.securityAnswer ?? '';
+        const AnswerHash = await argon2.hash(securityAns, { type: argon2.argon2id });
         const user = await prisma.user.create({
-            data: { employeeId, role, password: passwordhash, email, birthdate, firstName, lastName, phone, streetAddress, city, province, zipCode, country, securityQuestion, securityAnswerHash: AnswerHash },
+            data: { employeeId, roleId, password: passwordhash, email, birthdate, firstName, lastName, phone, streetAddress, city, province, zipCode, country, securityQuestionId, securityAnswer: AnswerHash },
         });
-        await this.emailService.sendWelcomeEmail(user.email, user.employeeId, tempPassword);
-        return { message: 'User registered successfully', user: {
+        await this.emailService.sendWelcomeEmail(user.email, user.employeeId, tempPassword, firstName);
+        return {
+            message: 'User registered successfully', user: {
                 id: user.id,
                 employeeID: user.employeeId,
-                role: user.role,
+                role: user.roleId,
                 email: user.email,
                 birthdate: user.birthdate,
                 firstName: user.firstName,
@@ -72,11 +73,11 @@ let AuthController = class AuthController {
                 province: user.province,
                 zipCode: user.zipCode,
                 country: user.country,
-                securityQuestion: user.securityQuestion,
-                securityAnswerHash: user.securityAnswerHash,
+                securityQuestion: user.securityQuestionId,
+                securityAnswerHash: user.securityAnswer,
                 message: 'User Registered. Email Sent'
-            } };
-        ;
+            }
+        };
     }
     async requestReset(body) {
         const user = await prisma.user.findUnique({ where: { employeeId: body.employeeId } });
@@ -93,7 +94,7 @@ let AuthController = class AuthController {
             throw new common_1.BadRequestException('User does not have a valid email address');
         }
         await this.emailService.sendResetEmail(user.email, token);
-        return { message: 'Rest token generated', token };
+        return { message: 'Reset token generated and email sent', token };
     }
     async resetPassword(body) {
         const user = await prisma.user.findFirst({
@@ -116,16 +117,18 @@ let AuthController = class AuthController {
                 resetTokenExpiry: null,
             },
         });
-        return { message: 'Password reset Successfully' };
+        return { message: 'Password reset successfully' };
     }
     async firstPasswordReset(body) {
         const user = await prisma.user.findUnique({
             where: { employeeId: body.employeeId },
         });
-        if (!user)
+        if (!user) {
             throw new common_1.BadRequestException('No such user');
-        if (!user.mustChangePassword)
-            throw new common_1.BadRequestException('Password already set');
+        }
+        if (!user.mustChangePassword) {
+            throw new common_1.BadRequestException('Password reset not required or already completed');
+        }
         const hash = await argon2.hash(body.newPassword, { type: argon2.argon2id });
         await prisma.user.update({
             where: { employeeId: body.employeeId },

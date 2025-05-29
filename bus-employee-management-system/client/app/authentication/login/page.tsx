@@ -4,21 +4,54 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import LoginForm from "./LoginForm";
+import { useEffect } from "react";
 
 export default function LoginPage() {
   const router = useRouter();
   const [formData, setFormData] = useState({
-    role: '',
-    employeeID: '',
+    roleId: '',
+    employeeId: '',
     password: ''
   });
   const [errors, setErrors] = useState({
-    role: '',
-    employeeID: '',
+    roleId: '',
+    employeeId: '',
     password: '',
     general: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [roles, setRoles] = useState<{ id: number; name: string }[]>([]);
+
+  useEffect(() => {
+    const fetchRoles = async () => {
+      const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+      console.log('Using API base:', API_BASE_URL);
+      try {
+        const response = await fetch(`${API_BASE_URL}/roles`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch roles');
+        }
+
+        const data = await response.json();
+        setRoles(data);
+      } catch (error) {
+        console.error('Error fetching roles:', error);
+        setErrors(prev => ({
+          ...prev,
+          general: 'Failed to load roles. Please try again later.'
+        }));
+      }
+    };
+
+    fetchRoles();
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -38,22 +71,22 @@ export default function LoginPage() {
   const validateForm = () => {
     let valid = true;
     const newErrors = {
-      role: '',
-      employeeID: '',
+      roleId: '',
+      employeeId: '',
       password: '',
       general: ''
     };
 
-    if (!formData.role) {
-      newErrors.role = 'Please select your role';
+    if (!formData.roleId) {
+      newErrors.roleId = 'Please select your role';
       valid = false;
     }
 
-    if (!formData.employeeID) {
-      newErrors.employeeID = 'Employee ID is required';
+    if (!formData.employeeId) {
+      newErrors.employeeId = 'Employee ID is required';
       valid = false;
-    } else if (!/^[a-zA-Z0-9@._-]{4,20}$/.test(formData.employeeID)) {
-      newErrors.employeeID = 'Employee ID must be 4-20 characters and can contain letters, numbers, @, ., _, or -';
+    } else if (!/^[a-zA-Z0-9@._-]{4,20}$/.test(formData.employeeId)) {
+      newErrors.employeeId = 'Employee ID must be 4-20 characters and can contain letters, numbers, @, ., _, or -';
       valid = false;
     }
 
@@ -91,6 +124,7 @@ export default function LoginPage() {
         credentials: 'include',
       });
 
+      console.log('Response status:', formData);
       let data = {};
       try {
         data = await response.json();
@@ -99,7 +133,7 @@ export default function LoginPage() {
       if (response.ok) {
         router.push('/homepage');
       } else if (response.status === 403) {
-        router.push(`/authentication/new-password?first=true&employeeID=${encodeURIComponent(formData.employeeID)}`);
+        router.push(`/authentication/new-password?first=true&employeeID=${encodeURIComponent(formData.employeeId)}`);
       } else {
         setErrors(prev => ({
           ...prev,
@@ -123,6 +157,7 @@ export default function LoginPage() {
       isSubmitting={isSubmitting}
       handleChange={handleChange}
       handleSubmit={handleSubmit}
+      roles={roles}
     />
   );
 }

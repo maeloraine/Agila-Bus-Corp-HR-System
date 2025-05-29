@@ -15,6 +15,7 @@ const auth_ms_service_1 = require("./auth-ms.service");
 const auth_controller_1 = require("./auth/auth.controller");
 const jwt_strategy_1 = require("./auth/jwt.strategy");
 const email_module_1 = require("./email/email.module");
+const roles_controller_1 = require("./roles/roles.controller");
 let AuthMsModule = class AuthMsModule {
 };
 exports.AuthMsModule = AuthMsModule;
@@ -42,7 +43,7 @@ exports.AuthMsModule = AuthMsModule = __decorate([
                 inject: [config_1.ConfigService],
             }),
         ],
-        controllers: [auth_controller_1.AuthController],
+        controllers: [auth_controller_1.AuthController, roles_controller_1.RolesController],
         providers: [auth_ms_service_1.AuthService, jwt_strategy_1.JwtStrategy],
     })
 ], AuthMsModule);

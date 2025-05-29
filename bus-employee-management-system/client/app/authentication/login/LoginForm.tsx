@@ -5,19 +5,20 @@ import styles from "./login.module.css";
 
 interface LoginFormProps {
   formData: {
-    role: string;
-    employeeID: string;
+    roleId: string;
+    employeeId: string;
     password: string;
   };
   errors: {
-    role: string;
-    employeeID: string;
+    roleId: string;
+    employeeId: string;
     password: string;
     general: string;
   };
   isSubmitting: boolean;
   handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
   handleSubmit: (e: React.FormEvent) => void;
+  roles: { id: number; name: string }[];
 }
 
 export default function LoginForm({
@@ -26,6 +27,7 @@ export default function LoginForm({
   isSubmitting,
   handleChange,
   handleSubmit,
+  roles,
 }: LoginFormProps) {
   return (
     <div className={styles.container}>
@@ -50,45 +52,48 @@ export default function LoginForm({
               {errors.general}
             </div>
           )}
-          <label htmlFor="role" className={styles.label}>
+          <label htmlFor="roleId" className={styles.label}>
             Role
           </label>
           <select
-            id="role"
-            name="role"
-            value={formData.role}
+            id="roleId"
+            name="roleId"
+            value={formData.roleId}
             onChange={handleChange}
             required
-            className={`${styles.input} ${errors.role ? styles.inputError : ''}`}
+            className={`${styles.input} ${errors.roleId ? styles.inputError : ''}`}
           >
             <option value="" disabled>
               Select your role
             </option>
-            <option value="Admin">Admin</option>
-            <option value="HR Manager">HR Manager</option>
-            <option value="Accountant">Accountant</option>
+            {roles.map(role => (
+              <option key={role.id} value={role.id}>
+                {role.name}
+              </option>
+            ))}
           </select>
-          {errors.role && (
+          {errors.roleId && (
             <p className={styles.errorText}>
-              {errors.role}
+              {errors.roleId}
             </p>
           )}
-          <label htmlFor="employeeID" className={styles.label}>
+          
+          <label htmlFor="employeeId" className={styles.label}>
             Employee ID
           </label>
           <input
             type="text"
-            id="employeeID"
-            name="employeeID"
-            value={formData.employeeID}
+            id="employeeId"
+            name="employeeId"
+            value={formData.employeeId}
             onChange={handleChange}
-            placeholder="Employee ID here..."
+            placeholder="Employee Id here..."
             required
-            className={`${styles.input} ${errors.employeeID ? styles.inputError : ''}`}
+            className={`${styles.input} ${errors.employeeId ? styles.inputError : ''}`}
           />
-          {errors.employeeID && (
+          {errors.employeeId && (
             <p className={styles.errorText}>
-              {errors.employeeID}
+              {errors.employeeId}
             </p>
           )}
           <label htmlFor="password" className={styles.label}>
