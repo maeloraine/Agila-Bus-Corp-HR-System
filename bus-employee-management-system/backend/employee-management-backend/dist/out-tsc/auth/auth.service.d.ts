@@ -4,5 +4,9 @@ export declare class AuthService {
     private readonly httpService;
     constructor(httpService: HttpService);
     login(credentials: LoginDto): Promise<any>;
-    resetPassword(employeeId: string, newPassword: string): Promise<any>;
+    firstResetPassword(employeeId: string, newPassword: string): Promise<any>;
+    requestSecurityQuestion(email: string): Promise<any>;
+    validateSecurityAnswer(email: string, answer: string): Promise<any>;
+    resetPassword(token: string, newPassword: string): Promise<any>;
+    logout(): Promise<any>;
 }

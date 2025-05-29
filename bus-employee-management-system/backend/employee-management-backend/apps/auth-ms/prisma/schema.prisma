@@ -50,8 +50,8 @@ model User {
   province           String? // Optional province
   zipCode            String? // Optional zip code
   country            String? // Optional country
-  securityQuestionId Int? // Optional security question
-  securityAnswer     String? // Optional security answer with arghon2 hashing
+  securityQuestionId Int // Optional security question
+  securityAnswer     String // Optional security answer with arghon2 hashing
   resetToken         String? // Reset Password Token
   resetTokenExpiry   DateTime? // Token Expiry
   createdAt          DateTime  @default(now())

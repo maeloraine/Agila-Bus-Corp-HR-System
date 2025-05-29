@@ -66,8 +66,8 @@ export class AuthController {
     province?: string,
     zipCode?: string,
     country?: string,
-    securityQuestionId?: number,
-    securityAnswer?: string;
+    securityQuestionId: number,
+    securityAnswer: string;
   }) {
     const { employeeId, roleId, email, birthdate, firstName, lastName, phone, streetAddress, city, province, zipCode, country, securityQuestionId, securityAnswer } = body;
 
@@ -114,29 +114,47 @@ export class AuthController {
    * Handles requests to initiate a password reset.
    * Generates a reset token and expiry, stores them for the user, and emails the token.
    */
-  @Post('request-reset')
+  @Post('request-security-question')
   @HttpCode(HttpStatus.OK)
-  async requestReset(@Body() body: { employeeId: string }) {
-    const user = await prisma.user.findUnique({ where: { employeeId: body.employeeId } });
+  async requestReset(@Body() body: { email: string }) {
+    const user = await prisma.user.findUnique({ where: { email: body.email } });
     if (!user) {
       throw new BadRequestException('No such user');
     }
+
+    const question = await prisma.securityQuestion.findUnique({
+      where: { id: user.securityQuestionId },
+    });
+    if (!question) throw new BadRequestException('Security question not found');
+    return {securityQuestion: question.question}; // Return the security question for the user to answer.
+  }
+
+  @Post('validate-security-answer')
+  @HttpCode(HttpStatus.OK)
+  async validateSecurityAnswer(@Body() body: { email: string; answer: string }) {
+    const user = await prisma.user.findUnique({ where: { email: body.email } });
+    if (!user) {
+      throw new BadRequestException('Invalid Request');
+    }
+
+    if (!user.securityAnswer) {
+      throw new BadRequestException('Security answer not set for this user');
+    }
+
+    const isCorrect = await argon2.verify(user.securityAnswer, body.answer); // Verify the security answer against the stored hash.
+    if (!isCorrect) throw new UnauthorizedException('Incorrect security answer');
 
     const token = crypto.randomBytes(32).toString('hex'); // Generate a secure random token.
     const expiry = addMinutes(new Date(), 15); // Token expiry set to 15 minutes.
 
     // Update user with reset token and expiry.
     await prisma.user.update({
-      where: { employeeId: body.employeeId },
+      where: { email: body.email },
       data: { resetToken: token, resetTokenExpiry: expiry },
     });
 
-    if (!user.email) {
-      throw new BadRequestException('User does not have a valid email address');
-    }
     await this.emailService.sendResetEmail(user.email, token); // Send reset email.
-
-    return { message: 'Reset token generated and email sent', token }; // Token returned here for potential alternative delivery/logging.
+    return { message: 'If your answer is correct, a reset link was sent to your email.' }; // Token returned here for potential alternative delivery/logging.
   }
 
   /**

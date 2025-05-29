@@ -24,7 +24,7 @@ let EmailService = class EmailService {
         });
     }
     async sendResetEmail(to, token) {
-        const resetLink = `http://localhost:3000/reset-password?token=${token}`;
+        const resetLink = `http://localhost:3000/authentication/new-password?token=${token}`;
         await this.transporter.sendMail({
             from: `"Agila Bus Transport Corporation" <${process.env.STMP_USER}>`,
             to,

@@ -29,11 +29,52 @@ let AuthService = class AuthService {
             throw new common_1.HttpException(error?.response?.data || 'Auth Service Error', error?.response?.status || common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    async resetPassword(employeeId, newPassword) {
+    async firstResetPassword(employeeId, newPassword) {
         try {
             const response = await (0, rxjs_1.firstValueFrom)(this.httpService.post('http://localhost:4000/auth/first-password-reset', {
                 employeeId,
                 newPassword,
+            }));
+            return response.data;
+        }
+        catch (error) {
+            throw new common_1.HttpException(error?.response?.data || 'Auth Service Error', error?.response?.status || common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    async requestSecurityQuestion(email) {
+        try {
+            const response = await (0, rxjs_1.firstValueFrom)(this.httpService.post('http://localhost:4000/auth/request-security-question', { email }));
+            return response.data;
+        }
+        catch (error) {
+            throw new common_1.HttpException(error?.response?.data || 'Auth Service Error', error?.response?.status || common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    async validateSecurityAnswer(email, answer) {
+        try {
+            const response = await (0, rxjs_1.firstValueFrom)(this.httpService.post('http://localhost:4000/auth/validate-security-answer', { email, answer }));
+            return response.data;
+        }
+        catch (error) {
+            throw new common_1.HttpException(error?.response?.data || 'Auth Service Error', error?.response?.status || common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    async resetPassword(token, newPassword) {
+        try {
+            const response = await (0, rxjs_1.firstValueFrom)(this.httpService.post('http://localhost:4000/auth/reset-password', {
+                token,
+                newPassword,
+            }));
+            return response.data;
+        }
+        catch (error) {
+            throw new common_1.HttpException(error?.response?.data || 'Auth Service Error', error?.response?.status || common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    async logout() {
+        try {
+            const response = await (0, rxjs_1.firstValueFrom)(this.httpService.post('http://localhost:4000/auth/logout', {}, {
+                withCredentials: true,
             }));
             return response.data;
         }

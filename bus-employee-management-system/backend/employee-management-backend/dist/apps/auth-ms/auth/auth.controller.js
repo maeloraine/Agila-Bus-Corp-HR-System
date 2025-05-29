@@ -80,21 +80,36 @@ let AuthController = class AuthController {
         };
     }
     async requestReset(body) {
-        const user = await prisma.user.findUnique({ where: { employeeId: body.employeeId } });
+        const user = await prisma.user.findUnique({ where: { email: body.email } });
         if (!user) {
             throw new common_1.BadRequestException('No such user');
         }
+        const question = await prisma.securityQuestion.findUnique({
+            where: { id: user.securityQuestionId },
+        });
+        if (!question)
+            throw new common_1.BadRequestException('Security question not found');
+        return { securityQuestion: question.question };
+    }
+    async validateSecurityAnswer(body) {
+        const user = await prisma.user.findUnique({ where: { email: body.email } });
+        if (!user) {
+            throw new common_1.BadRequestException('Invalid Request');
+        }
+        if (!user.securityAnswer) {
+            throw new common_1.BadRequestException('Security answer not set for this user');
+        }
+        const isCorrect = await argon2.verify(user.securityAnswer, body.answer);
+        if (!isCorrect)
+            throw new common_1.UnauthorizedException('Incorrect security answer');
         const token = crypto.randomBytes(32).toString('hex');
         const expiry = (0, date_fns_1.addMinutes)(new Date(), 15);
         await prisma.user.update({
-            where: { employeeId: body.employeeId },
+            where: { email: body.email },
             data: { resetToken: token, resetTokenExpiry: expiry },
         });
-        if (!user.email) {
-            throw new common_1.BadRequestException('User does not have a valid email address');
-        }
         await this.emailService.sendResetEmail(user.email, token);
-        return { message: 'Reset token generated and email sent', token };
+        return { message: 'If your answer is correct, a reset link was sent to your email.' };
     }
     async resetPassword(body) {
         const user = await prisma.user.findFirst({
@@ -167,13 +182,21 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "register", null);
 __decorate([
-    (0, common_1.Post)('request-reset'),
+    (0, common_1.Post)('request-security-question'),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "requestReset", null);
+__decorate([
+    (0, common_1.Post)('validate-security-answer'),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "validateSecurityAnswer", null);
 __decorate([
     (0, common_1.Post)('reset-password'),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),

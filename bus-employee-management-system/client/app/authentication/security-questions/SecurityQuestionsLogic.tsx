@@ -1,52 +1,84 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
 
+// --- LOGIC HOOK ---
 export function useSecurityQuestionsLogic() {
   const [question, setQuestion] = useState('');
   const [answer, setAnswer] = useState('');
-  const [errors, setErrors] = useState({ answer: false });
-  const [showError, setShowError] = useState(false);
+  const [errors, setErrors] = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
-  // Fetch question on load
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const email = searchParams.get('email');
+
+  // Fetch question on mount
   useEffect(() => {
-    // Replace this with an actual API call if needed
+    if (!email) return;
     const fetchQuestion = async () => {
-      // Example fetch
-      const res = await fetch('/api/user/security-question');
+      const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+      const res = await fetch(`${API_BASE_URL}/auth/request-security-question`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
       const data = await res.json();
-      setQuestion(data.question);
-
-      setQuestion("What is your childhood nickname?"); // Mocked
+      if (res.ok) {
+        setQuestion(data.securityQuestion);
+      } else {
+        setErrors(data.message || 'Failed to fetch question.');
+      }
     };
-
     fetchQuestion();
-  }, []);
+  }, [email]);
 
+  // Handle answer input change
   const handleAnswerChange = (v: string) => {
     setAnswer(v);
-    if (errors.answer) setErrors((e) => ({ ...e, answer: false }));
+    setErrors('');
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  // Handle form submit
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setErrors('');
+    setSubmitting(true);
+
     if (answer.trim() === '') {
-      setErrors({ answer: true });
-      setShowError(true);
+      setErrors('Please provide your answer.');
+      setSubmitting(false);
       return;
     }
 
-    setShowError(false);
-    alert('Answer submitted!');
-    // Optionally send to backend
-    setAnswer('');
+    try {
+      const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+      const res = await fetch(`${API_BASE_URL}/auth/validate-security-answer`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, answer }),
+      });
+      const data = await res.json();
+
+      if (res.ok) {
+        alert('If your answer is correct, a reset link was sent to your email.');
+        router.push('/authentication/login');
+      } else {
+        setErrors(data.message || 'Incorrect answer. Please try again.');
+      }
+    } catch (error) {
+      setErrors('Something went wrong. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return {
     question,
     answer,
     errors,
-    showError,
+    submitting,
     handleAnswerChange,
     handleSubmit,
   };
