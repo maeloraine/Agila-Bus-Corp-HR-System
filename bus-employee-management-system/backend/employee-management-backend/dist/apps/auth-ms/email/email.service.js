@@ -28,9 +28,20 @@ let EmailService = class EmailService {
         await this.transporter.sendMail({
             from: `"Agila Bus Transport Corporation" <${process.env.STMP_USER}>`,
             to,
-            subject: 'Reset your Agila Bust Transport Corporation Password',
+            subject: 'Reset your Agila Bus Transport Corporation Password',
             html: `<p>Click the link below to reset your password. This will expire soon:</p>
                    <a href="${resetLink}">${resetLink}</a>`,
+        });
+    }
+    async sendWelcomeEmail(to, employeeId, password) {
+        await this.transporter.sendMail({
+            from: `"Agila Bus Transport Corporation" <${process.env.STMP_USER}>`,
+            to,
+            subject: 'Welcome to Agila Bus Transport Corporation',
+            html: `<p>Welcome to Agila Bus Transport Corporation!</p>
+                   <p>Your Employee ID is: <strong>${employeeId}</strong></p>
+                   <p>Your temporary password is: <strong>${password}</strong></p>
+                   <p>Please change your password after logging in.</p>`,
         });
     }
 };

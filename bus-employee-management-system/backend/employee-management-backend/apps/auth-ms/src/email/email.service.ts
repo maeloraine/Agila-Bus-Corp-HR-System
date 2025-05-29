@@ -32,4 +32,16 @@ export class EmailService {
                    <a href="${resetLink}">${resetLink}</a>`,
         });
     }
+
+    async sendWelcomeEmail(to: string, employeeId: string, password: string) {
+        await this.transporter.sendMail({
+            from: `"Agila Bus Transport Corporation" <${process.env.STMP_USER}>`, // sender address
+            to, 
+            subject: 'Welcome to Agila Bus Transport Corporation', // Subject line
+            html: `<p>Welcome to Agila Bus Transport Corporation!</p>
+                   <p>Your Employee ID is: <strong>${employeeId}</strong></p>
+                   <p>Your temporary password is: <strong>${password}</strong></p>
+                   <p>Please change your password after logging in.</p>`,
+        }); 
     }
+}

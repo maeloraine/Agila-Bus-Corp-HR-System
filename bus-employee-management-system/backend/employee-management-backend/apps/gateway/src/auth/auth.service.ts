@@ -23,4 +23,21 @@ export class AuthService {
       );
     }
   }
+
+  async resetPassword(employeeId: string, newPassword: string) {
+    try {
+      const response = await firstValueFrom(
+        this.httpService.post('http://localhost:4000/auth/first-password-reset', {
+          employeeId,
+          newPassword,
+        }),
+      );
+      return response.data;
+    } catch (error) {
+      throw new HttpException(
+        error?.response?.data || 'Auth Service Error',
+        error?.response?.status || HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
 }

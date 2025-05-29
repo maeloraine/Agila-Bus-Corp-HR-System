@@ -21,6 +21,7 @@ const argon2 = require("argon2");
 const crypto = require("crypto");
 const date_fns_1 = require("date-fns");
 const email_service_1 = require("../email/email.service");
+const generators_1 = require("../utils/generators");
 const prisma = new client_1.PrismaClient();
 let AuthController = class AuthController {
     authService;
@@ -44,16 +45,38 @@ let AuthController = class AuthController {
         return { message: 'Login successful' };
     }
     async register(body) {
-        const { employeeId, role, password, email } = body;
+        const { employeeId, role, email, birthdate, firstName, lastName, phone, streetAddress, city, province, zipCode, country, securityQuestion, securityAnswerHash } = body;
         const existing = await prisma.user.findUnique({ where: { employeeId } });
         if (existing) {
             throw new common_1.BadRequestException('User already exists');
         }
-        const hash = await argon2.hash(password, { type: argon2.argon2id });
+        const tempPassword = (0, generators_1.generateRandomPassword)();
+        const passwordhash = await argon2.hash(tempPassword, { type: argon2.argon2id });
+        const securityAnswer = body.securityAnswerHash ?? '';
+        const AnswerHash = await argon2.hash(securityAnswer, { type: argon2.argon2id });
         const user = await prisma.user.create({
-            data: { employeeId, role, password: hash, email },
+            data: { employeeId, role, password: passwordhash, email, birthdate, firstName, lastName, phone, streetAddress, city, province, zipCode, country, securityQuestion, securityAnswerHash: AnswerHash },
         });
-        return { message: 'User registered successfully', user: { id: user.id, employeeID: user.employeeId, role: user.role, email: user.email } };
+        await this.emailService.sendWelcomeEmail(user.email, user.employeeId, tempPassword);
+        return { message: 'User registered successfully', user: {
+                id: user.id,
+                employeeID: user.employeeId,
+                role: user.role,
+                email: user.email,
+                birthdate: user.birthdate,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                phone: user.phone,
+                streetAddress: user.streetAddress,
+                city: user.city,
+                province: user.province,
+                zipCode: user.zipCode,
+                country: user.country,
+                securityQuestion: user.securityQuestion,
+                securityAnswerHash: user.securityAnswerHash,
+                message: 'User Registered. Email Sent'
+            } };
+        ;
     }
     async requestReset(body) {
         const user = await prisma.user.findUnique({ where: { employeeId: body.employeeId } });
@@ -94,6 +117,24 @@ let AuthController = class AuthController {
             },
         });
         return { message: 'Password reset Successfully' };
+    }
+    async firstPasswordReset(body) {
+        const user = await prisma.user.findUnique({
+            where: { employeeId: body.employeeId },
+        });
+        if (!user)
+            throw new common_1.BadRequestException('No such user');
+        if (!user.mustChangePassword)
+            throw new common_1.BadRequestException('Password already set');
+        const hash = await argon2.hash(body.newPassword, { type: argon2.argon2id });
+        await prisma.user.update({
+            where: { employeeId: body.employeeId },
+            data: {
+                password: hash,
+                mustChangePassword: false,
+            },
+        });
+        return { message: 'Password reset successfully' };
     }
     logout(res) {
         res.clearCookie('jwt', {
@@ -138,6 +179,14 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "resetPassword", null);
+__decorate([
+    (0, common_1.Post)('first-password-reset'),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "firstPasswordReset", null);
 __decorate([
     (0, common_1.Post)('logout'),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),

@@ -11,4 +11,13 @@ export class AuthController {
   async login(@Body() credentials: LoginDto) {
     return this.authService.login(credentials);
   }
+
+  @Post('reset-password')
+  async resetPassword(@Body() body: { employeeId: string; newPassword: string }) {
+    const { employeeId, newPassword } = body;
+    if (!employeeId || !newPassword) {
+      throw new Error('Employee ID and new password are required');
+    }
+    return this.authService.resetPassword(employeeId, newPassword);
+  }
 }
