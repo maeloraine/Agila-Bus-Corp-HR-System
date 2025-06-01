@@ -1,3 +1,13 @@
-.qodo
+
+# Ignore all env files
 .env
-/node_modules
+**/.env
+
+# Ignore node_modules everywhere
+**/node_modules
+
+# Other build artifacts
+dist
+*.log
+*.tsbuildinfo
+.qodo

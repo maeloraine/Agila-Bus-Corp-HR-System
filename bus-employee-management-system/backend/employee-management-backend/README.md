@@ -163,6 +163,10 @@ npm install @prisma/client
 npx prisma studio
 ```
 ```PrismaORM Migration:
-npx prisma migrate dev --name init
+npx prisma format
+npx prisma migrate dev --name add-auth-tables
 npx prisma generate
+```
+```PrismaORM RESET DB:
+npx prisma migrate reset
 ```

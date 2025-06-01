@@ -50,6 +50,7 @@ import { AuthService } from './auth-ms.service';
 import { AuthController } from './auth/auth.controller';
 import { JwtStrategy } from './auth/jwt.strategy';
 import { EmailModule } from './email/email.module';
+import { RolesController } from './roles/roles.controller';
 
 
 @Module({
@@ -75,7 +76,7 @@ import { EmailModule } from './email/email.module';
       inject: [ConfigService],
     }),
   ],
-  controllers: [AuthController],
+  controllers: [AuthController, RolesController],
   providers: [AuthService, JwtStrategy],
 })
 export class AuthMsModule {}

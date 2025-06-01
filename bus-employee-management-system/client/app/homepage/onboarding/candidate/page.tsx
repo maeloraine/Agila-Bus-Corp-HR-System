@@ -6,54 +6,44 @@ import styles from './candidate.module.css';
 export default function CandidateOverview() {
   return (
     <div className={styles.base}>
-      <div className={styles.employeeContainer}>
-        <h1>Candidate Overview</h1>
+      <div className={styles.candidateContainer}>
+        <h1 className={styles.title}>Candidate Overview</h1>
 
         {/* Status Filter */}
         <div className={styles.headerSection}>
-          <select className={styles.filterDropdown}>
+          <select className={styles.statusfilterDropdown}>
             <option value="" defaultChecked disabled>Applicant Status</option>
             <option value="Pending">Pending</option>
             <option value="Processing">Processing</option>
             <option value="Hired">Hired</option>
           </select>
 
-          <select className={styles.filterDropdown}>
+          <select className={styles.statusfilterDropdown}>
             <option value="" defaultChecked disabled>Interview Status</option>
             <option value="notScheduled">Not scheduled</option>
             <option value="Scheduled">Scheduled</option>
           </select>
 
           {/* Search */}
-          <input type="text" className={styles.searchBar} placeholder="Search employees..."/>
-          <div className={styles.searchButton}>
-          <button><img src="/assets/images/search-icon.png" /></button>
+          <div className={styles.search}>
+            <i className='ri-search-line'/>
+            <input
+              type="text"
+              placeholder="Search here..."
+              // value={searchTerm}
+              // onChange={(e) => setSearchTerm(e.target.value)}
+            />
           </div>
-          
-          {/* Department Filter */}
-          <select className={styles.filterDropdown}>
-            <option value="" defaultChecked disabled>All Departments</option>
-            <option value="Accounting">Accounting</option>
-            <option value="HR">Human Resource</option>
-            <option value="Inventory">Inventory</option>
-            <option value="Operational">Operational</option>
-          </select>
 
-          {/* Position Filter */}
-          <select className={styles.filterDropdown}>
-            <option value="" defaultChecked disabled>Job Position</option>
-            <option value="Driver">Driver</option>
-            <option value="Dispatcher">Dispatcher</option>
-            <option value="Warehouse Staff">Warehouse Staff</option>
-            <option value="Recruiter">Recruiter</option>
-          </select>
-
-          <button className={styles.addEmployeeButton}>Add candidate</button>
+          <button className={styles.addCandidateButton}>
+            <i className="ri-add-line"/>
+            Add candidate
+          </button>
         </div>
 
-        {/* Employee List Table */}
+        {/* Candidate Overview Table */}
         <div className={styles.tableWrapper}>
-          <table className={styles.employeeTable}>
+          <table className={styles.candidateTable}>
             <thead>
               <tr>
                 <th className={styles.firstColumn}>No.</th>
@@ -77,16 +67,31 @@ export default function CandidateOverview() {
                 <td>Operations</td>
                 <td>Processing</td>
                 <td>Scheduled</td>
-                <td className={styles.actionCell}>
-                  <button className={styles.commentButton}>
-                    <img src="/assets/images/comment.png" />
-                  </button>
-                  <button className={styles.editButton}>
-                    <img src="/assets/images/edit.png" />
-                  </button>
-                  <button className={styles.deleteButton}>
-                    <img src="/assets/images/delete.png" />
-                  </button>
+                  <td className={styles.actionCell}>
+                    <button
+                      className={styles.viewButton}
+                      onClick={() => {
+                        // setSelectedEmployee(emp);
+                        // setIsReadOnlyView(true);
+                        // setShowEditModal(true);
+                      }}
+                    > <i className="ri-feedback-line"/>
+                    </button>
+
+                    <button
+                      className={styles.editButton}
+                      onClick={() => {
+                        // setSelectedEmployee(emp);
+                        // setIsReadOnlyView(false);
+                        // setShowEditModal(true);
+                      }}
+                    > <i className="ri-edit-2-line"/> 
+                    </button>
+                    <button
+                      className={styles.deleteButton}
+                      // onClick={() => handleDeleteRequest(emp)}
+                    > <i className="ri-delete-bin-line"/>
+                    </button>
                 </td>
               </tr>
               <tr>
@@ -98,16 +103,31 @@ export default function CandidateOverview() {
                 <td>Human Resource</td>
                 <td>Pending</td>
                 <td>Not Scheduled</td>
-                <td className={styles.actionCell}>
-                  <button className={styles.commentButton}>
-                    <img src="/assets/images/comment.png" />
-                  </button>
-                  <button className={styles.editButton}>
-                    <img src="/assets/images/edit.png" />
-                  </button>
-                  <button className={styles.deleteButton}>
-                    <img src="/assets/images/delete.png" />
-                  </button>
+                  <td className={styles.actionCell}>
+                    <button
+                      className={styles.viewButton}
+                      onClick={() => {
+                        // setSelectedEmployee(emp);
+                        // setIsReadOnlyView(true);
+                        // setShowEditModal(true);
+                      }}
+                    > <i className="ri-feedback-line"/>
+                    </button>
+
+                    <button
+                      className={styles.editButton}
+                      onClick={() => {
+                        // setSelectedEmployee(emp);
+                        // setIsReadOnlyView(false);
+                        // setShowEditModal(true);
+                      }}
+                    > <i className="ri-edit-2-line"/> 
+                    </button>
+                    <button
+                      className={styles.deleteButton}
+                      // onClick={() => handleDeleteRequest(emp)}
+                    > <i className="ri-delete-bin-line"/>
+                    </button>
                 </td>
               </tr>
               <tr>
@@ -119,64 +139,52 @@ export default function CandidateOverview() {
                 <td>Inventory</td>
                 <td>Processing</td>
                 <td>Not Scheduled</td>
-                <td className={styles.actionCell}>
-                  <button className={styles.commentButton}>
-                    <img src="/assets/images/comment.png" />
-                  </button>
-                  <button className={styles.editButton}>
-                    <img src="/assets/images/edit.png" />
-                  </button>
-                  <button className={styles.deleteButton}>
-                    <img src="/assets/images/delete.png" />
-                  </button>
+                  <td className={styles.actionCell}>
+                    <button
+                      className={styles.viewButton}
+                      onClick={() => {
+                        // setSelectedEmployee(emp);
+                        // setIsReadOnlyView(true);
+                        // setShowEditModal(true);
+                      }}
+                    > <i className="ri-feedback-line"/>
+                    </button>
+
+                    <button
+                      className={styles.editButton}
+                      onClick={() => {
+                        // setSelectedEmployee(emp);
+                        // setIsReadOnlyView(false);
+                        // setShowEditModal(true);
+                      }}
+                    > <i className="ri-edit-2-line"/> 
+                    </button>
+                    <button
+                      className={styles.deleteButton}
+                      // onClick={() => handleDeleteRequest(emp)}
+                    > <i className="ri-delete-bin-line"/>
+                    </button>
                 </td>
               </tr>
-              <tr>
-                <td className={styles.firstColumn}>4</td>
-                <td>Ramon Cruz</td>
-                <td>Dispatcher</td>
-                <td>Recruitment Agency</td>
-                <td>2024-01-22</td>
-                <td>Operations</td>
-                <td>Hired</td>
-                <td>Scheduled</td>
-                <td className={styles.actionCell}>
-                  <button className={styles.commentButton}>
-                    <img src="/assets/images/comment.png" />
-                  </button>
-                  <button className={styles.editButton}>
-                    <img src="/assets/images/edit.png" />
-                  </button>
-                  <button className={styles.deleteButton}>
-                    <img src="/assets/images/delete.png" />
-                  </button>
-                </td>
-              </tr>
-              <tr>
-                <td className={styles.firstColumn}>5</td>
-                <td>Elaine Torres</td>
-                <td>Recruiter</td>
-                <td>Job fair</td>
-                <td>2023-06-18</td>
-                <td>Human Resource</td>
-                <td>Pending</td>
-                <td>Not Scheduled</td>
-                <td className={styles.actionCell}>
-                  <button className={styles.commentButton}>
-                    <img src="/assets/images/comment.png" />
-                  </button>
-                  <button className={styles.editButton}>
-                    <img src="/assets/images/edit.png" />
-                  </button>
-                  <button className={styles.deleteButton}>
-                    <img src="/assets/images/delete.png" />
-                  </button>
-                </td>
-              </tr>
-              {/* Keep or update remaining rows if needed */}
             </tbody>
           </table>
         </div>
+
+        {/* Pagination */}
+        <div className="pagination">
+            <button className="page-btn">
+              <i className="ri-arrow-left-s-line"></i>
+            </button>
+            <button className="page-btn active">1</button>
+            <button className="page-btn">2</button>
+            <button className="page-btn">3</button>
+            <button className="page-btn">4</button>
+            <button className="page-btn">5</button>
+            <button className="page-btn">
+              <i className="ri-arrow-right-s-line"></i>
+            </button>
+        </div>
+
       </div>
     </div>
   );

@@ -8,6 +8,7 @@ import { HttpModule } from '@nestjs/axios';
 import { ConfigModule } from '@nestjs/config';
 import appConfig from './config/app.config';
 import authConfig from './config/auth.config';
+import { RolesController } from './auth/roles.controller';
 
 
 
@@ -31,7 +32,7 @@ import authConfig from './config/auth.config';
       },
     ]),
   ],
-  controllers: [AppController],
+  controllers: [AppController, RolesController],
   providers: [AppService],
 })
 export class AppModule {}

@@ -1,25 +1,11 @@
 import { useState } from 'react';
-
-interface Employee {
-  status: string;
-  firstName: string;
-  middleName: string;
-  lastName: string;
-  birthdate: string;
-  contact: string;
-  dateHired: string;
-  department: string;
-  position: string;
-  email: string;
-  address: string;
-}
+import { showSuccess, showConfirmation } from '@/app/utils/swal';
+import { Employee } from '@/components/modal/information/EmployeeModalLogic';
+import { FilterSection } from '@/components/ui/filterDropdown';
 
 export const EmployeeLogic = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [showMessagePrompt, setShowMessagePrompt] = useState(false);
-  const [promptMessage, setPromptMessage] = useState('');
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
@@ -135,7 +121,94 @@ export const EmployeeLogic = () => {
     }
   ]);
 
-  const filteredEmployees = employees.filter(emp => {
+  // Filter sections
+  const [filteredEmployees, setFilteredEmployees] = useState<Employee[]>(employees);
+
+  const uniqueDepartments = Array.from(new Set(employees.map(emp => emp.department)));
+  const uniquePositions = Array.from(new Set(employees.map(emp => emp.position)));
+
+  const filterSections: FilterSection[] = [
+    {
+      id: "dateRange",
+      title: "Date Range",
+      type: "dateRange",
+      defaultValue: { from: "", to: "" }
+    },
+    {
+      id: "department",
+      title: "Department",
+      type: "checkbox",
+      options: uniqueDepartments.map(dept => ({ id: dept.toLowerCase(), label: dept }))
+    },
+    {
+      id: "position",
+      title: "Position",
+      type: "checkbox",
+      options: uniquePositions.map(pos => ({ id: pos.toLowerCase(), label: pos }))
+    },
+    {
+      id: "sortBy",
+      title: "Sort By",
+      type: "radio",
+      options: [
+        { id: "name", label: "Name" },
+        { id: "date", label: "Date Hired" }
+      ],
+      defaultValue: "name"
+    },
+    {
+      id: "order",
+      title: "Order",
+      type: "radio",
+      options: [
+        { id: "asc", label: "Ascending" },
+        { id: "desc", label: "Descending" }
+      ],
+      defaultValue: "asc"
+    }
+  ];
+
+  const handleApplyFilters = (filterValues: Record<string, any>) => {
+    let newData = [...employees];
+
+    // Status
+    if (filterValues.status && filterValues.status.length > 0) {
+      newData = newData.filter(item => filterValues.status.includes(item.status));
+    }
+
+    // Department
+    if (filterValues.department && filterValues.department.length > 0) {
+      newData = newData.filter(item => filterValues.department.includes(item.department.toLowerCase()));
+    }
+
+    // Position
+    if (filterValues.position && filterValues.position.length > 0) {
+      newData = newData.filter(item => filterValues.position.includes(item.position.toLowerCase()));
+    }
+
+    // Date range
+    const fromDate = filterValues.dateRange?.from ? new Date(filterValues.dateRange.from) : null;
+    const toDate = filterValues.dateRange?.to ? new Date(filterValues.dateRange.to) : null;
+    if (fromDate || toDate) {
+      newData = newData.filter(item => {
+        const hiredDate = new Date(item.dateHired);
+        return (!fromDate || hiredDate >= fromDate) && (!toDate || hiredDate <= toDate);
+      });
+    }
+
+    // Sorting
+    const sortBy = filterValues.sortBy;
+    const sortOrder = filterValues.order === 'desc' ? -1 : 1;
+    if (sortBy === 'name') {
+      newData.sort((a, b) => `${a.lastName}, ${a.firstName}`.localeCompare(`${b.lastName}, ${b.firstName}`) * sortOrder);
+    } else if (sortBy === 'date') {
+      newData.sort((a, b) => (new Date(a.dateHired).getTime() - new Date(b.dateHired).getTime()) * sortOrder);
+    }
+
+    setFilteredEmployees(newData);
+  };
+
+  const filteredByText = filteredEmployees.filter(emp => {
     const fullName = `${emp.firstName} ${emp.middleName} ${emp.lastName}`.toLowerCase();
     return (
       (!statusFilter || emp.status === statusFilter) &&
@@ -146,12 +219,14 @@ export const EmployeeLogic = () => {
   });
 
   const handleAdd = (newEmployee: Employee) => {
-    setEmployees(prev => [...prev, newEmployee]);
+    const updatedList = [...employees, newEmployee];
+    setEmployees(updatedList);
+    setFilteredEmployees(updatedList);
+    showSuccess('Success', 'Employee added successfully.');
   };
 
   const handleEdit = (updatedEmployee: Employee) => {
     if (!selectedEmployee) return;
-
     const updatedList = employees.map(emp =>
       emp.firstName === selectedEmployee.firstName &&
       emp.middleName === selectedEmployee.middleName &&
@@ -159,27 +234,23 @@ export const EmployeeLogic = () => {
         ? updatedEmployee
         : emp
     );
-
     setEmployees(updatedList);
+    setFilteredEmployees(updatedList);
+    showSuccess('Success', 'Employee updated successfully.');
   };
 
-  const handleDeleteRequest = (employee: Employee) => {
-    setSelectedEmployee(employee);
-    setShowDeleteConfirm(true);
-  };
-
-  const handleDelete = () => {
-    if (!selectedEmployee) return;
-
-    const updatedList = employees.filter(emp =>
-      emp.firstName !== selectedEmployee.firstName ||
-      emp.middleName !== selectedEmployee.middleName ||
-      emp.lastName !== selectedEmployee.lastName
-    );
-    setEmployees(updatedList);
-    setShowDeleteConfirm(false);
-    setPromptMessage('Employee deleted successfully!');
-    setShowMessagePrompt(true);
+  const handleDeleteRequest = async (employee: Employee) => {
+    const result = await showConfirmation('Are you sure you want to delete this employee?');
+    if (result.isConfirmed) {
+      const updatedList = employees.filter(
+        emp => emp.firstName !== employee.firstName ||
+               emp.middleName !== employee.middleName ||
+               emp.lastName !== employee.lastName
+      );
+      setEmployees(updatedList);
+      setFilteredEmployees(updatedList);
+      showSuccess('Success', 'Employee deleted successfully.');
+    }
   };
 
   return {
@@ -187,15 +258,10 @@ export const EmployeeLogic = () => {
     setShowAddModal,
     showEditModal,
     setShowEditModal,
-    showDeleteConfirm,
-    setShowDeleteConfirm,
-    showMessagePrompt,
-    setShowMessagePrompt,
-    promptMessage,
     selectedEmployee,
     setSelectedEmployee,
     employees,
-    filteredEmployees,
+    filteredEmployees: filteredByText,
     searchTerm,
     setSearchTerm,
     statusFilter,
@@ -207,8 +273,9 @@ export const EmployeeLogic = () => {
     handleAdd,
     handleEdit,
     handleDeleteRequest,
-    handleDelete,
     isReadOnlyView,
-    setIsReadOnlyView
+    setIsReadOnlyView,
+    filterSections,
+    handleApplyFilters,
   };
 };

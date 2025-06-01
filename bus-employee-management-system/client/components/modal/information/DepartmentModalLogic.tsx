@@ -1,7 +1,9 @@
 'use client';
 
+
 import React, { useState, useEffect } from 'react';
 import DepartmentModalUI from '@/components/modal/information/DepartmentModal';
+import { showError, showConfirmation, showSuccess } from '@/app/utils/swal';
 
 interface DepartmentModalLogicProps {
   isEdit: boolean;
@@ -20,13 +22,10 @@ const DepartmentModalLogic: React.FC<DepartmentModalLogicProps> = ({
 }) => {
   const [departmentName, setDepartmentName] = useState(defaultValue);
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
-  const [showConfirm, setShowConfirm] = useState(false);
 
   useEffect(() => {
     setDepartmentName(defaultValue);
     setError('');
-    setSuccess('');
   }, [defaultValue]);
 
   const validateInput = () => {
@@ -34,7 +33,6 @@ const DepartmentModalLogic: React.FC<DepartmentModalLogicProps> = ({
 
     if (!trimmed) {
       setError('Department name is required.');
-      setSuccess('');
       return false;
     }
 
@@ -43,8 +41,7 @@ const DepartmentModalLogic: React.FC<DepartmentModalLogicProps> = ({
       .some((name) => name.toLowerCase() === trimmed.toLowerCase());
 
     if (isDuplicate) {
-      setError('Department name already exists.');
-      setSuccess('');
+      showError('Error', 'Department name already exists.');
       return false;
     }
 
@@ -55,23 +52,17 @@ const DepartmentModalLogic: React.FC<DepartmentModalLogicProps> = ({
     if (!validateInput()) return;
 
     onSubmit(departmentName.trim());
-    setSuccess(isEdit ? 'Department updated successfully.' : 'Department added successfully.');
-    setError('');
-
-    setTimeout(() => {
-      setSuccess('');
-      onClose();
-    }, 2000);
+    showSuccess('Success', isEdit ? 'Department updated successfully.' : 'Department added successfully.');
+    onClose();
   };
 
-  const handleUpdateConfirm = () => {
+  const handleUpdateConfirm = async () => {
     if (!validateInput()) return;
-    setShowConfirm(true);
-  };
 
-  const handleConfirmedSubmit = () => {
-    setShowConfirm(false);
-    handleSubmit();
+    const result = await showConfirmation('Are you sure you want to update this department?');
+    if (result.isConfirmed) {
+      handleSubmit();
+    }
   };
 
   return (
@@ -79,13 +70,9 @@ const DepartmentModalLogic: React.FC<DepartmentModalLogicProps> = ({
       isEdit={isEdit}
       departmentName={departmentName}
       setDepartmentName={setDepartmentName}
-      error={error}
-      success={success}
-      showConfirm={showConfirm}
       onClose={onClose}
       onSubmit={isEdit ? handleUpdateConfirm : handleSubmit}
-      onConfirm={handleConfirmedSubmit}
-      onCancelConfirm={() => setShowConfirm(false)}
+      isSubmitDisabled={!departmentName.trim()}
     />
   );
 };

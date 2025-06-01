@@ -1,15 +1,15 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable prettier/prettier */
-import { IsString, IsNotEmpty } from 'class-validator';
+import { IsString, IsNotEmpty,IsNumberString } from 'class-validator';
 
 export class LoginDto {
-  @IsString()
+  @IsNumberString()
   @IsNotEmpty()
-  role: string;
+  roleId: number;
 
   @IsString()
   @IsNotEmpty()
-  employeeID: string;
+  employeeId: string;
 
   @IsString()
   @IsNotEmpty()

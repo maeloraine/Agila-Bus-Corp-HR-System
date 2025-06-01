@@ -31,7 +31,7 @@ let AuthController = class AuthController {
         this.emailService = emailService;
     }
     async login(loginDto, res) {
-        const user = await this.authService.validateUser(loginDto.role, loginDto.employeeID, loginDto.password);
+        const user = await this.authService.validateUser(Number(loginDto.roleId), loginDto.employeeId, loginDto.password);
         if (!user) {
             throw new common_1.UnauthorizedException('Invalid credentials');
         }
@@ -45,23 +45,24 @@ let AuthController = class AuthController {
         return { message: 'Login successful' };
     }
     async register(body) {
-        const { employeeId, role, email, birthdate, firstName, lastName, phone, streetAddress, city, province, zipCode, country, securityQuestion, securityAnswerHash } = body;
+        const { employeeId, roleId, email, birthdate, firstName, lastName, phone, streetAddress, city, province, zipCode, country, securityQuestionId, securityAnswer } = body;
         const existing = await prisma.user.findUnique({ where: { employeeId } });
         if (existing) {
             throw new common_1.BadRequestException('User already exists');
         }
         const tempPassword = (0, generators_1.generateRandomPassword)();
         const passwordhash = await argon2.hash(tempPassword, { type: argon2.argon2id });
-        const securityAnswer = body.securityAnswerHash ?? '';
-        const AnswerHash = await argon2.hash(securityAnswer, { type: argon2.argon2id });
+        const securityAns = body.securityAnswer ?? '';
+        const AnswerHash = await argon2.hash(securityAns, { type: argon2.argon2id });
         const user = await prisma.user.create({
-            data: { employeeId, role, password: passwordhash, email, birthdate, firstName, lastName, phone, streetAddress, city, province, zipCode, country, securityQuestion, securityAnswerHash: AnswerHash },
+            data: { employeeId, roleId, password: passwordhash, email, birthdate, firstName, lastName, phone, streetAddress, city, province, zipCode, country, securityQuestionId, securityAnswer: AnswerHash },
         });
-        await this.emailService.sendWelcomeEmail(user.email, user.employeeId, tempPassword);
-        return { message: 'User registered successfully', user: {
+        await this.emailService.sendWelcomeEmail(user.email, user.employeeId, tempPassword, firstName);
+        return {
+            message: 'User registered successfully', user: {
                 id: user.id,
                 employeeID: user.employeeId,
-                role: user.role,
+                role: user.roleId,
                 email: user.email,
                 birthdate: user.birthdate,
                 firstName: user.firstName,
@@ -72,28 +73,43 @@ let AuthController = class AuthController {
                 province: user.province,
                 zipCode: user.zipCode,
                 country: user.country,
-                securityQuestion: user.securityQuestion,
-                securityAnswerHash: user.securityAnswerHash,
+                securityQuestion: user.securityQuestionId,
+                securityAnswerHash: user.securityAnswer,
                 message: 'User Registered. Email Sent'
-            } };
-        ;
+            }
+        };
     }
     async requestReset(body) {
-        const user = await prisma.user.findUnique({ where: { employeeId: body.employeeId } });
+        const user = await prisma.user.findUnique({ where: { email: body.email } });
         if (!user) {
             throw new common_1.BadRequestException('No such user');
         }
+        const question = await prisma.securityQuestion.findUnique({
+            where: { id: user.securityQuestionId },
+        });
+        if (!question)
+            throw new common_1.BadRequestException('Security question not found');
+        return { securityQuestion: question.question };
+    }
+    async validateSecurityAnswer(body) {
+        const user = await prisma.user.findUnique({ where: { email: body.email } });
+        if (!user) {
+            throw new common_1.BadRequestException('Invalid Request');
+        }
+        if (!user.securityAnswer) {
+            throw new common_1.BadRequestException('Security answer not set for this user');
+        }
+        const isCorrect = await argon2.verify(user.securityAnswer, body.answer);
+        if (!isCorrect)
+            throw new common_1.UnauthorizedException('Incorrect security answer');
         const token = crypto.randomBytes(32).toString('hex');
         const expiry = (0, date_fns_1.addMinutes)(new Date(), 15);
         await prisma.user.update({
-            where: { employeeId: body.employeeId },
+            where: { email: body.email },
             data: { resetToken: token, resetTokenExpiry: expiry },
         });
-        if (!user.email) {
-            throw new common_1.BadRequestException('User does not have a valid email address');
-        }
         await this.emailService.sendResetEmail(user.email, token);
-        return { message: 'Rest token generated', token };
+        return { message: 'If your answer is correct, a reset link was sent to your email.' };
     }
     async resetPassword(body) {
         const user = await prisma.user.findFirst({
@@ -116,16 +132,18 @@ let AuthController = class AuthController {
                 resetTokenExpiry: null,
             },
         });
-        return { message: 'Password reset Successfully' };
+        return { message: 'Password reset successfully' };
     }
     async firstPasswordReset(body) {
         const user = await prisma.user.findUnique({
             where: { employeeId: body.employeeId },
         });
-        if (!user)
+        if (!user) {
             throw new common_1.BadRequestException('No such user');
-        if (!user.mustChangePassword)
-            throw new common_1.BadRequestException('Password already set');
+        }
+        if (!user.mustChangePassword) {
+            throw new common_1.BadRequestException('Password reset not required or already completed');
+        }
         const hash = await argon2.hash(body.newPassword, { type: argon2.argon2id });
         await prisma.user.update({
             where: { employeeId: body.employeeId },
@@ -164,13 +182,21 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "register", null);
 __decorate([
-    (0, common_1.Post)('request-reset'),
+    (0, common_1.Post)('request-security-question'),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "requestReset", null);
+__decorate([
+    (0, common_1.Post)('validate-security-answer'),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "validateSecurityAnswer", null);
 __decorate([
     (0, common_1.Post)('reset-password'),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),

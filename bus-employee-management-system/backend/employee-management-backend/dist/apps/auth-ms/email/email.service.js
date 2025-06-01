@@ -24,7 +24,7 @@ let EmailService = class EmailService {
         });
     }
     async sendResetEmail(to, token) {
-        const resetLink = `http://localhost:3000/reset-password?token=${token}`;
+        const resetLink = `http://localhost:3000/authentication/new-password?token=${token}`;
         await this.transporter.sendMail({
             from: `"Agila Bus Transport Corporation" <${process.env.STMP_USER}>`,
             to,
@@ -33,12 +33,12 @@ let EmailService = class EmailService {
                    <a href="${resetLink}">${resetLink}</a>`,
         });
     }
-    async sendWelcomeEmail(to, employeeId, password) {
+    async sendWelcomeEmail(to, employeeId, password, firstName) {
         await this.transporter.sendMail({
             from: `"Agila Bus Transport Corporation" <${process.env.STMP_USER}>`,
             to,
             subject: 'Welcome to Agila Bus Transport Corporation',
-            html: `<p>Welcome to Agila Bus Transport Corporation!</p>
+            html: `<p>Welcome to Agila Bus Transport Corporation <strong>${firstName}</strong>!</p>
                    <p>Your Employee ID is: <strong>${employeeId}</strong></p>
                    <p>Your temporary password is: <strong>${password}</strong></p>
                    <p>Please change your password after logging in.</p>`,

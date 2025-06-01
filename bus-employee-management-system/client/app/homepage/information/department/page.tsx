@@ -2,9 +2,9 @@
 
 import React from 'react';
 import styles from './department.module.css';
+import "@/styles/filters.css"
+import "@/styles/pagination.css"
 import DepartmentModal from '@/components/modal/information/DepartmentModalLogic';
-import ConfirmMessage from '@/components/modal/ConfirmMessage';
-import MessagePrompt from '@/components/modal/MessagePrompt';
 import { DepartmentLogic } from './departmentLogic';
 
 const DepartmentPage = () => {
@@ -21,32 +21,29 @@ const DepartmentPage = () => {
     selectedDept,
     setSelectedDept,
     departments,
-    showDeleteConfirm,
-    setShowDeleteConfirm,
     handleAdd,
     handleEdit,
     handleDeleteRequest,
-    handleDelete,
-    showMessagePrompt,
-    setShowMessagePrompt,
-    promptMessage,
   } = DepartmentLogic();
 
   return (
     <div className={styles.base}>
       <div className={styles.departmentContainer}>
-        <h1>Department List</h1>
+        <h1 className={styles.title}>Department List</h1>
 
         <div className={styles.headerSection}>
 
           {/* Search */}
-          <input
-            type="text"
-            className={styles.searchBar}
-            placeholder="Search department..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
+          <div className={styles.search}>
+            <i className='ri-search-line'/>
+            <input
+              type="text"
+              placeholder="Search here..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+
 
           {/* No. of Employees Filter */}
           <select
@@ -63,7 +60,8 @@ const DepartmentPage = () => {
             <option value="101+">more than 100</option>
           </select>
           <button onClick={() => setShowAddModal(true)} className={styles.addDepartmentButton}>
-            Add department
+            <i className='ri-add-line'/>
+            Add Department
           </button>
         </div>
 
@@ -94,20 +92,33 @@ const DepartmentPage = () => {
                         setSelectedDept(dept.name);
                         setShowEditModal(true);
                       }}
-                    >
-                      Edit
+                    > <i className='ri-edit-2-line'/>
                     </button>
                     <button
                       className={styles.deleteButton}
                       onClick={() => handleDeleteRequest(dept.name)}
-                    >
-                      <img src="/assets/images/delete.png" />
+                    > <i className='ri-delete-bin-line' />
                     </button>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
+        </div>
+
+        {/* Pagination */}
+        <div className="pagination">
+            <button className="page-btn">
+              <i className="ri-arrow-left-s-line"></i>
+            </button>
+            <button className="page-btn active">1</button>
+            <button className="page-btn">2</button>
+            <button className="page-btn">3</button>
+            <button className="page-btn">4</button>
+            <button className="page-btn">5</button>
+            <button className="page-btn">
+              <i className="ri-arrow-right-s-line"></i>
+            </button>
         </div>
 
         {showAddModal && (
@@ -126,21 +137,6 @@ const DepartmentPage = () => {
             existingDepartments={departments.map((d) => d.name)}
             onClose={() => setShowEditModal(false)}
             onSubmit={handleEdit}
-          />
-        )}
-
-        {showDeleteConfirm && (
-          <ConfirmMessage
-            message="Are you sure you want to delete?"
-            onConfirm={handleDelete}
-            onCancel={() => setShowDeleteConfirm(false)}
-          />
-        )}
-
-        {showMessagePrompt && (
-          <MessagePrompt
-            message={promptMessage}
-            onClose={() => setShowMessagePrompt(false)}
           />
         )}
       </div>
