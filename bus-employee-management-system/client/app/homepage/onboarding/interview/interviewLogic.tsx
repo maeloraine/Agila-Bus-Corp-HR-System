@@ -3,7 +3,7 @@ import { showSuccess, showConfirmation } from '@/app/utils/swal';
 import { Employee } from '@/components/modal/information/EmployeeModalLogic';
 import { FilterSection } from '@/components/ui/filterDropdown';
 
-export const EmployeeLogic = () => {
+export const InterviewLogic = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
@@ -134,12 +134,12 @@ export const EmployeeLogic = () => {
       type: "dateRange",
       defaultValue: { from: "", to: "" }
     },
-    {
-      id: "department",
-      title: "Department",
-      type: "checkbox",
-      options: uniqueDepartments.map(dept => ({ id: dept.toLowerCase(), label: dept }))
-    },
+    // {
+    //   id: "department",
+    //   title: "Department",
+    //   type: "checkbox",
+    //   options: uniqueDepartments.map(dept => ({ id: dept.toLowerCase(), label: dept }))
+    // },
     {
       id: "position",
       title: "Position",

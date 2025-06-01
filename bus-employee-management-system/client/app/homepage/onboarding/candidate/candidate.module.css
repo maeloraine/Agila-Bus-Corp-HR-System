@@ -1,8 +1,9 @@
 .base {
   width: 100%;
+  height: 100%;
 }
 
-.employeeContainer {
+.candidateContainer {
   max-width: auto;
   height: 100%;
   padding: 2rem;
@@ -12,23 +13,52 @@
   box-shadow: 0 0 10px rgba(0,0,0,0.05);
 }
 
-.searchButton button {
+.title {
+  font-size: 24px;
+  font-weight: 600 (bold);
+  margin-bottom: 15px;
+}
+
+.search {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.search i {
+  display: flex; 
+  align-items: center; 
+  border: 1px solid #B3B3B3; 
+  border-right: none; 
+  border-radius: 8px 0 0 8px; 
+  height: 35px; 
+  padding: 8px; 
+}
+
+.search input {
+  border: 1px solid var(--border-color);
+  border-left: none;
+  border-radius: 0 8px 8px 0; 
+  width: 400px; 
+  height: 35px; 
+  padding-right: 0 8px; 
+  font-size: 14px; 
+}
+
+.addCandidateButton {
+  width: 175px;
+  height: 35px; 
+  display: flex; 
+  justify-content: center; 
+  align-items: center; 
+  gap: 8px; 
+  border-radius: 8px; 
+  background-color: #961C1E; 
+  color: #FFFFFF; 
+  font-size: 14px; 
+  transition: all 0.3s ease-in-out; 
+  cursor: pointer; 
   background-color: #961C1E;
-  color: white;
-  padding-top: 0.2rem;
-  border-radius: 5px;
-  border: none;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.searchButton button:hover {
-  background-color: #571415 !important;
-  color: white;
-}
-
-.addEmployeeButton {
-  background-color: #9F0F19;
   color: white;
   border: none;
   padding: 0.5rem 1rem;
@@ -36,21 +66,7 @@
   cursor: pointer;
 }
 
-.addEmployeeButton:hover {
-  background-color: #571415 !important;
-  color: white;
-}
-
-.importButton {
-  background-color: #961C1E;
-  color: white;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.importButton:hover {
+.addCandidateButton:hover {
   background-color: #571415 !important;
   color: white;
 }
@@ -64,17 +80,14 @@
   flex-wrap: wrap;
 }
 
-.searchBar {
+.statusfilterDropdown {
+  border: 1px solid var(--border-color); 
+  border-radius: 8px; 
+  width: 150px; 
+  height: 35px; 
+  padding-right: 0 8px; 
+  font-size: 14px; 
   padding: 0.5rem;
-  flex: 1;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-}
-
-.filterDropdown {
-  padding: 0.5rem;
-  border-radius: 5px;
-  border: 1px solid #ccc;
 }
 
 .firstColumn {
@@ -87,50 +100,41 @@
   gap: 0.5rem;
 }
 
-.editButton {
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  padding: 0.25rem;
-  display: flex;
-  align-items: center;
+.actionCell i{
+  padding: 3px 6px; 
+  font-size: 14px; 
+  border-radius: 4px; 
+  color: #FFFFFF; 
+  transition: all 0.3s ease-in-out; 
+  cursor: pointer; 
+  border: none; 
 }
 
-.editButton img {
-  width: 25px;
-  height: 25px;
-  object-fit: contain;
+.viewButton {
+  background-color: #13CE66;
+  border-radius: 4px;
 }
 
+.viewButton:hover {
+  background-color: #12B75C;
+}
+
+.editButton{
+  background-color: #2D8EFF;
+  border-radius: 4px;
+}
+
+.editButton:hover {
+  background-color: #267BDB;
+}
 
 .deleteButton {
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  padding: 0.25rem;
-  display: flex;
-  align-items: center;
+  background-color: #FF4949;
+  border-radius: 4px;
 }
 
-.deleteButton img {
-  width: 25px;
-  height: 25px;
-  object-fit: contain;
-}
-
-.commentButton {
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  padding: 0.25rem;
-  display: flex;
-  align-items: center;
-}
-
-.commentButton img {
-  width: 25px;
-  height: 25px;
-  object-fit: contain;
+.deleteButton:hover {
+  background-color: #DE3939;
 }
 
 .tableWrapper {
@@ -138,14 +142,14 @@
   overflow-x: auto;
 }
 
-.employeeTable {
+.candidateTable {
   width: 100%;
   border-collapse: collapse;
   table-layout: fixed;
   text-align: center;
 }
 
-.employeeTable thead th {
+.candidateTable thead th {
   position: sticky;
   top: 0;
   background: #fff;
@@ -154,21 +158,21 @@
   padding: 10px;
 }
 
-.employeeTable tbody {
+.candidateTable tbody {
   display: block;
   max-height: 300px; /* scroll height */
   overflow-y: auto;
   width: 100%;
 }
 
-.employeeTable thead,
-.employeeTable tbody tr {
+.candidateTable thead,
+.candidateTable tbody tr {
   display: table;
   width: 100%;
   table-layout: fixed;
 }
 
-.employeeTable tbody td {
+.candidateTable tbody td {
   padding: 10px;
   border-bottom: 1px solid #eee;
 }

@@ -1,147 +1,170 @@
 .base {
-    width: 100%;
-  }
-  
-  .departmentContainer {
-    max-width: auto;
-    height: 100%;
-    padding: 2rem;
-    padding-top: 0.01rem;
-    background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.05);
-  }
+  width: 100%;
+  height: 100%;
+}
 
-  .searchButton button {
-    background-color: #961C1E;
-    color: white;
-    padding-top: 0.2rem;
-    border-radius: 5px;
-    border: none;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-  }
-  
-  .searchButton button:hover {
-    background-color: #571415 !important;
-    color: white;
-  }
+.departmentContainer {
+  max-width: auto;
+  height: 100%;
+  padding: 2rem;
+  padding-top: 0.01rem;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.05);
+}
 
-  .addDepartmentButton {
-    background-color: #961C1E;
-    color: white;
-    border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 5px;
-    cursor: pointer;
-  }
+.title {
+  font-size: 24px;
+  font-weight: 600 (bold);
+  margin-Bottom: 15px;
+}
 
-  .addDepartmentButton:hover {
-    background-color: #571415 !important;
-    color: white;
-  }
-  
-  .headerSection {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.5rem;
-    gap: 1rem;
-    flex-wrap: wrap;
-  }
-  
-  .searchBar {
-    padding: 0.5rem;
-    flex: 1;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-  }
-  
-  .filterDropdown {
-    padding: 0.5rem;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-  }
+.search {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
 
-  .firstColumn {
-    width: 75px;
-  }
+.search i {
+  display: flex; 
+  align-items: center; 
+  border: 1px solid #B3B3B3; 
+  border-right: none; 
+  border-radius: 8px 0 0 8px; 
+  height: 35px; 
+  padding: 8px; 
+}
 
-  .actionCell {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-  
-  .editButton{
-    background-color: white;
-    border:1px solid #961C1E;
-    color: #961C1E;
-    padding: 0.5rem 1rem;
-    border-radius: 5px;
-    font-weight: bold;
-    font-family: inherit;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-  }
+.search input {
+  border: 1px solid var(--border-color);
+  border-left: none;
+  border-radius: 0 8px 8px 0; 
+  width: 400px; 
+  height: 35px; 
+  padding-right: 0 8px; 
+  font-size: 14px; 
+}
 
-  .editButton:hover {
-    background-color: #961C1E !important;
-    color: white;
-  }
+.addDepartmentButton {
+  width: 160px; 
+  height: 35px; 
+  display: flex; 
+  justify-content: center; 
+  align-items: center; 
+  gap: 8px; 
+  border-radius: 8px; 
+  background-color: #961C1E; 
+  color: #FFFFFF; 
+  font-size: 14px; 
+  transition: all 0.3s ease-in-out; 
+  cursor: pointer; 
+  background-color: #961C1E;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+}
 
-  .deleteButton {
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    padding: 0.25rem;
-    display: flex;
-    align-items: center;
-  }
-  
-  .deleteButton img {
-    width: 25px;
-    height: 25px;
-    object-fit: contain;
-  }
+.addDepartmentButton:hover {
+  background-color: #571415 !important;
+  color: white;
+}
 
-  .tableWrapper {
-    width: 100%;
-    overflow-x: auto;
-  }
-  
-  .departmentTable {
-    width: 100%;
-    border-collapse: collapse;
-    table-layout: fixed;
-    text-align: center;
-  }
-  
-  .departmentTable thead th {
-    position: sticky;
-    top: 0;
-    background: #fff;
-    z-index: 2;
-    border-bottom: 2px solid #ddd;
-    padding: 10px;
-  }
-  
-  .departmentTable tbody {
-    display: block;
-    max-height: 300px; /* scroll height */
-    overflow-y: auto;
-    width: 100%;
-  }
-  
-  .departmentTable thead,
-  .departmentTable tbody tr {
-    display: table;
-    width: 100%;
-    table-layout: fixed;
-  }
-  
-  .departmentTable tbody td {
-    padding: 10px;
-    border-bottom: 1px solid #eee;
-  }
-  
+.headerSection {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.filterDropdown {
+  border: 1px solid var(--border-color); 
+  border-radius: 8px; 
+  width: 200px; 
+  height: 35px; 
+  padding-right: 0 8px; 
+  font-size: 14px; 
+  padding: 0.5rem;
+}
+
+.firstColumn {
+  width: 75px;
+}
+
+.actionCell {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.actionCell i{
+  padding: 3px 6px; 
+  font-size: 14px; 
+  border-radius: 4px; 
+  color: #FFFFFF; 
+  transition: all 0.3s ease-in-out; 
+  cursor: pointer; 
+  border: none; 
+}
+
+.editButton{
+  background-color: #2D8EFF;
+  border-radius: 4px;
+}
+
+.editButton:hover {
+  background-color: #267BDB;
+}
+
+.deleteButton {
+  background-color: #FF4949;
+  border-radius: 4px;
+}
+
+.deleteButton:hover {
+  background-color: #DE3939;
+}
+
+.tableWrapper {
+  width: 100%;
+  max-height: 100%;
+  overflow-x: auto;
+}
+
+.departmentTable {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  text-align: center;
+}
+
+.departmentTable thead th {
+  position: sticky;
+  top: 0;
+  background: #fff;
+  z-index: 2;
+  border-bottom: 2px solid #ddd;
+  padding: 10px;
+}
+
+.departmentTable tbody {
+  display: block;
+  max-height: 300px; /* scroll height */
+  overflow-y: auto;
+  width: 100%;
+}
+
+.departmentTable thead,
+.departmentTable tbody tr {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
+
+.departmentTable tbody td {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+}

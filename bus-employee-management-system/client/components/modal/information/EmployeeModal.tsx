@@ -2,8 +2,8 @@
 
 import React, { useState } from 'react';
 import styles from './InformationModal.module.css';
-import ConfirmMessage from '@/components/modal/ConfirmMessage';
 import { useEmployeeModal, Employee } from './EmployeeModalLogic';
+import { showConfirmation } from '@/app/utils/swal';
 
 interface EmployeeModalProps {
   isEdit: boolean;
@@ -17,15 +17,10 @@ interface EmployeeModalProps {
 const EmployeeModal: React.FC<EmployeeModalProps> = (props) => {
   const {
     employee,
-    error,
-    success,
     fieldErrors,
-    showConfirm,
     handleChange,
     handleSubmit,
     handleUpdateConfirm,
-    handleConfirmedSubmit,
-    setShowConfirm,
   } = useEmployeeModal(
     props.isEdit,
     props.defaultValue,
@@ -34,7 +29,6 @@ const EmployeeModal: React.FC<EmployeeModalProps> = (props) => {
     props.onClose
   );
 
-  const [showExitConfirm, setShowExitConfirm] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
 
   const handleChangeWrapper = (field: keyof Employee, value: string) => {
@@ -44,9 +38,13 @@ const EmployeeModal: React.FC<EmployeeModalProps> = (props) => {
     handleChange(field, value);
   };
 
-  const handleExitClick = () => {
+  const handleExitClick = async () => {
     if (hasChanges) {
-      setShowExitConfirm(true);
+      const result = await showConfirmation("Are you sure you want to close? Unsaved changes will be lost.");
+      if (result.isConfirmed) {
+        setHasChanges(false);
+        props.onClose();
+      }
     } else {
       props.onClose();
     }
@@ -60,22 +58,21 @@ const EmployeeModal: React.FC<EmployeeModalProps> = (props) => {
         {!props.isReadOnly && (
           <h1 className={styles.heading}>
             <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            className={styles.headingIcon}
-          >
-            <path d="M12 2C17.52 2 22 6.48 22 12C22 
-              17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 6.48 6.48 2 12 2ZM6.02332 15.4163C7.49083 17.6069 9.69511 19 
-              12.1597 19C14.6243 19 16.8286 17.6069 18.2961 15.4163C16.6885 13.9172 14.5312 13 12.1597 13C9.78821 13 
-              7.63095 13.9172 6.02332 15.4163ZM12 11C13.6569 11 15 9.65685 15 8C15 6.34315 13.6569 5 12 5C10.3431 5 9 
-              6.34315 9 8C9 9.65685 10.3431 11 12 11Z"
-            />
-          </svg>
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              className={styles.headingIcon}
+            >
+              <path d="M12 2C17.52 2 22 6.48 22 12C22 
+                17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 6.48 6.48 2 12 2ZM6.02332 15.4163C7.49083 17.6069 9.69511 19 
+                12.1597 19C14.6243 19 16.8286 17.6069 18.2961 15.4163C16.6885 13.9172 14.5312 13 12.1597 13C9.78821 13 
+                7.63095 13.9172 6.02332 15.4163ZM12 11C13.6569 11 15 9.65685 15 8C15 6.34315 13.6569 5 12 5C10.3431 5 9 
+                6.34315 9 8C9 9.65685 10.3431 11 12 11Z"
+              />
+            </svg>
             {props.isEdit ? 'Edit Employee' : 'Add Employee'}
           </h1>
         )}
-
 
         <h3>Employee Details</h3>
 
@@ -209,9 +206,8 @@ const EmployeeModal: React.FC<EmployeeModalProps> = (props) => {
             {fieldErrors.position && <p className={styles.errorText}>{fieldErrors.position}</p>}
           </div>
         </div>
-        <br/>
+        <br />
 
-        
         <h3>Related Forms/ Requests</h3>
         <div className={styles.sectionGroup}>
           <div className={styles.workInfo}></div>
@@ -268,11 +264,8 @@ const EmployeeModal: React.FC<EmployeeModalProps> = (props) => {
               </tr>
             </tbody>
           </table>
-          <br/>
+          <br />
         </div>
-
-        {error && <p className={styles.errorMessage}>{error}</p>}
-        {success && <p className={styles.successMessage}>{success}</p>}
 
         <div className={styles.buttonGroup}>
           {props.isReadOnly ? (
@@ -287,26 +280,6 @@ const EmployeeModal: React.FC<EmployeeModalProps> = (props) => {
           )}
         </div>
       </div>
-
-      {showConfirm && (
-        <ConfirmMessage
-          message="Are you sure you want to update this employee?"
-          onConfirm={handleConfirmedSubmit}
-          onCancel={() => setShowConfirm(false)}
-        />
-      )}
-
-      {showExitConfirm && (
-        <ConfirmMessage
-          message="Are you sure you want to close? Unsaved changes will be lost."
-          onConfirm={() => {
-            setShowExitConfirm(false);
-            setHasChanges(false);
-            props.onClose();
-          }}
-          onCancel={() => setShowExitConfirm(false)}
-        />
-      )}
     </div>
   );
 };

@@ -1,5 +1,6 @@
 .base {
   width: 100%;
+  height: 100%;
 }
 
 .employeeContainer {
@@ -12,23 +13,52 @@
   box-shadow: 0 0 10px rgba(0,0,0,0.05);
 }
 
-.searchButton button {
-  background-color: #961C1E;
-  color: white;
-  padding-top: 0.2rem;
-  border-radius: 5px;
-  border: none;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
+.title {
+  font-size: 24px;
+  font-weight: 600 (bold);
+  margin-bottom: 15px;
 }
 
-.searchButton button:hover {
-  background-color: #571415 !important;
-  color: white;
+.search {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.search i {
+  display: flex; 
+  align-items: center; 
+  border: 1px solid #B3B3B3; 
+  border-right: none; 
+  border-radius: 8px 0 0 8px; 
+  height: 35px; 
+  padding: 8px; 
+}
+
+.search input {
+  border: 1px solid var(--border-color);
+  border-left: none;
+  border-radius: 0 8px 8px 0; 
+  width: 400px; 
+  height: 35px; 
+  padding-right: 0 8px; 
+  font-size: 14px; 
 }
 
 .addEmployeeButton {
-  background-color: #9F0F19;
+  width: 160px; 
+  height: 35px; 
+  display: flex; 
+  justify-content: center; 
+  align-items: center; 
+  gap: 8px; 
+  border-radius: 8px; 
+  background-color: #961C1E; 
+  color: #FFFFFF; 
+  font-size: 14px; 
+  transition: all 0.3s ease-in-out; 
+  cursor: pointer; 
+  background-color: #961C1E;
   color: white;
   border: none;
   padding: 0.5rem 1rem;
@@ -42,6 +72,18 @@
 }
 
 .importButton {
+  width: 160px; 
+  height: 35px; 
+  display: flex; 
+  justify-content: center; 
+  align-items: center; 
+  gap: 8px; 
+  border-radius: 8px; 
+  background-color: #961C1E; 
+  color: #FFFFFF; 
+  font-size: 14px; 
+  transition: all 0.3s ease-in-out; 
+  cursor: pointer; 
   background-color: #961C1E;
   color: white;
   border: none;
@@ -64,17 +106,14 @@
   flex-wrap: wrap;
 }
 
-.searchBar {
+.statusfilterDropdown {
+  border: 1px solid var(--border-color); 
+  border-radius: 8px; 
+  width: 150px; 
+  height: 35px; 
+  padding-right: 0 8px; 
+  font-size: 14px; 
   padding: 0.5rem;
-  flex: 1;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-}
-
-.filterDropdown {
-  padding: 0.5rem;
-  border-radius: 5px;
-  border: 1px solid #ccc;
 }
 
 .firstColumn {
@@ -87,51 +126,41 @@
   gap: 0.5rem;
 }
 
+.actionCell i{
+  padding: 3px 6px; 
+  font-size: 14px; 
+  border-radius: 4px; 
+  color: #FFFFFF; 
+  transition: all 0.3s ease-in-out; 
+  cursor: pointer; 
+  border: none; 
+}
+
 .viewButton {
-  background-color: white;
-  border:1px solid #961C1E;
-  color: #961C1E;
-  padding: 0.5rem 1rem;
-  border-radius: 5px;
-  font-weight: bold;
-  font-family: inherit;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
+  background-color: #13CE66;
+  border-radius: 4px;
 }
 
 .viewButton:hover {
-  background-color: #961C1E !important;
-  color: white;
+  background-color: #12B75C;
 }
 
-.editButton {
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  padding: 0.25rem;
-  display: flex;
-  align-items: center;
+.editButton{
+  background-color: #2D8EFF;
+  border-radius: 4px;
 }
 
-.editButton img {
-  width: 25px;
-  height: 25px;
-  object-fit: contain;
+.editButton:hover {
+  background-color: #267BDB;
 }
 
 .deleteButton {
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  padding: 0.25rem;
-  display: flex;
-  align-items: center;
+  background-color: #FF4949;
+  border-radius: 4px;
 }
 
-.deleteButton img {
-  width: 25px;
-  height: 25px;
-  object-fit: contain;
+.deleteButton:hover {
+  background-color: #DE3939;
 }
 
 .tableWrapper {
