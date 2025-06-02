@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-// eslint-disable-next-line prettier/prettier
+ 
 import { NestFactory } from '@nestjs/core';
 import { MicroserviceOptions } from '@nestjs/microservices';
 import { Transport } from '@nestjs/microservices/enums';
