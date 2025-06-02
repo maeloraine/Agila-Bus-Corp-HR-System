@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
@@ -24,7 +25,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     const fetchRoles = async () => {
-      const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+      const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
       console.log('Using API base:', API_BASE_URL);
       try {
         const response = await fetch(`${API_BASE_URL}/roles`, {

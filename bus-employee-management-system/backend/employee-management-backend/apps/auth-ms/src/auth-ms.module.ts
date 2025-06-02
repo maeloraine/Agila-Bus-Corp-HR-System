@@ -63,8 +63,8 @@ import { RolesController } from './roles/roles.controller';
       useFactory: (config: ConfigService) => {
         const secret = config.get<string>('JWT_SECRET');
         const expiresIn = config.get<string>('JWT_EXPIRATION');
-        console.log('JWT_SECRET:', secret);
-        console.log('JWT_EXPIRATION:', expiresIn);
+        // console.log('JWT_SECRET:', secret);
+        // console.log('JWT_EXPIRATION:', expiresIn);
         if (!secret) {
           throw new Error('JWT_SECRET is not defined in .env');
         }

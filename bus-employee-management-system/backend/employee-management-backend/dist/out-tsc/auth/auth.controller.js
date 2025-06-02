@@ -21,8 +21,12 @@ let AuthController = class AuthController {
     constructor(authService) {
         this.authService = authService;
     }
-    async login(credentials) {
-        return this.authService.login(credentials);
+    async login(credentials, res) {
+        const response = await this.authService.login(credentials);
+        if (response && response.headers && response.headers['set-cookie']) {
+            res.setHeader('Set-Cookie', response.headers['set-cookie']);
+        }
+        res.status(response.status).json(response.data);
     }
     async firstResetPassword(body) {
         const { employeeId, newPassword } = body;
@@ -30,6 +34,16 @@ let AuthController = class AuthController {
             throw new Error('Employee ID and new password are required');
         }
         return this.authService.firstResetPassword(employeeId, newPassword);
+    }
+    async verify(authHeader) {
+        if (!authHeader) {
+            throw new common_1.BadRequestException('Missing Authorization header');
+        }
+        const token = authHeader.split(' ')[1];
+        if (!token) {
+            throw new common_1.BadRequestException('No token provided');
+        }
+        return this.authService.verify(token);
     }
     async requestSecurityQuestion(email) {
         return this.authService.requestSecurityQuestion(email);
@@ -44,17 +58,22 @@ let AuthController = class AuthController {
         }
         return this.authService.resetPassword(token, newPassword);
     }
-    async logout(response) {
-        const result = await this.authService.logout();
-        return result;
+    logout(res) {
+        res.clearCookie('jwt', {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+        });
+        return { message: 'Logged out successfully' };
     }
 };
 exports.AuthController = AuthController;
 __decorate([
     (0, common_1.Post)('login'),
     __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [login_dto_1.LoginDto]),
+    __metadata("design:paramtypes", [login_dto_1.LoginDto, Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "login", null);
 __decorate([
@@ -64,6 +83,13 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "firstResetPassword", null);
+__decorate([
+    (0, common_1.Post)('verify'),
+    __param(0, (0, common_1.Headers)('authorization')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "verify", null);
 __decorate([
     (0, common_1.Post)('request-security-question'),
     __param(0, (0, common_1.Body)('email')),
@@ -90,7 +116,7 @@ __decorate([
     __param(0, (0, common_1.Res)({ passthrough: true })),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
+    __metadata("design:returntype", void 0)
 ], AuthController.prototype, "logout", null);
 exports.AuthController = AuthController = __decorate([
     (0, common_1.Controller)('auth'),
