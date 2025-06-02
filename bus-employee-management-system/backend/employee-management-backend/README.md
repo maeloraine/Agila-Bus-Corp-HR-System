@@ -155,8 +155,7 @@ npm install date-fns
 
 ```
 -----------------------------------------------------------------------------------------
-YES MAEEMM HANGGANG DITO LANG ANG COMMANDS PANG INSTALL NG DEPENDENCIES
------------------------------------------------------------------------------------------
+
 
 ## Backend Commands To Run Services (MAG KAKAHIWALAY NG TERMINAL PER SERVICE)
 ```NestJs Run:
@@ -170,8 +169,7 @@ For Auth Microservice:
 ```
 
 -----------------------------------------------------------------------------------------
-YES MAEEMM HANGGANG DITO LANG ANG COMMANDS PANG RUN
------------------------------------------------------------------------------------------
+
 
 
 ```PrismaORM Generating Project:
