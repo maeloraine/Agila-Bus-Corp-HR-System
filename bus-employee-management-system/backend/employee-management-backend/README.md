@@ -170,6 +170,7 @@ For Auth Microservice:
 
 -----------------------------------------------------------------------------------------
 
+## DB Stuffs Commands (No need to run this)
 
 
 ```PrismaORM Generating Project:
