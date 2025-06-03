@@ -11,10 +11,12 @@ export interface Candidate {
   email: string;
   contact: string;
   address: string;
-  status: string;
-  dateHired: string;
+  applicationDate: string;
+  sourceOfHire: string;
   department: string;
   position: string;
+  applicationStatus: string;
+  interviewStatus: string;
 }
 
 const isAtLeast18 = (birthdate: string) => {
@@ -28,7 +30,7 @@ const isAtLeast18 = (birthdate: string) => {
 const isValidEmail = (email: string) => /^[\w.-]+@[\w.-]+\.[A-Za-z]{2,}$/.test(email);
 const isValidContact = (contact: string) => /^\d{11}$/.test(contact);
 const isValidPhilippineContact = (contact: string) => /^(09)\d{9}$/.test(contact);
-const isValidDateHired = (date: string) => new Date(date) <= new Date();
+const isValidapplicationDate = (date: string) => new Date(date) <= new Date();
 
 export const useCandidateModal = (
   isEdit: boolean,
@@ -39,8 +41,8 @@ export const useCandidateModal = (
 ) => {
   const [candidate, setCandidate] = useState<Candidate>({
     firstName: '', middleName: '', lastName: '', birthdate: '',
-    email: '', contact: '', address: '', status: '', dateHired: '',
-    department: '', position: '', ...defaultValue,
+    email: '', contact: '', address: '', applicationStatus: '', applicationDate: '',
+    interviewStatus: '', sourceOfHire: '',department: '', position: '', ...defaultValue,
   });
 
   const [fieldErrors, setFieldErrors] = useState<{ [key in keyof Candidate]?: string }>({});
@@ -53,8 +55,9 @@ export const useCandidateModal = (
     if (!candidate.email || !isValidEmail(candidate.email)) errors.email = 'Invalid email format.';
     if (!isValidContact(candidate.contact) || !isValidPhilippineContact(candidate.contact)) errors.contact = 'Invalid format.';
     if (!candidate.address) errors.address = 'Required';
-    if (!candidate.status) errors.status = 'Required';
-    if (!candidate.dateHired || !isValidDateHired(candidate.dateHired)) errors.dateHired = 'Date Hired cannot be a future date.';
+    if (!candidate.applicationStatus) errors.applicationStatus = 'Required';
+    if (!candidate.applicationDate || !isValidapplicationDate(candidate.applicationDate)) errors.applicationDate = 'Application Date cannot be a future date.';
+    if (!candidate.sourceOfHire) errors.sourceOfHire = 'Required';
     if (!candidate.department) errors.department = 'Required';
     if (!candidate.position.trim()) errors.position = 'Required';
     setFieldErrors(errors);

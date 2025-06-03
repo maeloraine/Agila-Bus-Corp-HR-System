@@ -110,13 +110,22 @@
   border: none; 
 }
 
-.commentButton {
+.viewButton {
   background-color: #13CE66;
   border-radius: 4px;
 }
 
-.commentButton:hover {
+.viewButton:hover {
   background-color: #12B75C;
+}
+
+.commentButton {
+  background-color: #FFCC3D;
+  border-radius: 4px;
+}
+
+.commentButton:hover {
+  background-color: #FFC107;
 }
 
 .editButton{

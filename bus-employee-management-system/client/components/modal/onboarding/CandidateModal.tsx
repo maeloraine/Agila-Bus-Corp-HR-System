@@ -3,7 +3,8 @@
 import React, { useState } from 'react';
 import styles from './OnboardingModal.module.css';
 import { useCandidateModal, Candidate } from './CandidateModalLogic';
-import { showConfirmation } from '@/app/utils/swal';
+import { useCandidateRecords } from './CandidateRecordsLogic';
+import { showConfirmation, showSuccess } from '@/app/utils/swal';
 
 interface CandidateModalProps {
   isEdit: boolean;
@@ -29,6 +30,35 @@ const CandidateModal: React.FC<CandidateModalProps> = (props) => {
     props.onClose
   );
 
+  const {
+    workExperiences,
+    tempWork,
+    editingWorkIndex,
+    setTempWork,
+    addWork,
+    saveWork,
+    editWork,
+    cancelWorkEdit,
+    deleteWork,
+    isTempWorkValid,
+    workDateError,
+    setWorkDateError,
+    validateWorkDates,
+
+    educationList,
+    tempEduc,
+    editingEducIndex,
+    setTempEduc,
+    addEducation,
+    saveEducation,
+    editEducation,
+    cancelEducationEdit,
+    deleteEducation,
+    isTempEducValid,
+    educDateError,
+    setEducDateError
+  } = useCandidateRecords();
+
   const [hasChanges, setHasChanges] = useState(false);
 
   const handleChangeWrapper = (field: keyof Candidate, value: string) => {
@@ -53,7 +83,9 @@ const CandidateModal: React.FC<CandidateModalProps> = (props) => {
   return (
     <div className={styles.modalOverlay}>
       <div className={styles.modalContent}>
-        <button className={styles.closeButton} onClick={handleExitClick} aria-label="Close modal">×</button>
+        <button className={styles.closeButton} onClick={handleExitClick} aria-label="Close modal">
+          <i className='ri-close-line'/>
+        </button>
 
         {!props.isReadOnly && (
           <h1 className={styles.heading}>
@@ -153,33 +185,207 @@ const CandidateModal: React.FC<CandidateModalProps> = (props) => {
               {fieldErrors.address && <p className={styles.errorText}>{fieldErrors.address}</p>}
             </div>
           </div>
+
+          {/* Work Experience Table */}
+          <div className={styles.sectionHeader}>
+            <h4>Work Experience</h4>
+            <button onClick={addWork} className={styles.addWorkExpButton}><i className="ri-add-line" /></button>
+          </div>
+          <table className={styles.workExpTable}>
+            <thead>
+              <tr>
+                <th>No.</th>
+                <th>Company</th>
+                <th>Position</th>
+                <th>From</th>
+                <th>To</th>
+                <th>Description</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {[...workExperiences, ...(editingWorkIndex === workExperiences.length ? [{
+              company: '', position: '', from: '', to: '', description: ''
+              }] : [])].map((exp, index) => (
+                <tr key={index}>
+                  {editingWorkIndex === index ? (
+                    <>
+                      <td className={styles.firstColumn}>{index + 1}</td>
+                      <td><input className={styles.tableInput} value={tempWork.company} onChange={(e) => setTempWork({ ...tempWork, company: e.target.value })} /></td>
+                      <td><input className={styles.tableInput} value={tempWork.position} onChange={(e) => setTempWork({ ...tempWork, position: e.target.value })} /></td>
+                      <td>
+                        <input
+                          className={styles.tableInput}
+                          type="date"
+                          value={tempWork.from}
+                          onChange={(e) => {
+                            const from = e.target.value;
+                            const to = tempWork.to;
+                            setTempWork({ ...tempWork, from });
+                            validateWorkDates(from, to);
+                          }}
+                        />
+                        {workDateError.from && <p className={styles.errorText}>{workDateError.from}</p>}
+                      </td>
+                      <td>
+                        <input
+                          className={styles.tableInput}
+                          type="date"
+                          value={tempWork.to}
+                          onChange={(e) => {
+                            const to = e.target.value;
+                            const from = tempWork.from;
+                            setTempWork({ ...tempWork, to });
+                            validateWorkDates(from, to);
+                          }}
+                        />
+                        {workDateError.to && <p className={styles.errorText}>{workDateError.to}</p>}
+                      </td>
+                      <td><input className={styles.tableInput} value={tempWork.description} onChange={(e) => setTempWork({ ...tempWork, description: e.target.value })} /></td>
+                      <td className={styles.actionCell}>
+                        <button className={styles.xButton} onClick={cancelWorkEdit}>
+                          <i className='ri-close-line'/>
+                        </button>
+                        <button className={styles.saveButton}
+                          onClick={saveWork}
+                          disabled={!isTempWorkValid}>
+                          <i className="ri-save-line"/>
+                        </button>
+                      </td>
+                    </>
+                  ) : (
+                    <>
+                      <td className={styles.firstColumn}>{index + 1}</td>
+                      <td>{exp.company}</td>
+                      <td>{exp.position}</td>
+                      <td>{exp.from}</td>
+                      <td>{exp.to}</td>
+                      <td>{exp.description}</td>
+                      <td className={styles.actionCell}>
+                        <button className={styles.editButton} onClick={() => editWork(index)}><i className="ri-edit-2-line" /></button>
+                        <button className={styles.deleteButton}onClick={() => deleteWork(index)}><i className="ri-delete-bin-line" /></button>
+                      </td>
+                    </>
+                  )}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          {/* Education Table */}
+          <div className={styles.sectionHeader}>
+            <h4>Education</h4>
+            <button onClick={addEducation} className={styles.addEducButton}><i className="ri-add-line" /></button>
+          </div>
+          <table className={styles.educTable}>
+            <thead>
+              <tr>
+                <th>No.</th>
+                <th>Institute</th>
+                <th>Degree</th>
+                <th>Specialization</th>
+                <th>Completion Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {[...educationList, ...(editingEducIndex === educationList.length ? [{
+              institute: '', degree: '', specialization: '', completionDate: ''
+              }] : [])].map((edu, index) => (
+                <tr key={index}>
+                  {editingEducIndex === index ? (
+                    <>
+                      <td className={styles.firstColumn}>{index + 1}</td>
+                      <td><input className={styles.tableInput} value={tempEduc.institute} onChange={(e) => setTempEduc({ ...tempEduc, institute: e.target.value })} /></td>
+                      <td><input className={styles.tableInput} value={tempEduc.degree} onChange={(e) => setTempEduc({ ...tempEduc, degree: e.target.value })} /></td>
+                      <td><input className={styles.tableInput} value={tempEduc.specialization} onChange={(e) => setTempEduc({ ...tempEduc, specialization: e.target.value })} /></td>
+                      <td>
+                        <input
+                          className={styles.tableInput}
+                          type="date"
+                          value={tempEduc.completionDate}
+                          onChange={(e) => {
+                            const value = e.target.value;
+                            setTempEduc({ ...tempEduc, completionDate: value });
+                            if (new Date(value) > new Date()) {
+                              setEducDateError('Date cannot be in the future.');
+                            } else {
+                              setEducDateError('');
+                            }
+                          }}
+                        /> {educDateError && <p className={styles.dateError}>{educDateError}</p>}
+                      </td>
+                      <td className={styles.actionCell}>
+                        <button className={styles.xButton} onClick={cancelEducationEdit}>
+                          <i className='ri-close-line'/>
+                        </button>
+                        <button className={styles.saveButton}
+                          onClick={saveEducation}
+                          disabled={!isTempEducValid}>
+                          <i className='ri-save-line'/>
+                        </button>
+                      </td>
+                    </>
+                  ) : (
+                    <>
+                      <td className={styles.firstColumn}>{index + 1}</td>
+                      <td>{edu.institute}</td>
+                      <td>{edu.degree}</td>
+                      <td>{edu.specialization}</td>
+                      <td>{edu.completionDate}</td>
+                      <td className={styles.actionCell}>
+                        <button className={styles.editButton} onClick={() => editEducation(index)}>
+                          <i className="ri-edit-2-line" />
+                          </button>
+                        <button className={styles.deleteButton} onClick={() => deleteEducation(index)}>
+                          <i className="ri-delete-bin-line" />
+                          </button>
+                      </td>
+                    </>
+                  )}
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
 
+        <h3>Onboarding Information</h3>
+
         <div className={styles.sectionGroup}>
-          <div className={styles.workInfo}>
-            <h4>Work Information</h4>
+          <div className={styles.onboardingInfo}>
+            <h4>Application Details</h4>
             <select
-              className={`${styles.inputField} ${fieldErrors.status ? styles.inputError : ''}`}
-              value={candidate.status}
-              onChange={(e) => handleChangeWrapper('status', e.target.value)}
+              className={`${styles.inputField} ${fieldErrors.applicationStatus ? styles.inputError : ''}`}
+              value={candidate.applicationStatus}
+              onChange={(e) => handleChangeWrapper('applicationStatus', e.target.value)}
               disabled={props.isReadOnly}
             >
-              <option value="">Select status</option>
-              <option value="Active">Active</option>
-              <option value="On Leave">On Leave</option>
-              <option value="Resigned">Resigned</option>
+              <option value="">Application status</option>
+              <option value="Pending">Pending</option>
+              <option value="Processing">Processing</option>
+              <option value="Hired">Hired</option>
             </select>
-            {fieldErrors.status && <p className={styles.errorText}>{fieldErrors.status}</p>}
+            {fieldErrors.applicationStatus && <p className={styles.errorText}>{fieldErrors.applicationStatus}</p>}
 
-            <label className={styles.label}>Date Hired</label>
+            <label className={styles.label}>Application Date</label>
             <input
               type="date"
-              className={`${styles.inputField} ${fieldErrors.dateHired ? styles.inputError : ''}`}
-              value={candidate.dateHired}
-              onChange={(e) => handleChangeWrapper('dateHired', e.target.value)}
+              className={`${styles.inputField} ${fieldErrors.applicationDate ? styles.inputError : ''}`}
+              value={candidate.applicationDate}
+              onChange={(e) => handleChangeWrapper('applicationDate', e.target.value)}
               disabled={props.isReadOnly}
             />
-            {fieldErrors.dateHired && <p className={styles.errorText}>{fieldErrors.dateHired}</p>}
+            {fieldErrors.applicationDate && <p className={styles.errorText}>{fieldErrors.applicationDate}</p>}
+
+            <label className={styles.label}> Source of Hire</label>
+            <input
+              className={`${styles.inputField} ${fieldErrors.sourceOfHire ? styles.inputError : ''}`}
+              value={candidate.sourceOfHire}
+              onChange={(e) => handleChangeWrapper('sourceOfHire', e.target.value)}
+              placeholder="Enter source of hire"
+              disabled={props.isReadOnly}
+            />
+            {fieldErrors.position && <p className={styles.errorText}>{fieldErrors.position}</p>}
 
             <select
               className={`${styles.inputField} ${fieldErrors.department ? styles.inputError : ''}`}
@@ -195,7 +401,7 @@ const CandidateModal: React.FC<CandidateModalProps> = (props) => {
             </select>
             {fieldErrors.department && <p className={styles.errorText}>{fieldErrors.department}</p>}
 
-            <label className={styles.label}>Position</label>
+            <label className={styles.label}> Desired Position</label>
             <input
               className={`${styles.inputField} ${fieldErrors.position ? styles.inputError : ''}`}
               value={candidate.position}
@@ -204,67 +410,83 @@ const CandidateModal: React.FC<CandidateModalProps> = (props) => {
               disabled={props.isReadOnly}
             />
             {fieldErrors.position && <p className={styles.errorText}>{fieldErrors.position}</p>}
+
+            <h4>Interview Details</h4>
+            <table className={styles.interviewDetailsTable}>
+              <thead>
+                <tr>
+                  <th className={styles.firstColumn}>No.</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1</td>
+                  <td>2019-02-20</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
-        <br />
+
+        {/* Related Forms or Requests */}
 
         <h3>Related Forms/ Requests</h3>
-        <div className={styles.sectionGroup}>
-          <div className={styles.workInfo}></div>
-          <h4>Exit Details</h4>
-          <div className={styles.tableWrapper}></div>
-          <table className={styles.exitDetailsTable}>
-            <thead>
-              <tr>
-                <th className={styles.firstColumn}>No.</th>
-                <th>Date Hired</th>
-                <th>Department</th>
-                <th>Position</th>
-                <th>Request Date</th>
-                <th>Last Day of Work</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>1</td>
-                <td>2019-02-20</td>
-                <td>Operations</td>
-                <td>Driver</td>
-                <td>2024-04-15</td>
-                <td>2024-05-15</td>
-              </tr>
-            </tbody>
-          </table>
 
-          <h4>Leave Requests</h4>
-          <div className={styles.tableWrapper}></div>
-          <table className={styles.leaveRequestTable}>
-            <thead>
-              <tr>
-                <th className={styles.firstColumn}>No.</th>
-                <th>Date Hired</th>
-                <th>Department</th>
-                <th>Position</th>
-                <th>Request Date</th>
-                <th>Leave Type</th>
-                <th>Start Date</th>
-                <th>End Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>1</td>
-                <td>2021-03-10</td>
-                <td>Operations</td>
-                <td>Driver</td>
-                <td>2024-03-01</td>
-                <td>Vacation Leave</td>
-                <td>2024-06-10</td>
-                <td>2024-06-17</td>
-              </tr>
-            </tbody>
-          </table>
-          <br />
+        <div className={styles.sectionGroup}>
+          <div className={styles.relatedForms}>
+            <h4>Exit Details</h4>
+            <table className={styles.exitDetailsTable}>
+              <thead>
+                <tr>
+                  <th className={styles.firstColumn}>No.</th>
+                  <th>Date Hired</th>
+                  <th>Department</th>
+                  <th>Position</th>
+                  <th>Request Date</th>
+                  <th>Last Day of Work</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1</td>
+                  <td>2019-02-20</td>
+                  <td>Operations</td>
+                  <td>Driver</td>
+                  <td>2024-04-15</td>
+                  <td>2024-05-15</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <h4>Leave Requests</h4>
+            <table className={styles.leaveRequestTable}>
+              <thead>
+                <tr>
+                  <th className={styles.firstColumn}>No.</th>
+                  <th>Date Hired</th>
+                  <th>Department</th>
+                  <th>Position</th>
+                  <th>Request Date</th>
+                  <th>Leave Type</th>
+                  <th>Start Date</th>
+                  <th>End Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1</td>
+                  <td>2021-03-10</td>
+                  <td>Operations</td>
+                  <td>Driver</td>
+                  <td>2024-03-01</td>
+                  <td>Vacation Leave</td>
+                  <td>2024-06-10</td>
+                  <td>2024-06-17</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
 
         <div className={styles.buttonGroup}>

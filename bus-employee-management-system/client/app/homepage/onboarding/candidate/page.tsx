@@ -99,19 +99,22 @@ export default function CandidatePage() {
                 <tr key={`${c.firstName}-${c.lastName}-${index}`}>
                   <td className={styles.firstColumn}>{index + 1}</td>
                   <td>{`${c.firstName} ${c.middleName} ${c.lastName}`}</td>
-                  <td>{c.desiredPosition}</td>
+                  <td>{c.position}</td>
                   <td>{c.sourceOfHire}</td>
                   <td>{c.applicationDate}</td>
                   <td>{c.department}</td>
                   <td>{c.applicationStatus}</td>
                   <td>{c.interviewStatus}</td>
                   <td className={styles.actionCell}>
-                    <button className={styles.commentButton}
+                    <button className={styles.viewButton}
                       onClick={() => { 
                         setSelectedCandidate(c); 
                         setIsReadOnlyView(true); 
                         setShowEditModal(true); }}>
-                        <i className="ri-feedback-line" />
+                        <i className="ri-eye-line" />
+                    </button>
+                    <button className={styles.commentButton}>
+                      <i className='ri-feedback-line'/>
                     </button>
                     <button className={styles.editButton}
                       onClick={() => { 

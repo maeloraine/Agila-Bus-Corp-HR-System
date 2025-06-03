@@ -8,10 +8,11 @@ export interface Candidate {
   firstName: string;
   middleName: string;
   lastName: string;
+  birthdate: string;
   email: string;
   contact: string;
   address: string;
-  desiredPosition: string;
+  position: string;
   department: string;
   applicationDate: string;
   applicationStatus: string;
@@ -33,10 +34,11 @@ export const useCandidateLogic = () => {
         firstName: 'Juan',
         middleName: '',
         lastName: 'Dela Cruz',
+        birthdate:'22-11-1988',
         email: 'juan.delacruz@example.com',
         contact: '09171234567',
         address: '123 Main St, Manila',
-        desiredPosition: 'Driver',
+        position: 'Driver',
         department: 'Operations',
         applicationDate: '2023-01-15',
         applicationStatus: 'Processing',
@@ -47,10 +49,11 @@ export const useCandidateLogic = () => {
         firstName: 'Mark',
         middleName: '',
         lastName: 'Reyes',
+        birthdate:'15-04-1995',
         email: 'mark.reyes@example.com',
         contact: '09181234567',
         address: '456 Second St, Quezon City',
-        desiredPosition: 'Supervisor',
+        position: 'Supervisor',
         department: 'Human Resource',
         applicationDate: '2023-03-10',
         applicationStatus: 'Pending',
@@ -61,10 +64,11 @@ export const useCandidateLogic = () => {
         firstName: 'Ana',
         middleName: '',
         lastName: 'Santos',
+        birthdate:'03-07-2000',
         email: 'ana.santos@example.com',
         contact: '09221234567',
         address: '789 Third St, Makati',
-        desiredPosition: 'Warehouse Staff',
+        position: 'Warehouse Staff',
         department: 'Inventory',
         applicationDate: '2022-11-05',
         applicationStatus: 'Processing',
@@ -77,7 +81,7 @@ export const useCandidateLogic = () => {
     const [filteredCandidates, setFilteredCandidates] = useState<Candidate[]>(candidates);
 
     const uniqueDepartments = Array.from(new Set(candidates.map(emp => emp.department)));
-    const uniqueDesiredPositions = Array.from(new Set(candidates.map(emp => emp.desiredPosition)));
+    const uniquePositions = Array.from(new Set(candidates.map(emp => emp.position)));
     const uniqueSourceOfHire = Array.from(new Set(candidates.map(emp => emp.sourceOfHire)));
 
     const filterSections: FilterSection[] = [
@@ -97,7 +101,7 @@ export const useCandidateLogic = () => {
         id: "position",
         title: "Position",
         type: "checkbox",
-        options: uniqueDesiredPositions.map(pos => ({ id: pos.toLowerCase(), label: pos }))
+        options: uniquePositions.map(pos => ({ id: pos.toLowerCase(), label: pos }))
         },
         {
         id: "source",
@@ -137,7 +141,7 @@ export const useCandidateLogic = () => {
 
         // Position
         if (filterValues.position && filterValues.position.length > 0) {
-        newData = newData.filter(item => filterValues.position.includes(item.desiredPosition.toLowerCase()));
+        newData = newData.filter(item => filterValues.position.includes(item.position.toLowerCase()));
         }
 
         // Application Date Range
