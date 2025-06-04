@@ -10,7 +10,6 @@ export function useSecurityQuestionsLogic() {
   const [answer, setAnswer] = useState('');
   const [errors, setErrors] = useState('');
   const [submitting, setSubmitting] = useState(false);
-
   const searchParams = useSearchParams();
   const router = useRouter();
   const email = searchParams.get('email');

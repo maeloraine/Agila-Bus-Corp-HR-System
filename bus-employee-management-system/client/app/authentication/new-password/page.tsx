@@ -1,10 +1,11 @@
 'use client';
 
-import { useRouter, useSearchParams } from 'next/navigation';
+import React, { Suspense } from 'react';
 import styles from './NewPassword.module.css';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useNewPasswordLogic } from './NewPasswordLogic';
 
-export default function NewPasswordPage() {
+function NewPasswordForm() {
   const {
     newPassword,
     confirmPassword,
@@ -20,7 +21,7 @@ export default function NewPasswordPage() {
   const searchParams = useSearchParams();
   const isFirstTime = searchParams.get('first') === 'true';
 
- return (
+  return (
     <div className={styles.base}>
       <div className={styles.resetContainer}>
         <h1>
@@ -89,5 +90,13 @@ export default function NewPasswordPage() {
         </a>
       </div>
     </div>
+  );
+}
+
+export default function NewPasswordPage() {
+  return (
+    <Suspense fallback={<div className={styles.base}>Loading password page...</div>}>
+      <NewPasswordForm />
+    </Suspense>
   );
 }
