@@ -1,16 +1,18 @@
+/* eslint-disable @typescript-eslint/require-await */
 /* eslint-disable prettier/prettier */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 // Imports for NestJS, DTOs, services, and utilities
-import { Controller, Post, Body, HttpCode, HttpStatus, Res, UnauthorizedException, BadRequestException } from '@nestjs/common';
+import { Controller, Post, Body, HttpCode, HttpStatus, Req, Res, UnauthorizedException, BadRequestException } from '@nestjs/common';
 import { AuthService } from '../auth-ms.service';
 import { LoginDto } from './dto/login.dto';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 import * as argon2 from 'argon2';
 import * as crypto from 'crypto';
 import { addMinutes } from 'date-fns';
 import { EmailService } from '../email/email.service';
 import { generateRandomPassword } from '../utils/generators';
+import { JwtService } from '@nestjs/jwt';
 
 // Initialize a single instance of PrismaClient.
 const prisma = new PrismaClient(); // <-- Only need one Prisma client
@@ -21,6 +23,7 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly emailService: EmailService,
+    private readonly jwtService: JwtService, // Inject JwtService for JWT operations.
   ) {}
 
   /**
@@ -29,7 +32,7 @@ export class AuthController {
    */
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  async login(@Body() loginDto: LoginDto, @Res({ passthrough: true }) res: Response) {
+  async login(@Body() loginDto: LoginDto, @Res({ passthrough: true }) res: Response, @Req() req: Request) {
     // Validate the user's role, employeeID, and password.
     const user = await this.authService.validateUser(Number(loginDto.roleId), loginDto.employeeId, loginDto.password);
     if (!user) {
@@ -37,16 +40,41 @@ export class AuthController {
     }
 
     const { access_token } = this.authService.login(user);
+
+    const isLocalhost = req.hostname === 'localhost' || req.hostname === '127.0.0.1';
     // Set the access token as an HTTP-only cookie for security.
     res.cookie('jwt', access_token, {
       httpOnly: true, // Cookie cannot be accessed by client-side JavaScript.
-      secure: process.env.NODE_ENV === 'production', // Cookie sent only over HTTPS in production.
-      sameSite: 'strict', // Mitigates CSRF attacks.
+      secure: false, // Cookie sent only over HTTPS in production.
+      // secure: process.env.NODE_ENV === 'production', // Cookie sent only over HTTPS in production.
+      // sameSite: 'strict', // Mitigates CSRF attacks.
+      sameSite: 'lax', // Allows cookies to be sent with top-level navigations and will be sent along with GET requests initiated by third party websites.
+      path: '/', // Cookie is accessible on all routes.
       maxAge: 3600 * 1000, // Cookie expiry: 1 hour.
     });
     return { message: 'Login successful' };
   }
 
+  /**
+   * Handles jwt verfication.
+  */
+  @Post('verify')
+  @HttpCode(HttpStatus.OK)
+  async verify(@Req() req: Request, @Res() res: Response) {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer')) {
+      throw new UnauthorizedException('No token provided');
+    }
+    const token = authHeader.split(' ')[1]; // Extract the token from the header.
+
+    try { 
+      const payload = this.jwtService.verify(token); // Verify the token using JwtService.
+      return res.status(200).json({ valid: true, user:payload }); // Return the payload if valid.
+    } catch (error) {
+      return res.status(401).json({ valid: false, message: 'Invalid token' }); // Return error if token is invalid.
+    }
+  }
+  
   /**
    * Handles new user registration.
    * Checks for existing users, hashes the password, stores the new user, and sends a welcome email.

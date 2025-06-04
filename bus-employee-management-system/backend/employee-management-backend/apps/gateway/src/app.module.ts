@@ -12,11 +12,14 @@ import { RolesController } from './auth/roles.controller';
 
 
 
+
+
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       load: [appConfig, authConfig],
+      envFilePath: 'apps/gateway/.env', // (relative to process.cwd())
     }),
     HttpModule,
     AuthModule,
@@ -32,7 +35,7 @@ import { RolesController } from './auth/roles.controller';
       },
     ]),
   ],
-  controllers: [AppController, RolesController],
-  providers: [AppService],
+  controllers: [AppController, RolesController], // Register AuthController
+  providers: [AppService], // Register AuthService
 })
 export class AppModule {}

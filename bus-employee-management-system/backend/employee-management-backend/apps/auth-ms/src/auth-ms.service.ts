@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable prettier/prettier */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unused-vars */
+
 /* eslint-disable prettier/prettier */
 import { ForbiddenException, Injectable, OnModuleInit } from '@nestjs/common';
 import * as argon2 from 'argon2';

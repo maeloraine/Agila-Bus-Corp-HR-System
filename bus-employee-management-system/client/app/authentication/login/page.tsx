@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
@@ -23,8 +24,15 @@ export default function LoginPage() {
   const [roles, setRoles] = useState<{ id: number; name: string }[]>([]);
 
   useEffect(() => {
+    const resetSession = async () => {
+    const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+    await fetch(`${API_BASE_URL}/auth/logout`, {
+        method: 'POST',
+        credentials: 'include', // This makes sure cookies are sent and cleared
+      });
+    };
     const fetchRoles = async () => {
-      const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+      const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
       console.log('Using API base:', API_BASE_URL);
       try {
         const response = await fetch(`${API_BASE_URL}/roles`, {
@@ -49,7 +57,7 @@ export default function LoginPage() {
         }));
       }
     };
-
+    resetSession();
     fetchRoles();
   }, []);
 
@@ -110,12 +118,11 @@ export default function LoginPage() {
       setIsSubmitting(false);
       return;
     }
-    const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+    const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
     console.log('Using API base:', API_BASE_URL);
     try {
       
       const response = await fetch(`${API_BASE_URL}/auth/login`, {
-      // const response = await fetch(`http://localhost:3001/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -6,19 +6,51 @@ import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import { LoginDto } from './dto/login.dto';
+import { ConfigService } from '@nestjs/config';
 
 
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly httpService: HttpService) {}
+  constructor(private readonly httpService: HttpService, private readonly configService: ConfigService) {}
 
+  
   async login(credentials: LoginDto) {
     try {
+      const authServiceUrl = this.configService.get<string>('auth.authServiceUrl');
       const response = await firstValueFrom(
-        this.httpService.post('http://localhost:4000/auth/login', credentials, {
-          withCredentials: true,
-        }),
+        this.httpService.post(
+          `${authServiceUrl}/auth/login`,
+          credentials,
+          {
+            withCredentials: true,
+            // @nestjs/axios supports 'responseType', but for headers you need to extract the whole response
+          }
+        )
+      );
+      // response has .data, .headers, .status
+      return response;
+    } catch (error) {
+      throw new HttpException(
+        error?.response?.data || 'Auth Service Error',
+        error?.response?.status || HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async verify(token: string) {
+    try {
+      const authServiceUrl = this.configService.get<string>('auth.authServiceUrl');
+      const response = await firstValueFrom(
+        this.httpService.post(
+          `${authServiceUrl}/auth/verify`,
+          {}, // No body
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        ),
       );
       return response.data;
     } catch (error) {
@@ -29,10 +61,12 @@ export class AuthService {
     }
   }
 
+
   async firstResetPassword(employeeId: string, newPassword: string) {
     try {
+      const authServiceUrl = this.configService.get<string>('auth.authServiceUrl');
       const response = await firstValueFrom(
-        this.httpService.post('http://localhost:4000/auth/first-password-reset', {
+        this.httpService.post(`${authServiceUrl}/auth/first-password-reset`, {
           employeeId,
           newPassword,
         }),
@@ -48,8 +82,9 @@ export class AuthService {
 
   async requestSecurityQuestion(email: string){
     try {
+      const authServiceUrl = this.configService.get<string>('auth.authServiceUrl');
       const response = await firstValueFrom(
-        this.httpService.post('http://localhost:4000/auth/request-security-question', { email}),
+        this.httpService.post(`${authServiceUrl}/auth/request-security-question`, { email}),
       );
       return response.data;
     } catch (error) {
@@ -62,8 +97,9 @@ export class AuthService {
 
   async validateSecurityAnswer(email: string, answer: string) {
     try {
+      const authServiceUrl = this.configService.get<string>('auth.authServiceUrl');
       const response = await firstValueFrom(
-        this.httpService.post('http://localhost:4000/auth/validate-security-answer', { email, answer }),
+        this.httpService.post(`${authServiceUrl}/auth/validate-security-answer`, { email, answer }),
       );
       return response.data;
     } catch (error) {
@@ -76,8 +112,9 @@ export class AuthService {
     
   async resetPassword(token: string, newPassword: string) {
     try {
+      const authServiceUrl = this.configService.get<string>('auth.authServiceUrl');
       const response = await firstValueFrom(
-        this.httpService.post('http://localhost:4000/auth/reset-password', {
+        this.httpService.post(`${authServiceUrl}/auth/reset-password`, {
           token,
           newPassword,
         }),
@@ -93,8 +130,9 @@ export class AuthService {
 
   async logout() {
     try {
+      const authServiceUrl = this.configService.get<string>('auth.authServiceUrl');
       const response = await firstValueFrom(
-        this.httpService.post('http://localhost:4000/auth/logout', {}, {
+        this.httpService.post(`${authServiceUrl}/auth/logout`, {}, {
           withCredentials: true,
         }),
       );

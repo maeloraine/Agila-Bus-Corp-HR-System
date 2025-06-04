@@ -22,27 +22,46 @@ const crypto = require("crypto");
 const date_fns_1 = require("date-fns");
 const email_service_1 = require("../email/email.service");
 const generators_1 = require("../utils/generators");
+const jwt_1 = require("@nestjs/jwt");
 const prisma = new client_1.PrismaClient();
 let AuthController = class AuthController {
     authService;
     emailService;
-    constructor(authService, emailService) {
+    jwtService;
+    constructor(authService, emailService, jwtService) {
         this.authService = authService;
         this.emailService = emailService;
+        this.jwtService = jwtService;
     }
-    async login(loginDto, res) {
+    async login(loginDto, res, req) {
         const user = await this.authService.validateUser(Number(loginDto.roleId), loginDto.employeeId, loginDto.password);
         if (!user) {
             throw new common_1.UnauthorizedException('Invalid credentials');
         }
         const { access_token } = this.authService.login(user);
+        const isLocalhost = req.hostname === 'localhost' || req.hostname === '127.0.0.1';
         res.cookie('jwt', access_token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict',
+            secure: false,
+            sameSite: 'lax',
+            path: '/',
             maxAge: 3600 * 1000,
         });
         return { message: 'Login successful' };
+    }
+    async verify(req, res) {
+        const authHeader = req.headers.authorization;
+        if (!authHeader || !authHeader.startsWith('Bearer')) {
+            throw new common_1.UnauthorizedException('No token provided');
+        }
+        const token = authHeader.split(' ')[1];
+        try {
+            const payload = this.jwtService.verify(token);
+            return res.status(200).json({ valid: true, user: payload });
+        }
+        catch (error) {
+            return res.status(401).json({ valid: false, message: 'Invalid token' });
+        }
     }
     async register(body) {
         const { employeeId, roleId, email, birthdate, firstName, lastName, phone, streetAddress, city, province, zipCode, country, securityQuestionId, securityAnswer } = body;
@@ -169,10 +188,20 @@ __decorate([
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Res)({ passthrough: true })),
+    __param(2, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [login_dto_1.LoginDto, Object]),
+    __metadata("design:paramtypes", [login_dto_1.LoginDto, Object, Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "login", null);
+__decorate([
+    (0, common_1.Post)('verify'),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "verify", null);
 __decorate([
     (0, common_1.Post)('register'),
     (0, common_1.HttpCode)(common_1.HttpStatus.CREATED),
@@ -224,6 +253,7 @@ __decorate([
 exports.AuthController = AuthController = __decorate([
     (0, common_1.Controller)('auth'),
     __metadata("design:paramtypes", [auth_ms_service_1.AuthService,
-        email_service_1.EmailService])
+        email_service_1.EmailService,
+        jwt_1.JwtService])
 ], AuthController);
 //# sourceMappingURL=auth.controller.js.map

@@ -1,7 +1,6 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable prettier/prettier */
-import { Controller, Post, Body, Res } from '@nestjs/common';
+import { Controller, Post, Body, Res, Headers, BadRequestException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { Response } from 'express';
@@ -12,9 +11,18 @@ export class AuthController {
   constructor(private readonly authService: AuthService,) {}
 
   @Post('login')
-  async login(@Body() credentials: LoginDto) {
-    return this.authService.login(credentials);
+  async login(@Body() credentials: LoginDto, @Res() res: Response) {
+    const response = await this.authService.login(credentials);
+
+    // Check if response and headers exist before accessing set-cookie
+    if (response && response.headers && response.headers['set-cookie']) {
+      res.setHeader('Set-Cookie', response.headers['set-cookie']);
+    }
+
+    // Forward status and data
+    res.status(response.status).json(response.data);
   }
+
 
   @Post('first-password-reset')
   async firstResetPassword(@Body() body: { employeeId: string; newPassword: string }) {
@@ -23,6 +31,21 @@ export class AuthController {
       throw new Error('Employee ID and new password are required');
     }
     return this.authService.firstResetPassword(employeeId, newPassword);
+  }
+
+  @Post('verify')
+  async verify(@Headers('authorization') authHeader: string) {
+    // authHeader looks like "Bearer <token>"
+    if (!authHeader) {
+      throw new BadRequestException('Missing Authorization header');
+    }
+    const token = authHeader.split(' ')[1]; // Get the token part
+
+    if (!token) {
+      throw new BadRequestException('No token provided');
+    }
+
+    return this.authService.verify(token);
   }
 
   @Post('request-security-question')
@@ -45,8 +68,13 @@ export class AuthController {
   }
 
   @Post('logout')
-  async logout(@Res({ passthrough: true }) response: Response) {
-    const result = await this.authService.logout();
-    return result;
+  logout(@Res({ passthrough: true }) res: Response) {
+    // Just clear the cookie right here!
+    res.clearCookie('jwt', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+    });
+    return { message: 'Logged out successfully' };
   }
 }

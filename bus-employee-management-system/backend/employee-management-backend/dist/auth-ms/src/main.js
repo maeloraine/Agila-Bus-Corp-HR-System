@@ -14,7 +14,6 @@ async function bootstrap() {
     });
     await app.startAllMicroservices();
     await app.listen(4000);
-    console.log('Auth service is running on http://localhost:4000');
 }
 bootstrap().catch(err => {
     console.error('Microservice failed to start:', err);

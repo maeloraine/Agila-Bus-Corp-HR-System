@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState } from 'react';
 import { showSuccess, showWarning, showConfirmation, showError } from '@/app/utils/swal';
 

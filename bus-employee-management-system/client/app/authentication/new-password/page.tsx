@@ -13,6 +13,7 @@ export default function NewPasswordPage() {
     showError,
     handleSubmit,
     apiError,
+    passwordError,
   } = useNewPasswordLogic();
 
   const router = useRouter();
@@ -61,6 +62,9 @@ export default function NewPasswordPage() {
           )}
           {apiError && (
             <p className={styles.errorText}>{apiError}</p>
+          )}
+          {passwordError && (
+            <p className={styles.errorText}>{passwordError}</p>
           )}
 
           <div className={styles.cancelButton}>
