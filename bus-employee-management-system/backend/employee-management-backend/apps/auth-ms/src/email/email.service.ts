@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable prettier/prettier */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable prettier/prettier */
@@ -22,7 +21,8 @@ export class EmailService {
     }
     
     async sendResetEmail(to: string, token: string){
-        const resetLink = `http://localhost:3000/authentication/new-password?token=${token}`;
+        const baseUrl = process.env.ALLOWED_ORIGINS;
+        const resetLink = `${baseUrl}/authentication/new-password?token=${token}`;
 
         await this.transporter.sendMail({
             from: `"Agila Bus Transport Corporation" <${process.env.STMP_USER}>`, // sender address

@@ -10,11 +10,10 @@ export default function SecurityQuestionsPage() {
     question, // new: single question from backend or mock
     answer,
     errors,
-    showError,
     handleAnswerChange,
     handleSubmit,
   } = useSecurityQuestionsLogic();
-
+  const showError = Boolean(errors);
   return (
     <div className={styles.base}>
       <div className={styles.questionsContainer}>
@@ -32,7 +31,7 @@ export default function SecurityQuestionsPage() {
             id="answer"
             type="text"
             placeholder="Answer"
-            className={`${styles.input} ${errors.answer ? styles.fieldError : ''}`}
+            className={`${styles.input} ${errors ? styles.fieldError : ''}`}
             value={answer}
             onChange={(e) => handleAnswerChange(e.target.value)}
           />

@@ -1,8 +1,10 @@
 import { HttpService } from '@nestjs/axios';
 import { LoginDto } from './dto/login.dto';
+import { ConfigService } from '@nestjs/config';
 export declare class AuthService {
     private readonly httpService;
-    constructor(httpService: HttpService);
+    private readonly configService;
+    constructor(httpService: HttpService, configService: ConfigService);
     login(credentials: LoginDto): Promise<import("axios").AxiosResponse<any, LoginDto>>;
     verify(token: string): Promise<any>;
     firstResetPassword(employeeId: string, newPassword: string): Promise<any>;

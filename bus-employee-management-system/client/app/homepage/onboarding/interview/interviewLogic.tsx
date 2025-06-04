@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState } from 'react';
 import { showSuccess, showConfirmation } from '@/app/utils/swal';
 import { Employee } from '@/components/modal/information/EmployeeModalLogic';

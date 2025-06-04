@@ -143,6 +143,8 @@ npm i dotenv
 npm install @nestjs/throttler@latest
 npm install @nestjs/jwt @nestjs/passport passport passport-jwt cookie`
 npm install --save-dev @types/cookie
+npm install --save-dev nodemon
+
 
 ```
 

@@ -67,19 +67,6 @@ export class AuthController {
     return this.authService.resetPassword(token, newPassword);
   }
 
-  // @Post('logout')
-  // async logout(@Res() res: Response) {
-  //   // Send the request to auth-ms, and get the full response including headers
-  //   const response = await this.authService.logout();
-
-  //   // Forward Set-Cookie header if present
-  //   if (response.headers && response.headers['set-cookie']) {
-  //     res.setHeader('Set-Cookie', response.headers['set-cookie']);
-  //   }
-
-  //   res.status(response.status || 200).json(response.data);
-  // }
-
   @Post('logout')
   logout(@Res({ passthrough: true }) res: Response) {
     // Just clear the cookie right here!
