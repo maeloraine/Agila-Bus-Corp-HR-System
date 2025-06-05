@@ -53,7 +53,9 @@ const EmployeeModal: React.FC<EmployeeModalProps> = (props) => {
   return (
     <div className={styles.modalOverlay}>
       <div className={styles.modalContent}>
-        <button className={styles.closeButton} onClick={handleExitClick} aria-label="Close modal">×</button>
+        <button className={styles.closeButton} onClick={handleExitClick} aria-label="Close modal">
+          <i className='ri-close-line'/>
+        </button>
 
         {!props.isReadOnly && (
           <h1 className={styles.heading}>
