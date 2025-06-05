@@ -431,7 +431,7 @@ const CandidateModal: React.FC<CandidateModalProps> = (props) => {
 
         {/* Related Forms or Requests */}
 
-        <h3>Related Forms/ Requests</h3>
+        {/* <h3>Related Forms/ Requests</h3>
 
         <div className={styles.sectionGroup}>
           <div className={styles.relatedForms}>
@@ -487,7 +487,7 @@ const CandidateModal: React.FC<CandidateModalProps> = (props) => {
               </tbody>
             </table>
           </div>
-        </div>
+        </div> */}
 
         <div className={styles.buttonGroup}>
           {props.isReadOnly ? (
