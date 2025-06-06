@@ -339,7 +339,6 @@ const CandidateModal: React.FC<CandidateModalProps> = (props) => {
                           </button>
                         </td>
                       )}
-
                     </>
                   ) : (
                     <>
