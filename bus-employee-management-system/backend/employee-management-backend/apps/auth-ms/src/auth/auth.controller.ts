@@ -28,31 +28,31 @@ export class AuthController {
 
   /**
    * Handles user login.
-   * Validates credentials, generates a JWT, and sets it as an HTTP-only cookie.
+   * Validates credentials, generates a JWT, and   sets it as an HTTP-only cookie.
    */
   @Post('login')
   @HttpCode(HttpStatus.OK)
   async login(@Body() loginDto: LoginDto, @Res({ passthrough: true }) res: Response, @Req() req: Request) {
     // Validate the user's role, employeeID, and password.
-    const user = await this.authService.validateUser(Number(loginDto.roleId), loginDto.employeeId, loginDto.password);
+    const user = await this.authService.validateUser(loginDto.employeeId, loginDto.password);
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
     }
+    const role = await this.authService.getRole(user); // Fetch user roles.
+    if (!role) {
+      throw new BadRequestException('Role not found for user');
+    }
+    const { access_token} = this.authService.login(user);
 
-    const { access_token } = this.authService.login(user);
-
-    const isLocalhost = req.hostname === 'localhost' || req.hostname === '127.0.0.1';
     // Set the access token as an HTTP-only cookie for security.
     res.cookie('jwt', access_token, {
-      httpOnly: true, // Cookie cannot be accessed by client-side JavaScript.
-      secure: false, // Cookie sent only over HTTPS in production.
-      // secure: process.env.NODE_ENV === 'production', // Cookie sent only over HTTPS in production.
-      // sameSite: 'strict', // Mitigates CSRF attacks.
-      sameSite: 'lax', // Allows cookies to be sent with top-level navigations and will be sent along with GET requests initiated by third party websites.
-      path: '/', // Cookie is accessible on all routes.
-      maxAge: 3600 * 1000, // Cookie expiry: 1 hour.
+      httpOnly: true,
+      secure: true, // Always true in production (HTTPS)
+      sameSite: 'none', // Required for cross-site cookies
+      path: '/',
+      maxAge: 3600 * 1000,
     });
-    return { message: 'Login successful' };
+    return { message: 'Login successful', token: access_token, role: role.name }; // Return success message and user role.
   }
 
   /**

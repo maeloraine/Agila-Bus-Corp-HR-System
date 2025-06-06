@@ -34,20 +34,23 @@ let AuthController = class AuthController {
         this.jwtService = jwtService;
     }
     async login(loginDto, res, req) {
-        const user = await this.authService.validateUser(Number(loginDto.roleId), loginDto.employeeId, loginDto.password);
+        const user = await this.authService.validateUser(loginDto.employeeId, loginDto.password);
         if (!user) {
             throw new common_1.UnauthorizedException('Invalid credentials');
         }
+        const role = await this.authService.getRole(user);
+        if (!role) {
+            throw new common_1.BadRequestException('Role not found for user');
+        }
         const { access_token } = this.authService.login(user);
-        const isLocalhost = req.hostname === 'localhost' || req.hostname === '127.0.0.1';
         res.cookie('jwt', access_token, {
             httpOnly: true,
-            secure: false,
-            sameSite: 'lax',
+            secure: true,
+            sameSite: 'none',
             path: '/',
             maxAge: 3600 * 1000,
         });
-        return { message: 'Login successful' };
+        return { message: 'Login successful', token: access_token, role: role.name };
     }
     async verify(req, res) {
         const authHeader = req.headers.authorization;

@@ -72,9 +72,11 @@ export class AuthController {
     // Just clear the cookie right here!
     res.clearCookie('jwt', {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      secure: true,
+      sameSite: 'none',
+      path: '/',
+      // Do NOT set domain unless you set it when creating the cookie
     });
-    return { message: 'Logged out successfully' };
+    res.status(200).json({ message: 'Logged out' });
   }
 }
