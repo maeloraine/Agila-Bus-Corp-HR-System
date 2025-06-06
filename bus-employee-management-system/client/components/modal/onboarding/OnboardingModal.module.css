@@ -86,9 +86,7 @@
 }
 
 .inputField:disabled {
-  background-color: #f1f5f9;
-  color: #9ca3af;
-  cursor: not-allowed;
+  background-color: inherit;
 }
 
 select.inputField {

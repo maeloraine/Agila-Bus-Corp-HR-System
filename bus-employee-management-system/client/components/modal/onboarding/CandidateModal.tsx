@@ -132,14 +132,18 @@ const CandidateModal: React.FC<CandidateModalProps> = (props) => {
               />
               {fieldErrors.firstName && <p className={styles.errorText}>{fieldErrors.firstName}</p>}
 
-              <label className={styles.label}>Middle Name (Optional)</label>
-              <input
-                className={styles.inputField}
-                value={candidate.middleName}
-                onChange={(e) => handleChangeWrapper('middleName', e.target.value)}
-                placeholder="Enter middle name"
-                disabled={props.isReadOnly}
-              />
+              {!(props.isReadOnly && !candidate.middleName) && (
+                <>
+                  <label className={styles.label}>Middle Name (Optional)</label>
+                  <input
+                    className={styles.inputField}
+                    value={candidate.middleName}
+                    onChange={(e) => handleChangeWrapper('middleName', e.target.value)}
+                    placeholder="Enter middle name"
+                    disabled={props.isReadOnly}
+                  />
+                </>
+              )}
 
               <label className={styles.label}>Birthdate</label>
               <input
@@ -189,7 +193,9 @@ const CandidateModal: React.FC<CandidateModalProps> = (props) => {
           {/* Work Experience Table */}
           <div className={styles.sectionHeader}>
             <h4>Work Experience</h4>
-            <button onClick={addWork} className={styles.addWorkExpButton}><i className="ri-add-line" /></button>
+            {!props.isReadOnly && (
+              <button onClick={addWork} className={styles.addWorkExpButton}><i className="ri-add-line" /></button>
+            )}
           </div>
           <table className={styles.workExpTable}>
             <thead>
@@ -200,7 +206,7 @@ const CandidateModal: React.FC<CandidateModalProps> = (props) => {
                 <th>From</th>
                 <th>To</th>
                 <th>Description</th>
-                <th>Actions</th>
+                {!props.isReadOnly && <th>Actions</th>}
               </tr>
             </thead>
             <tbody>
@@ -242,16 +248,18 @@ const CandidateModal: React.FC<CandidateModalProps> = (props) => {
                         {workDateError.to && <p className={styles.errorText}>{workDateError.to}</p>}
                       </td>
                       <td><input className={styles.tableInput} value={tempWork.description} onChange={(e) => setTempWork({ ...tempWork, description: e.target.value })} /></td>
-                      <td className={styles.actionCell}>
-                        <button className={styles.xButton} onClick={cancelWorkEdit}>
-                          <i className='ri-close-line'/>
-                        </button>
-                        <button className={styles.saveButton}
-                          onClick={saveWork}
-                          disabled={!isTempWorkValid}>
-                          <i className="ri-save-line"/>
-                        </button>
-                      </td>
+                      {!props.isReadOnly && (
+                        <td className={styles.actionCell}>
+                          <button className={styles.xButton} onClick={cancelWorkEdit}>
+                            <i className='ri-close-line'/>
+                          </button>
+                          <button className={styles.saveButton}
+                            onClick={saveWork}
+                            disabled={!isTempWorkValid}>
+                            <i className="ri-save-line"/>
+                          </button>
+                        </td>
+                      )}
                     </>
                   ) : (
                     <>
@@ -261,10 +269,12 @@ const CandidateModal: React.FC<CandidateModalProps> = (props) => {
                       <td>{exp.from}</td>
                       <td>{exp.to}</td>
                       <td>{exp.description}</td>
-                      <td className={styles.actionCell}>
-                        <button className={styles.editButton} onClick={() => editWork(index)}><i className="ri-edit-2-line" /></button>
-                        <button className={styles.deleteButton}onClick={() => deleteWork(index)}><i className="ri-delete-bin-line" /></button>
-                      </td>
+                      {!props.isReadOnly && (
+                        <td className={styles.actionCell}>
+                          <button className={styles.editButton} onClick={() => editWork(index)}><i className="ri-edit-2-line" /></button>
+                          <button className={styles.deleteButton}onClick={() => deleteWork(index)}><i className="ri-delete-bin-line" /></button>
+                        </td>
+                      )}
                     </>
                   )}
                 </tr>
@@ -275,7 +285,9 @@ const CandidateModal: React.FC<CandidateModalProps> = (props) => {
           {/* Education Table */}
           <div className={styles.sectionHeader}>
             <h4>Education</h4>
-            <button onClick={addEducation} className={styles.addEducButton}><i className="ri-add-line" /></button>
+            {!props.isReadOnly && (
+              <button onClick={addEducation} className={styles.addEducButton}><i className="ri-add-line" /></button>
+            )}
           </div>
           <table className={styles.educTable}>
             <thead>
@@ -285,7 +297,7 @@ const CandidateModal: React.FC<CandidateModalProps> = (props) => {
                 <th>Degree</th>
                 <th>Specialization</th>
                 <th>Completion Date</th>
-                <th>Actions</th>
+                {!props.isReadOnly && <th>Actions</th>}
               </tr>
             </thead>
             <tbody>
@@ -315,16 +327,18 @@ const CandidateModal: React.FC<CandidateModalProps> = (props) => {
                           }}
                         /> {educDateError && <p className={styles.dateError}>{educDateError}</p>}
                       </td>
-                      <td className={styles.actionCell}>
-                        <button className={styles.xButton} onClick={cancelEducationEdit}>
-                          <i className='ri-close-line'/>
-                        </button>
-                        <button className={styles.saveButton}
-                          onClick={saveEducation}
-                          disabled={!isTempEducValid}>
-                          <i className='ri-save-line'/>
-                        </button>
-                      </td>
+                      {!props.isReadOnly && (
+                        <td className={styles.actionCell}>
+                          <button className={styles.xButton} onClick={cancelEducationEdit}>
+                            <i className='ri-close-line'/>
+                          </button>
+                          <button className={styles.saveButton}
+                            onClick={saveEducation}
+                            disabled={!isTempEducValid}>
+                            <i className='ri-save-line'/>
+                          </button>
+                        </td>
+                      )}
                     </>
                   ) : (
                     <>
@@ -333,14 +347,16 @@ const CandidateModal: React.FC<CandidateModalProps> = (props) => {
                       <td>{edu.degree}</td>
                       <td>{edu.specialization}</td>
                       <td>{edu.completionDate}</td>
-                      <td className={styles.actionCell}>
-                        <button className={styles.editButton} onClick={() => editEducation(index)}>
-                          <i className="ri-edit-2-line" />
-                          </button>
-                        <button className={styles.deleteButton} onClick={() => deleteEducation(index)}>
-                          <i className="ri-delete-bin-line" />
-                          </button>
-                      </td>
+                      {!props.isReadOnly && (
+                        <td className={styles.actionCell}>
+                          <button className={styles.editButton} onClick={() => editEducation(index)}>
+                            <i className="ri-edit-2-line" />
+                            </button>
+                          <button className={styles.deleteButton} onClick={() => deleteEducation(index)}>
+                            <i className="ri-delete-bin-line" />
+                            </button>
+                        </td>
+                      )}
                     </>
                   )}
                 </tr>
