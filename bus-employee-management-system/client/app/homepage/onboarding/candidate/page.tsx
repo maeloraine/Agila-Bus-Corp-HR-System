@@ -4,6 +4,7 @@ import React from 'react';
 import styles from './candidate.module.css';
 import { useCandidateLogic } from './candidateLogic';
 import CandidateModal from '@/components/modal/onboarding/CandidateModal';
+import FeedbackModal from '@/components/modal/onboarding/FeedbackModal';
 import FilterDropDown, { FilterSection } from '@/components/ui/filterDropdown';
 import "@/styles/filters.css";
 import "@/styles/pagination.css";
@@ -24,6 +25,8 @@ export default function CandidatePage() {
     setShowAddModal,
     showEditModal,
     setShowEditModal,
+    showFeedbackModal,
+    setShowFeedbackModal,
     isReadOnlyView,
     setIsReadOnlyView,
     handleAdd,
@@ -113,7 +116,11 @@ export default function CandidatePage() {
                         setShowEditModal(true); }}>
                         <i className="ri-eye-line" />
                     </button>
-                    <button className={styles.commentButton}>
+                    <button className={styles.feedbackButton}
+                      onClick={() => {
+                        setSelectedCandidate(c);
+                        setShowFeedbackModal(true);
+                      }}>
                       <i className='ri-feedback-line'/>
                     </button>
                     <button className={styles.editButton}
@@ -169,6 +176,14 @@ export default function CandidatePage() {
             onSubmit={handleEdit}
           />
         )}
+
+        {showFeedbackModal && selectedCandidate && (
+          <FeedbackModal
+            candidate={selectedCandidate}
+            onClose={() => setShowFeedbackModal(false)}
+          />
+        )}
+
       </div>
     </div>
   );

@@ -27,6 +27,7 @@ export const useCandidateLogic = () => {
     const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null);
     const [showAddModal, setShowAddModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
+    const [showFeedbackModal, setShowFeedbackModal] = useState(false);
     const [isReadOnlyView, setIsReadOnlyView] = useState(false);
 
     const [candidates, setCandidates] = useState<Candidate[]>([
@@ -222,6 +223,8 @@ export const useCandidateLogic = () => {
     setShowAddModal,
     showEditModal,
     setShowEditModal,
+    showFeedbackModal,
+    setShowFeedbackModal,
     isReadOnlyView,
     setIsReadOnlyView,
     handleAdd,
