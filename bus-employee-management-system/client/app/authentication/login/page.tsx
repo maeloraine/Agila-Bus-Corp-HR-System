@@ -22,7 +22,6 @@ export default function LoginPage() {
 
   useEffect(() => {
     logout();
-
   }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

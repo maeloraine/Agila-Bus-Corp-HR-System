@@ -47,7 +47,7 @@ export class AuthController {
     // Set the access token as an HTTP-only cookie for security.
     res.cookie('jwt', access_token, {
       httpOnly: true,
-      secure: true, // Always true in production (HTTPS)
+      secure: false, // Always true in production (HTTPS)
       sameSite: 'none', // Required for cross-site cookies
       path: '/',
       maxAge: 3600 * 1000,

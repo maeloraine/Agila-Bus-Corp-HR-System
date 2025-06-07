@@ -30,21 +30,23 @@ export async function POST(request: NextRequest) {
   } catch (e) {
     token = undefined;
   }
+  console.log('Extracted token:', token);
 
   // Set JWT as HTTP-only cookie for all subdomains if present
   if (token) {
     response.cookies.set('jwt', token, {
       httpOnly: true,
-      secure: true,
+      secure: process.env.NODE_ENV === 'production', // true in prod, false in dev
       path: '/',
-      sameSite: 'lax', // or 'none' if needed for cross-site
-      domain: '.agilabuscorp.me', // Makes cookie available to all subdomains
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
       maxAge: 60 * 60 * 24, // 1 day
     });
+    console.log('JWT cookie set successfully');
   }
 
   // Forward ALL cookie headers from gateway (optional, if needed)
   const cookies = gatewayRes.headers.getSetCookie();
+  console.log('Cookies from gateway:', cookies);
   if (cookies && cookies.length > 0) {
     cookies.forEach(cookie => {
       response.headers.append('set-cookie', cookie);
