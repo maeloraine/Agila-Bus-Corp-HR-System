@@ -108,7 +108,7 @@ export const useCandidateLogic = () => {
         id: "source",
         title: "Source of Hire",
         type: "checkbox",
-        options: uniqueSourceOfHire.map(sourceofhire => ({ id: sourceofhire.toLowerCase(), label: sourceofhire }))
+        options: uniqueSourceOfHire.map(sourceOfHire => ({ id: sourceOfHire.toLowerCase(), label: sourceOfHire }))
         },
         {
         id: "sortBy",
@@ -143,6 +143,11 @@ export const useCandidateLogic = () => {
         // Position
         if (filterValues.position && filterValues.position.length > 0) {
         newData = newData.filter(item => filterValues.position.includes(item.position.toLowerCase()));
+        }
+
+        // Source of Hire
+        if (filterValues.source && filterValues.source.length > 0) {
+        newData = newData.filter(item => filterValues.source.includes(item.sourceOfHire.toLowerCase()));
         }
 
         // Application Date Range

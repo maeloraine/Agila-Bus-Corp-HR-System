@@ -67,7 +67,6 @@ export default function CandidatePage() {
             />
           </div>
 
-
           {/* Filter Button with Dropdown */}
           <div className="filter">
             <FilterDropDown
