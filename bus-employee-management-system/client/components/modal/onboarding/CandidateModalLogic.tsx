@@ -17,6 +17,7 @@ export interface Candidate {
   position: string;
   applicationStatus: string;
   interviewStatus: string;
+  feedback?: string;
 }
 
 const isAtLeast18 = (birthdate: string) => {

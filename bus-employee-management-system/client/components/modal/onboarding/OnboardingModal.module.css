@@ -38,7 +38,6 @@
   margin-bottom: 1.75rem;
 }
 
-
 .modalContent h4 {
   font-size: 1rem;
   color: #374151;
@@ -65,6 +64,13 @@
   font-size: 0.9rem;
   font-weight: 500;
   color: #4b5563;
+}
+
+.evaluationLabel h3{
+  text-align: left;
+  color: #111827;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
 }
 
 .inputField {
@@ -197,8 +203,29 @@ select.inputField {
   padding: 0.5rem 1rem;
 }
 
+.evalButton {
+  display: flex;
+  justify-content: center;
+}
+
+.addFeedbackButton {
+  display: flex;
+  justify-content: center; 
+  align-items: center;
+  border-radius: 5px; 
+  background-color: #961C1E; 
+  color: #FFFFFF; 
+  font-size: 14px; 
+  transition: all 0.3s ease-in-out; 
+  cursor: pointer; 
+  border: none;
+  padding: 0.5rem 1rem;
+  margin-top: 0.7rem;
+}
+
 .addWorkExpButton:hover,
-.addEducButton:hover {
+.addEducButton:hover,
+.addFeedbackButton:hover {
   background-color: #571415;
 }
 
