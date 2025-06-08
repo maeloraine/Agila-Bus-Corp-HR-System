@@ -65,7 +65,7 @@ export const useCandidateLogic = () => {
         firstName: 'Ana',
         middleName: '',
         lastName: 'Santos',
-        birthdate:'03-07-2000',
+        birthdate:'03-077-2000',
         email: 'ana.santos@example.com',
         contact: '09221234567',
         address: '789 Third St, Makati',
