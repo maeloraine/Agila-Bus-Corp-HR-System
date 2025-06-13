@@ -92,7 +92,7 @@
 }
 
 .inputField:disabled {
-  background-color: inherit;
+  background-color: #fff;
 }
 
 select.inputField {
