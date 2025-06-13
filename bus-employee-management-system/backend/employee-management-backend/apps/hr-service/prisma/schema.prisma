@@ -13,7 +13,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model employee {
+model Employee {
   id                 String   @id @default(cuid())
   employeeNumber     String   @unique
   firstName          String    
@@ -38,5 +38,5 @@ model Department {
   updatedAt DateTime @updatedAt
 
   // Relationships
-  employee employee[]
+  employee Employee[]
 }
