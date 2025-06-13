@@ -1,4 +1,4 @@
-// /* eslint-disable @typescript-eslint/no-unused-vars */
+ 
 // import { NextRequest, NextResponse } from 'next/server';
 
 // const publicRoutes = [
@@ -54,7 +54,9 @@
 //     '/((?!_next/static|_next/image|favicon.ico|assets|api|authentication/login|authentication/reset-password|authentication/new-password|authentication/security-questions).*)'
 //   ]
 // };
-// // This matcher excludes Next.js static files, API routes, and public authentication routes
+// This matcher excludes Next.js static files, API routes, and public authentication routes
+
+
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { NextRequest, NextResponse } from 'next/server';
 

@@ -77,7 +77,7 @@ let AuthController = class AuthController {
         const securityAns = body.securityAnswer ?? '';
         const AnswerHash = await argon2.hash(securityAns, { type: argon2.argon2id });
         const user = await prisma.user.create({
-            data: { employeeId, roleId, password: passwordhash, email, birthdate, firstName, lastName, phone, streetAddress, city, province, zipCode, country, securityQuestionId, securityAnswer: AnswerHash },
+            data: { employeeId, roleId, password: passwordhash, email, securityQuestionId, securityAnswer: AnswerHash },
         });
         await this.emailService.sendWelcomeEmail(user.email, user.employeeId, tempPassword, firstName);
         return {
@@ -86,15 +86,6 @@ let AuthController = class AuthController {
                 employeeID: user.employeeId,
                 role: user.roleId,
                 email: user.email,
-                birthdate: user.birthdate,
-                firstName: user.firstName,
-                lastName: user.lastName,
-                phone: user.phone,
-                streetAddress: user.streetAddress,
-                city: user.city,
-                province: user.province,
-                zipCode: user.zipCode,
-                country: user.country,
                 securityQuestion: user.securityQuestionId,
                 securityAnswerHash: user.securityAnswer,
                 message: 'User Registered. Email Sent'

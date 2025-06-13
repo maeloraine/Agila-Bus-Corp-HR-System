@@ -155,6 +155,7 @@ PrismaORM Installation:
 npm install @prisma/client`
 npm install --save-dev prisma
 npm install date-fns
+npm install --save-dev cpx
 
 ```
 -----------------------------------------------------------------------------------------

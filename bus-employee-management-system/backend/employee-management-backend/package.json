@@ -17,6 +17,8 @@
     "start:auth-ms": "nest start auth-ms",
     "build:gateway": "nest build gateway",
     "build:auth-ms": "nest build auth-ms",
+    "build:hr-service": "nest build hr-service",
+    "start:hr-service": "nest start hr-service",
     "start:prod": "node dist/apps/employee-management-backend/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",

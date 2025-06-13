@@ -32,17 +32,17 @@ export async function POST(request: NextRequest) {
   }
   console.log('Extracted token:', token);
 
-  // Set JWT as HTTP-only cookie for all subdomains if present
-  if (token) {
-    response.cookies.set('jwt', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production', // true in prod, false in dev
-      path: '/',
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-      maxAge: 60 * 60 * 24, // 1 day
-    });
-    console.log('JWT cookie set successfully');
-  }
+  // // Set JWT as HTTP-only cookie for all subdomains if present
+  // if (token) {
+  //   response.cookies.set('jwt', token, {
+  //     httpOnly: true,
+  //     secure: process.env.NODE_ENV === 'production', // true in prod, false in dev
+  //     path: '/',
+  //     sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+  //     maxAge: 60 * 60 * 24, // 1 day
+  //   });
+  //   console.log('JWT cookie set successfully');
+  // }
 
   // Forward ALL cookie headers from gateway (optional, if needed)
   const cookies = gatewayRes.headers.getSetCookie();
