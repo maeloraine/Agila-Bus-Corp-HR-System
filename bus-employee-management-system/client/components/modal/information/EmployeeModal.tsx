@@ -30,7 +30,30 @@ const EmployeeModal: React.FC<EmployeeModalProps> = (props) => {
     props.onClose
   );
 
-    const {
+      const {
+      governmentIds,
+      tempGovId,
+      editingGovIdIndex,
+      setTempGovId,
+      addGovernmentID,
+      saveGovernmentID,
+      editGovernmentID,
+      cancelGovernmentIDEdit,
+      deleteGovernmentID,
+      govIdError,
+
+      deductionList,
+      tempDeduct,
+      editingDeductIndex,
+      setTempDeduct,
+      addDeduction,
+      saveDeduction,
+      editDeduction,
+      cancelDeductionEdit,
+      deleteDeduction,
+      isTempDeductValid,
+      deductDateError,
+
       workExperiences,
       tempWork,
       editingWorkIndex,
@@ -61,7 +84,7 @@ const EmployeeModal: React.FC<EmployeeModalProps> = (props) => {
 
   const [hasChanges, setHasChanges] = useState(false);
 
-  const handleChangeWrapper = (field: keyof Employee, value: string) => {
+  const handleChangeWrapper = (field: keyof Employee, value: string | string[]) => {
     if (!hasChanges && value !== props.defaultValue?.[field]) {
       setHasChanges(true);
     }
@@ -106,12 +129,12 @@ const EmployeeModal: React.FC<EmployeeModalProps> = (props) => {
           </h1>
         )}
 
-        <h3>Employee Details</h3>
+        <h3>Employee Information</h3>
 
         <div className={styles.sectionGroup}>
           <div className={styles.formSections}>
             <div className={styles.basicInfo}>
-              <h4>Basic Information</h4>
+              <h4>Personal Details</h4>
               <label className={styles.label}>Last Name</label>
               <input
                 className={`${styles.inputField} ${fieldErrors.lastName ? styles.inputError : ''}`}
@@ -157,7 +180,7 @@ const EmployeeModal: React.FC<EmployeeModalProps> = (props) => {
             </div>
 
             <div className={styles.contactInfo}>
-              <h4>Contact Information</h4>
+              <h4>Contact Details</h4>
               <label className={styles.label}>Email</label>
               <input
                 className={`${styles.inputField} ${fieldErrors.email ? styles.inputError : ''}`}
@@ -173,7 +196,7 @@ const EmployeeModal: React.FC<EmployeeModalProps> = (props) => {
                 className={`${styles.inputField} ${fieldErrors.contact ? styles.inputError : ''}`}
                 value={employee.contact}
                 onChange={(e) => handleChangeWrapper('contact', e.target.value)}
-                placeholder="Enter contact"
+                placeholder="Enter contact no."
                 disabled={props.isReadOnly}
               />
               {fieldErrors.contact && <p className={styles.errorText}>{fieldErrors.contact}</p>}
@@ -188,6 +211,30 @@ const EmployeeModal: React.FC<EmployeeModalProps> = (props) => {
               />
               {fieldErrors.address && <p className={styles.errorText}>{fieldErrors.address}</p>}
             </div>
+          </div>
+
+          {/* Emergency Contact */}
+          <div className={styles.contactInfo}>
+            <h4>Emergency Contact</h4>
+            <label className={styles.label}>Full Name</label>
+            <input
+              className={`${styles.inputField} ${fieldErrors.emergencyContactName ? styles.inputError : ''}`}
+              value={employee.emergencyContactName}
+              onChange={(e) => handleChangeWrapper('emergencyContactName', e.target.value)}
+              placeholder="Enter full name"
+              disabled={props.isReadOnly}
+            />
+            {fieldErrors.emergencyContactName && <p className={styles.errorText}>{fieldErrors.emergencyContactName}</p>}
+
+            <label className={styles.label}>Contact No.</label>
+            <input
+              className={`${styles.inputField} ${fieldErrors.emergencyContactNo ? styles.inputError : ''}`}
+              value={employee.emergencyContactNo}
+              onChange={(e) => handleChangeWrapper('emergencyContactNo', e.target.value)}
+              placeholder="Enter 11-digit contact no."
+              disabled={props.isReadOnly}
+            />
+            {fieldErrors.emergencyContactNo && <p className={styles.errorText}>{fieldErrors.emergencyContactNo}</p>}
           </div>
 
           {/* Work Experience Table */}
@@ -368,9 +415,10 @@ const EmployeeModal: React.FC<EmployeeModalProps> = (props) => {
           </table>
         </div>
 
+        <h3>Employment Information</h3>
         <div className={styles.sectionGroup}>
           <div className={styles.workInfo}>
-            <h4>Work Information</h4>
+            <h4>Work Details</h4>
             <select
               className={`${styles.inputField} ${fieldErrors.status ? styles.inputError : ''}`}
               value={employee.status}
@@ -417,6 +465,196 @@ const EmployeeModal: React.FC<EmployeeModalProps> = (props) => {
               disabled={props.isReadOnly}
             />
             {fieldErrors.position && <p className={styles.errorText}>{fieldErrors.position}</p>}
+
+            {/* Government ID Section */}
+            <div className={styles.sectionHeader}>
+              <h4>Government Identification</h4>
+              {!props.isReadOnly && (
+                <button onClick={addGovernmentID} className={styles.addGovtIdButton}><i className="ri-add-line" /></button>
+              )}
+            </div>
+            <table className={styles.govtIdTable}>
+              <thead>
+                <tr>
+                  <th>ID Type</th>
+                  <th>ID Number</th>
+                  {!props.isReadOnly && <th>Actions</th>}
+                </tr>
+              </thead>
+              <tbody>
+                {[...governmentIds, ...(editingGovIdIndex === governmentIds.length ? [{ idType: '', idNumber: '' }] : [])].map((id, index) => (
+                  <tr key={index}>
+                    {editingGovIdIndex === index ? (
+                      <>
+                        <td>
+                          <select
+                            className={styles.tableInput}
+                            value={tempGovId.idType}
+                            onChange={(e) => setTempGovId({ ...tempGovId, idType: e.target.value })}
+                          >
+                            <option value="">Select ID Type</option>
+                            <option value="SSS">SSS</option>
+                            <option value="Pag-IBIG">Pag-IBIG</option>
+                            <option value="PhilHealth">PhilHealth</option>
+                            <option value="TIN">TIN</option>
+                            <option value="UMID">UMID</option>
+                          </select>
+                        </td>
+                        <td>
+                          <input
+                            className={styles.tableInput}
+                            value={tempGovId.idNumber}
+                            onChange={(e) => setTempGovId({ ...tempGovId, idNumber: e.target.value })}
+                          />
+                          {govIdError && <p className={styles.errorText}>{govIdError}</p>}
+                        </td>
+                        <td className={styles.actionCell}>
+                          <button className={styles.xButton} onClick={cancelGovernmentIDEdit}><i className="ri-close-line" /></button>
+                          <button className={styles.saveButton} onClick={saveGovernmentID}><i className="ri-save-line" /></button>
+                        </td>
+                      </>
+                    ) : (
+                      <>
+                        <td>{id.idType}</td>
+                        <td>{id.idNumber}</td>
+                        {!props.isReadOnly && (
+                          <td className={styles.actionCell}>
+                            <button className={styles.editButton} onClick={() => editGovernmentID(index)}><i className="ri-edit-2-line" /></button>
+                            <button className={styles.deleteButton} onClick={() => deleteGovernmentID(index)}><i className="ri-delete-bin-line" /></button>
+                          </td>
+                        )}
+                      </>
+                    )}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
+            <h4>Salary Information</h4>
+            <label className={styles.label}>Basic Pay</label>
+            <input
+              className={`${styles.inputField} ${fieldErrors.basicPay ? styles.inputError : ''}`}
+              value={employee.basicPay}
+              onChange={(e) => handleChangeWrapper('basicPay', e.target.value)}
+              placeholder="Enter basic pay"
+              disabled={props.isReadOnly}
+            />
+            {fieldErrors.basicPay && <p className={styles.errorText}>{fieldErrors.basicPay}</p>}
+
+            {/* Deductions Table */}
+            <div className={styles.sectionHeader}>
+              <h4>Deductions</h4>
+              {!props.isReadOnly && (
+                <button onClick={addDeduction} className={styles.addDeductButton}><i className="ri-add-line" /></button>
+              )}
+            </div>
+            <table className={styles.deductTable}>
+              <thead>
+                <tr>
+                  <th>No.</th>
+                  <th>Institute</th>
+                  <th>Amount</th>
+                  <th>Date</th>
+                  {!props.isReadOnly && <th>Actions</th>}
+                </tr>
+              </thead>
+              <tbody>
+                {[...deductionList, ...(editingDeductIndex === deductionList.length ? [{ institute: '', amount: '', deductionDate: '' }] : [])].map((d, index) => (
+                  <tr key={index}>
+                    {editingDeductIndex === index ? (
+                      <>
+                        <td>{index + 1}</td>
+                        <td><input className={styles.tableInput} value={tempDeduct.institute} onChange={(e) => setTempDeduct({ ...tempDeduct, institute: e.target.value })} /></td>
+                        <td><input className={styles.tableInput} value={tempDeduct.amount} onChange={(e) => setTempDeduct({ ...tempDeduct, amount: e.target.value })} /></td>
+                        <td>
+                          <input
+                            className={styles.tableInput}
+                            type="date"
+                            value={tempDeduct.deductionDate}
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              setTempDeduct({ ...tempDeduct, deductionDate: value });
+                            }}
+                          />
+                          {deductDateError && <p className={styles.errorText}>{deductDateError}</p>}
+                        </td>
+                        <td className={styles.actionCell}>
+                          <button className={styles.xButton} onClick={cancelDeductionEdit}><i className="ri-close-line" /></button>
+                          <button className={styles.saveButton} onClick={saveDeduction} disabled={!isTempDeductValid}><i className="ri-save-line" /></button>
+                        </td>
+                      </>
+                    ) : (
+                      <>
+                        <td>{index + 1}</td>
+                        <td>{d.institute}</td>
+                        <td>{d.amount}</td>
+                        <td>{d.deductionDate}</td>
+                        {!props.isReadOnly && (
+                          <td className={styles.actionCell}>
+                            <button className={styles.editButton} onClick={() => editDeduction(index)}><i className="ri-edit-2-line" /></button>
+                            <button className={styles.deleteButton} onClick={() => deleteDeduction(index)}><i className="ri-delete-bin-line" /></button>
+                          </td>
+                        )}
+                      </>
+                    )}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
+            {/* Driver’s License */}
+            <h4>Driver’s License (For Drivers)</h4>
+            <label className={styles.label}>License Type</label>
+            <select
+              className={`${styles.inputField} ${fieldErrors.licenseType ? styles.inputError : ''}`}
+              value={employee.licenseType}
+              onChange={(e) => handleChangeWrapper('licenseType', e.target.value)}
+              disabled={props.isReadOnly}
+            >
+              <option value="professional">Professional</option>
+            </select>
+
+            <label className={styles.label}>License No.</label>
+            <input
+              className={`${styles.inputField} ${fieldErrors.licenseNo ? styles.inputError : ''}`}
+              value={employee.licenseNo}
+              onChange={(e) => handleChangeWrapper('licenseNo', e.target.value)}
+              placeholder="Enter license no."
+              disabled={props.isReadOnly}
+            />
+
+            <label className={styles.label}>Restriction Codes</label>
+            <select
+              multiple
+              className={styles.inputField}
+              value={employee.restrictionCodes}
+              onChange={(e) =>
+                handleChangeWrapper(
+                  'restrictionCodes',
+                  Array.from(e.target.selectedOptions, (opt) => opt.value)
+                )
+              }
+              disabled={props.isReadOnly}
+            >
+              <option value="A">A : Motorcycle</option>
+              <option value="A1">A1 : Tricycle</option>
+              <option value="B">B : Passenger Car</option>
+              <option value="B1">B1 : Van or Jeepney</option>
+              <option value="B2">B2 : Light Commercial</option>
+              <option value="C">C : Heavy Commercial</option>
+              <option value="D">D : Passenger Bus</option>
+              <option value="BE">BE : Light Articulated</option>
+              <option value="CE">CE : Heavy Articulated</option>
+            </select>
+
+            <label className={styles.label}>Expiration Date</label>
+            <input
+              type="date"
+              className={`${styles.inputField} ${fieldErrors.expireDate ? styles.inputError : ''}`}
+              value={employee.expireDate}
+              onChange={(e) => handleChangeWrapper('expireDate', e.target.value)}
+              disabled={props.isReadOnly}
+            />
           </div>
         </div>
         <br />

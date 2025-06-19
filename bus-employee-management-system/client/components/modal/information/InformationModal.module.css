@@ -70,7 +70,7 @@
 .inputField {
   width: 100%;
   padding: 0.75rem 1rem;
-  background-color: #f9fafb;
+  background-color: #fff;
   border: 1px solid #e5e7eb;
   border-radius: 0.75rem;
   font-size: 1rem;
@@ -110,7 +110,9 @@ select.inputField {
 .educTable,
 .interviewDetailsTable,
 .exitDetailsTable,
-.leaveRequestTable {
+.leaveRequestTable,
+.govtIdTable,
+.deductTable {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.95rem;
@@ -121,10 +123,14 @@ select.inputField {
 .educTable th,
 .exitDetailsTable th,
 .leaveRequestTable th,
+.govtIdTable th,
+.deductTable th,
 .workExpTable td,
 .educTable td,
 .exitDetailsTable td,
-.leaveRequestTable td {
+.leaveRequestTable td,
+.govtIdTable td,
+.deductTable td {
   padding: 0.75rem;
   text-align: left;
   background-color: #fff;
@@ -141,7 +147,9 @@ select.inputField {
 .educTable th,
 .interviewDetailsTable th,
 .exitDetailsTable th,
-.leaveRequestTable th {
+.leaveRequestTable th,
+.govtIdTable th,
+.deductTable th {
   background-color: #FEB71F;
   font-weight: 600;
   color: #374151;
@@ -181,7 +189,9 @@ select.inputField {
 }
 
 .addWorkExpButton,
-.addEducButton {
+.addEducButton,
+.addGovtIdButton,
+.addDeductButton {
   width: 25px; 
   height: 30px;
   display: flex;
@@ -198,7 +208,9 @@ select.inputField {
 }
 
 .addWorkExpButton:hover,
-.addEducButton:hover {
+.addEducButton:hover,
+.addGovtIdButton:hover,
+.addDeductButton:hover {
   background-color: #571415;
 }
 
