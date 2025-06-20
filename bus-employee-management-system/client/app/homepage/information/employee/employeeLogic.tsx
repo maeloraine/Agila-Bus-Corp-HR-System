@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { showSuccess, showConfirmation } from '@/app/utils/swal';
 import { Employee } from '@/components/modal/information/EmployeeModalLogic';
 import { FilterSection } from '@/components/ui/filterDropdown';
@@ -26,7 +26,16 @@ export const EmployeeLogic = () => {
       department: 'Operations',
       position: 'Driver',
       email: 'juan.dela@example.com',
-      address: '123 Main Street'
+      address: '123 Main Street',
+      emergencyContactName: '',
+      emergencyContactNo: '',
+      basicPay: '',
+      govtIdType: '',
+      govtIdNo: '',
+      licenseType: 'professional',
+      licenseNo: '',
+      restrictionCodes: '',
+      expireDate: ''
     },
     {
       status: 'On Leave',
@@ -39,7 +48,16 @@ export const EmployeeLogic = () => {
       department: 'Human Resource',
       position: 'Supervisor',
       email: 'mark.reyes@example.com',
-      address: '456 Second Street'
+      address: '456 Second Street',
+      emergencyContactName: '',
+      emergencyContactNo: '',
+      basicPay: '',
+      govtIdType: '',
+      govtIdNo: '',
+      licenseType: '',
+      licenseNo: '',
+      restrictionCodes: '',
+      expireDate: ''
     },
     {
       status: 'Active',
@@ -52,7 +70,16 @@ export const EmployeeLogic = () => {
       department: 'Inventory',
       position: 'Warehouse Staff',
       email: 'analiza@gmail.com',
-      address: '199 Commonwealth Quezon City'
+      address: '199 Commonwealth Quezon City',
+      emergencyContactName: '',
+      emergencyContactNo: '',
+      basicPay: '',
+      govtIdType: '',
+      govtIdNo: '',
+      licenseType: '',
+      licenseNo: '',
+      restrictionCodes: '',
+      expireDate: ''
     },
     {
       status: "Active",
@@ -65,7 +92,16 @@ export const EmployeeLogic = () => {
       department: "Operations",
       position: "Dispatcher",
       email: "robertochua1@gmail.com",
-      address: "Villonco St. Quezon City"
+      address: "Villonco St. Quezon City",
+      emergencyContactName: '',
+      emergencyContactNo: '',
+      basicPay: '',
+      govtIdType: '',
+      govtIdNo: '',
+      licenseType: '',
+      licenseNo: '',
+      restrictionCodes: '',
+      expireDate: ''
     },
     {
       status: "Active",
@@ -78,7 +114,16 @@ export const EmployeeLogic = () => {
       department: "Accounting",
       position: "Billing Clerk",
       email: "thescruz0228@gmail.com",
-      address: "Tandang Sora. Quezon City"
+      address: "Tandang Sora. Quezon City",
+      emergencyContactName: '',
+      emergencyContactNo: '',
+      basicPay: '',
+      govtIdType: '',
+      govtIdNo: '',
+      licenseType: '',
+      licenseNo: '',
+      restrictionCodes: '',
+      expireDate: ''
     },
     {
       status: "Active",
@@ -91,7 +136,16 @@ export const EmployeeLogic = () => {
       department: "Inventory",
       position: "Warehouse Manager",
       email: "daniel_mercado@gmail.com",
-      address: "Visayas Ave. Quezon City"
+      address: "Visayas Ave. Quezon City",
+      emergencyContactName: '',
+      emergencyContactNo: '',
+      basicPay: '',
+      govtIdType: '',
+      govtIdNo: '',
+      licenseType: '',
+      licenseNo: '',
+      restrictionCodes: '',
+      expireDate: ''
     },
     {
       status: "On Leave",
@@ -104,20 +158,38 @@ export const EmployeeLogic = () => {
       department: "Human Resource",
       position: "Recruitment Specialist",
       email: "j0ycesant05@gmail.com",
-      address: "Cabuyao, Laguna"
+      address: "Cabuyao, Laguna",
+      emergencyContactName: '',
+      emergencyContactNo: '',
+      basicPay: '',
+      govtIdType: '',
+      govtIdNo: '',
+      licenseType: '',
+      licenseNo: '',
+      restrictionCodes: '',
+      expireDate: ''
     },
     {
-      "status": "Active",
-      "firstName": "Mark",
-      "middleName": "Gonzales",
-      "lastName": "David",
-      "birthdate": "1989-12-03",
-      "contact": "09176789012",
-      "dateHired": "2020-07-25",
-      "department": "Operations",
-      "position": "Logistics Coordinator",
+      status: "Active",
+      firstName: "Mark",
+      middleName: "Gonzales",
+      lastName: "David",
+      birthdate: "1989-12-03",
+      contact: "09176789012",
+      dateHired: "2020-07-25",
+      department: "Operations",
+      position: "Logistics Coordinator",
       email: "markdavid@gmail.com",
-      address: "5th Ave. Cubao, Quezon City"
+      address: "5th Ave. Cubao, Quezon City",
+      emergencyContactName: '',
+      emergencyContactNo: '',
+      basicPay: '',
+      govtIdType: '',
+      govtIdNo: '',
+      licenseType: '',
+      licenseNo: '',
+      restrictionCodes: '',
+      expireDate: ''
     }
   ]);
 
@@ -213,6 +285,17 @@ export const EmployeeLogic = () => {
     );
   });
 
+  // Pagination Implementation
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
+  const paginatedEmployees = useMemo(() => {
+    const start = (currentPage - 1) * pageSize;
+    return filteredEmployees.slice(start, start + pageSize);
+  }, [filteredEmployees, currentPage, pageSize]);
+
+  const totalPages = Math.ceil(filteredEmployees.length / pageSize);
+
   const handleAdd = (newEmployee: Employee) => {
     const updatedList = [...employees, newEmployee];
     setEmployees(updatedList);
@@ -272,5 +355,11 @@ export const EmployeeLogic = () => {
     setIsReadOnlyView,
     filterSections,
     handleApplyFilters,
+    paginatedEmployees,
+    currentPage,
+    setCurrentPage,
+    pageSize,
+    setPageSize,
+    totalPages
   };
 };

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { showConfirmation, showSuccess } from '@/app/utils/swal';
 import { FilterSection } from '@/components/ui/filterDropdown';
 
@@ -181,6 +181,16 @@ export const useCandidateLogic = () => {
         );
     });
 
+    const [currentPage, setCurrentPage] = useState(1);
+    const [pageSize, setPageSize] = useState(10);
+
+    const paginatedCandidates = useMemo(() => {
+    const start = (currentPage - 1) * pageSize;
+    return filteredCandidates.slice(start, start + pageSize);
+    }, [filteredCandidates, currentPage, pageSize]);
+
+    const totalPages = Math.ceil(filteredCandidates.length / pageSize);
+
 
     const handleAdd = (newCandidate: Candidate) => {
     const updatedList = [...candidates, newCandidate];
@@ -236,6 +246,12 @@ export const useCandidateLogic = () => {
     handleEdit,
     handleDeleteRequest,
     filterSections,
-    handleApplyFilters
+    handleApplyFilters,
+    paginatedCandidates,
+    currentPage,
+    setCurrentPage,
+    pageSize,
+    setPageSize,
+    totalPages
     };
 };

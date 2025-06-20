@@ -5,8 +5,8 @@ import styles from './interview.module.css';
 import { InterviewLogic } from './interviewLogic';
 // import InterviewModal from '@/components/modal/onboarding/InterviewModal';
 import FilterDropdown from "@/components/ui/filterDropdown";
+import PaginationComponent from "@/components/ui/pagination";
 import "@/styles/filters.css";
-import "@/styles/pagination.css";
 
 export default function InterviewScheduling() {
   

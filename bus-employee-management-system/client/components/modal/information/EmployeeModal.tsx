@@ -35,6 +35,7 @@ const EmployeeModal: React.FC<EmployeeModalProps> = (props) => {
       tempGovId,
       editingGovIdIndex,
       setTempGovId,
+      validateGovernmentIds,
       addGovernmentID,
       saveGovernmentID,
       editGovernmentID,
@@ -84,7 +85,17 @@ const EmployeeModal: React.FC<EmployeeModalProps> = (props) => {
 
   const [hasChanges, setHasChanges] = useState(false);
 
-  const handleChangeWrapper = (field: keyof Employee, value: string | string[]) => {
+  const handleSubmitWrapper = () => {
+    if (!validateGovernmentIds()) return;
+    handleSubmit();
+  };
+
+  const handleUpdateConfirmWrapper = () => {
+    if (!validateGovernmentIds()) return;
+    handleUpdateConfirm();
+  };
+
+  const handleChangeWrapper = (field: keyof Employee, value: string) => {
     if (!hasChanges && value !== props.defaultValue?.[field]) {
       setHasChanges(true);
     }
@@ -602,59 +613,63 @@ const EmployeeModal: React.FC<EmployeeModalProps> = (props) => {
               </tbody>
             </table>
 
-            {/* Driver’s License */}
-            <h4>Driver’s License (For Drivers)</h4>
-            <label className={styles.label}>License Type</label>
-            <select
-              className={`${styles.inputField} ${fieldErrors.licenseType ? styles.inputError : ''}`}
-              value={employee.licenseType}
-              onChange={(e) => handleChangeWrapper('licenseType', e.target.value)}
-              disabled={props.isReadOnly}
-            >
-              <option value="professional">Professional</option>
-            </select>
+            {/* Driver’s License (only visible for Drivers)*/}
+            {employee.position === 'Driver' && (
+              <>
+                <h4>Driver’s License (For Drivers)</h4>
 
-            <label className={styles.label}>License No.</label>
-            <input
-              className={`${styles.inputField} ${fieldErrors.licenseNo ? styles.inputError : ''}`}
-              value={employee.licenseNo}
-              onChange={(e) => handleChangeWrapper('licenseNo', e.target.value)}
-              placeholder="Enter license no."
-              disabled={props.isReadOnly}
-            />
+                <label className={styles.label}>License Type</label>
+                <select
+                  className={`${styles.inputField} ${fieldErrors.licenseType ? styles.inputError : ''}`}
+                  value={employee.licenseType}
+                  onChange={(e) => handleChangeWrapper('licenseType', e.target.value)}
+                  disabled={props.isReadOnly}
+                >
+                  <option value="professional">Professional</option>
+                </select>
 
-            <label className={styles.label}>Restriction Codes</label>
-            <select
-              multiple
-              className={styles.inputField}
-              value={employee.restrictionCodes}
-              onChange={(e) =>
-                handleChangeWrapper(
-                  'restrictionCodes',
-                  Array.from(e.target.selectedOptions, (opt) => opt.value)
-                )
-              }
-              disabled={props.isReadOnly}
-            >
-              <option value="A">A : Motorcycle</option>
-              <option value="A1">A1 : Tricycle</option>
-              <option value="B">B : Passenger Car</option>
-              <option value="B1">B1 : Van or Jeepney</option>
-              <option value="B2">B2 : Light Commercial</option>
-              <option value="C">C : Heavy Commercial</option>
-              <option value="D">D : Passenger Bus</option>
-              <option value="BE">BE : Light Articulated</option>
-              <option value="CE">CE : Heavy Articulated</option>
-            </select>
+                <label className={styles.label}>License No.</label>
+                <input
+                  className={`${styles.inputField} ${fieldErrors.licenseNo ? styles.inputError : ''}`}
+                  value={employee.licenseNo}
+                  onChange={(e) => handleChangeWrapper('licenseNo', e.target.value)}
+                  placeholder="Enter license no."
+                  disabled={props.isReadOnly}
+                />
+                {fieldErrors.licenseNo && <p className={styles.errorText}>{fieldErrors.licenseNo}</p>}
 
-            <label className={styles.label}>Expiration Date</label>
-            <input
-              type="date"
-              className={`${styles.inputField} ${fieldErrors.expireDate ? styles.inputError : ''}`}
-              value={employee.expireDate}
-              onChange={(e) => handleChangeWrapper('expireDate', e.target.value)}
-              disabled={props.isReadOnly}
-            />
+                <label className={styles.label}>Restriction Code</label>
+                <select
+                  id="restrictionCodes"
+                  value={employee.restrictionCodes}
+                  onChange={(e) => handleChangeWrapper('restrictionCodes', e.target.value)}
+                  disabled={props.isReadOnly}
+                  className={`${styles.inputField} ${fieldErrors.restrictionCodes ? styles.inputError : ''}`}
+                >
+                  <option value="">Select Restriction Code</option>
+                  <option value="A">A : Motorcycle (L1, L2, L3)</option>
+                  <option value="A1">A1 : Tricycle (L4, L5, L6, L7)</option>
+                  <option value="B">B : Passenger Car (M1)</option>
+                  <option value="B1">B1 : Van or Jeepney (M2)</option>
+                  <option value="B2">B2 : Light Commercial Vehicle (N1)</option>
+                  <option value="C">C : Heavy Commercial Vehicle (N2, N3)</option>
+                  <option value="D">D : Passenger Bus (M3)</option>
+                  <option value="BE">BE : Light Articulated Vehicle (O1, O2)</option>
+                  <option value="CE">CE : Heavy Articulated Vehicle (O3, O4)</option>
+                </select>
+                {fieldErrors.restrictionCodes && <p className={styles.errorText}>{fieldErrors.restrictionCodes}</p>}
+
+                <label className={styles.label}>Expiration Date</label>
+                <input
+                  type="date"
+                  className={`${styles.inputField} ${fieldErrors.expireDate ? styles.inputError : ''}`}
+                  value={employee.expireDate}
+                  onChange={(e) => handleChangeWrapper('expireDate', e.target.value)}
+                  disabled={props.isReadOnly}
+                />
+                {fieldErrors.expireDate && <p className={styles.errorText}>{fieldErrors.expireDate}</p>}
+              </>
+            )}
           </div>
         </div>
         <br />
@@ -724,7 +739,7 @@ const EmployeeModal: React.FC<EmployeeModalProps> = (props) => {
           ) : (
             <>
               <button onClick={handleExitClick} className={styles.cancelButton}>Cancel</button>
-              <button onClick={props.isEdit ? handleUpdateConfirm : handleSubmit} className={styles.submitButton}>
+              <button onClick={props.isEdit ? handleUpdateConfirmWrapper : handleSubmitWrapper} className={styles.submitButton}>
                 {props.isEdit ? 'Update' : 'Add'}
               </button>
             </>

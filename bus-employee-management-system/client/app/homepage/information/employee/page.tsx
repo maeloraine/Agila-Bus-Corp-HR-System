@@ -4,9 +4,9 @@ import React from "react";
 import styles from './employee.module.css';
 import { EmployeeLogic } from './employeeLogic';
 import EmployeeModal from '@/components/modal/information/EmployeeModal';
+import PaginationComponent from '@/components/ui/pagination';
 import FilterDropDown, { FilterSection } from '@/components/ui/filterDropdown';
 import "@/styles/filters.css";
-import "@/styles/pagination.css";
 
 export default function EmployeePage() {
   const {
@@ -28,7 +28,13 @@ export default function EmployeePage() {
     filteredEmployees,
     employees,
     filterSections,
-    handleApplyFilters
+    handleApplyFilters,
+    paginatedEmployees,
+    currentPage,
+    setCurrentPage,
+    pageSize,
+    setPageSize,
+    totalPages
   } = EmployeeLogic();
 
   return (
@@ -92,9 +98,9 @@ export default function EmployeePage() {
               </tr>
             </thead>
             <tbody>
-              {filteredEmployees.map((emp, index) => (
+              {paginatedEmployees.map((emp, index) => (
                 <tr key={`${emp.firstName}-${emp.lastName}-${index}`}>
-                  <td className={styles.firstColumn}>{index + 1}</td>
+                  <td className={styles.firstColumn}>{(currentPage - 1) * pageSize + index + 1}</td>
                   <td>{emp.status}</td>
                   <td>{`${emp.firstName} ${emp.middleName} ${emp.lastName}`}</td>
                   <td>{emp.dateHired}</td>
@@ -133,19 +139,16 @@ export default function EmployeePage() {
         </div>
 
         {/* Pagination */}
-        <div className="pagination">
-            <button className="page-btn">
-              <i className="ri-arrow-left-s-line"></i>
-            </button>
-            <button className="page-btn active">1</button>
-            <button className="page-btn">2</button>
-            <button className="page-btn">3</button>
-            <button className="page-btn">4</button>
-            <button className="page-btn">5</button>
-            <button className="page-btn">
-              <i className="ri-arrow-right-s-line"></i>
-            </button>
-        </div>
+        <PaginationComponent
+          currentPage={currentPage}
+          totalPages={totalPages}
+          pageSize={pageSize}
+          onPageChange={(page) => setCurrentPage(page)}
+          onPageSizeChange={(size) => {
+            setPageSize(size);
+            setCurrentPage(1); // reset to page 1 when size changes
+          }}
+        />
 
         {/* Modals */}
         {showAddModal && (

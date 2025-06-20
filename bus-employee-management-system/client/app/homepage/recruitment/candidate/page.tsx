@@ -3,11 +3,11 @@
 import React from 'react';
 import styles from './candidate.module.css';
 import { useCandidateLogic } from './candidateLogic';
-import CandidateModal from '@/components/modal/onboarding/CandidateModal';
-import FeedbackModal from '@/components/modal/onboarding/FeedbackModal';
+import CandidateModal from '@/components/modal/recruitment/CandidateModal';
+import FeedbackModal from '@/components/modal/recruitment/FeedbackModal';
+import PaginationComponent from '@/components/ui/pagination';
 import FilterDropDown, { FilterSection } from '@/components/ui/filterDropdown';
 import "@/styles/filters.css";
-import "@/styles/pagination.css";
 
 export default function CandidatePage() {
   const {
@@ -33,7 +33,13 @@ export default function CandidatePage() {
     handleEdit,
     handleDeleteRequest,
     filterSections,
-    handleApplyFilters
+    handleApplyFilters,
+    paginatedCandidates,
+    currentPage,
+    setCurrentPage,
+    pageSize,
+    setPageSize,
+    totalPages
   } = useCandidateLogic();
 
   return (
@@ -97,9 +103,9 @@ export default function CandidatePage() {
               </tr>
             </thead>
             <tbody>
-              {filteredCandidates.map((c, index) => (
+              {paginatedCandidates.map((c, index) => (
                 <tr key={`${c.firstName}-${c.lastName}-${index}`}>
-                  <td className={styles.firstColumn}>{index + 1}</td>
+                  <td className={styles.firstColumn}>{(currentPage - 1) * pageSize + index + 1}</td>
                   <td>{`${c.firstName} ${c.middleName} ${c.lastName}`}</td>
                   <td>{c.position}</td>
                   <td>{c.sourceOfHire}</td>
@@ -141,19 +147,16 @@ export default function CandidatePage() {
         </div>
 
         {/* Pagination */}
-        <div className="pagination">
-            <button className="page-btn">
-              <i className="ri-arrow-left-s-line"></i>
-            </button>
-            <button className="page-btn active">1</button>
-            <button className="page-btn">2</button>
-            <button className="page-btn">3</button>
-            <button className="page-btn">4</button>
-            <button className="page-btn">5</button>
-            <button className="page-btn">
-              <i className="ri-arrow-right-s-line"></i>
-            </button>
-        </div>   
+        <PaginationComponent
+          currentPage={currentPage}
+          totalPages={totalPages}
+          pageSize={pageSize}
+          onPageChange={(page) => setCurrentPage(page)}
+          onPageSizeChange={(size) => {
+            setPageSize(size);
+            setCurrentPage(1); // reset to page 1 when size changes
+          }}
+        /> 
 
         {/* Modals */}
         {showAddModal && (

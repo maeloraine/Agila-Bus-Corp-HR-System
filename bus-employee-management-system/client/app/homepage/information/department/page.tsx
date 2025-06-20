@@ -3,13 +3,19 @@
 import React from 'react';
 import styles from './department.module.css';
 import "@/styles/filters.css"
-import "@/styles/pagination.css"
+import PaginationComponent from '@/components/ui/pagination';
 import DepartmentModal from '@/components/modal/information/DepartmentModalLogic';
 import { DepartmentLogic } from './departmentLogic';
 
 const DepartmentPage = () => {
   const {
     filteredDepartments,
+    paginatedDepartments,
+    currentPage,
+    setCurrentPage,
+    pageSize,
+    setPageSize,
+    totalPages,
     searchTerm,
     setSearchTerm,
     employeeFilter,
@@ -78,9 +84,9 @@ const DepartmentPage = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredDepartments.map((dept, index) => (
+              {paginatedDepartments.map((dept, index) => (
                 <tr key={dept.name}>
-                  <td className={styles.firstColumn}>{index + 1}</td>
+                  <td className={styles.firstColumn}>{(currentPage - 1) * pageSize + index + 1}</td>
                   <td>{dept.name}</td>
                   <td>{dept.employees}</td>
                   <td>mm-dd-yyyy hh:mm</td>
@@ -107,19 +113,16 @@ const DepartmentPage = () => {
         </div>
 
         {/* Pagination */}
-        <div className="pagination">
-            <button className="page-btn">
-              <i className="ri-arrow-left-s-line"></i>
-            </button>
-            <button className="page-btn active">1</button>
-            <button className="page-btn">2</button>
-            <button className="page-btn">3</button>
-            <button className="page-btn">4</button>
-            <button className="page-btn">5</button>
-            <button className="page-btn">
-              <i className="ri-arrow-right-s-line"></i>
-            </button>
-        </div>
+        <PaginationComponent
+          currentPage={currentPage}
+          totalPages={totalPages}
+          pageSize={pageSize}
+          onPageChange={(page) => setCurrentPage(page)}
+          onPageSizeChange={(size) => {
+            setPageSize(size);
+            setCurrentPage(1); // reset to page 1 when size changes
+          }}
+        />
 
         {showAddModal && (
           <DepartmentModal

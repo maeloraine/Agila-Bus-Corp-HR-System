@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { showSuccess, showWarning, showConfirmation, showError } from '@/app/utils/swal';
 
 export const DepartmentLogic = () => {
@@ -56,6 +56,17 @@ export const DepartmentLogic = () => {
     return matchesSearch && matchesFilter;
   });
 
+    // Pagination Implementation
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
+  const paginatedDepartments = useMemo(() => {
+    const start = (currentPage - 1) * pageSize;
+    return filteredDepartments.slice(start, start + pageSize);
+  }, [filteredDepartments, currentPage, pageSize]);
+
+  const totalPages = Math.ceil(filteredDepartments.length / pageSize);
+
   return {
     searchTerm,
     setSearchTerm,
@@ -69,6 +80,12 @@ export const DepartmentLogic = () => {
     setSelectedDept,
     departments,
     filteredDepartments,
+    paginatedDepartments,
+    currentPage,
+    setCurrentPage,
+    pageSize,
+    setPageSize,
+    totalPages,
     handleAdd,
     handleEdit,
     handleDeleteRequest,

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import styles from './OnboardingModal.module.css';
+import styles from './RecruitmentModal.module.css';
 import { useCandidateModal, Candidate } from './CandidateModalLogic';
 import { useCandidateRecords } from './CandidateRecordsLogic';
 import { showConfirmation, showSuccess } from '@/app/utils/swal';

@@ -22,7 +22,7 @@ export interface Employee {
   govtIdNo: string;
   licenseType: string;
   licenseNo: string;
-  restrictionCodes: string[];
+  restrictionCodes: string;
   expireDate: string;
 }
 
@@ -66,7 +66,7 @@ export const useEmployeeModal = (
     govtIdNo: '',
     licenseType: 'professional',
     licenseNo: '',
-    restrictionCodes: [],
+    restrictionCodes: '',
     expireDate: '',
     ...defaultValue,
   });
@@ -88,11 +88,21 @@ export const useEmployeeModal = (
     if (!employee.department) errors.department = 'Required';
     if (!employee.position.trim()) errors.position = 'Required';
     if (!employee.basicPay || isNaN(Number(employee.basicPay))) errors.basicPay = 'Required and must be numeric';
-    if (!employee.govtIdType) errors.govtIdType = 'Required';
-    if (!employee.govtIdNo) errors.govtIdNo = 'Required';
     if (employee.expireDate && isPastDate(employee.expireDate)) errors.expireDate = 'Expiry date cannot be in the past.';
     if (!employee.licenseNo && employee.position.toLowerCase() === 'driver') errors.licenseNo = 'Required for drivers';
-    if (employee.position.toLowerCase() === 'driver' && employee.restrictionCodes.length === 0) errors.licenseType = 'At least one restriction code is required';
+    if (employee.position.toLowerCase() === 'driver') {
+      if (!employee.licenseNo) {
+        errors.licenseNo = 'Required for drivers';
+      }
+
+      if (employee.restrictionCodes !== 'D') {
+        errors.restrictionCodes = 'Not sufficient to operate a passenger bus';
+      }
+
+      if (employee.expireDate && isPastDate(employee.expireDate)) {
+        errors.expireDate = 'Expiry date cannot be in the past.';
+      }
+    }
 
     setFieldErrors(errors);
     return Object.keys(errors).length === 0;
@@ -114,28 +124,33 @@ export const useEmployeeModal = (
   };
 
   const handleSubmit = async () => {
-    if (!validateInput()) return;
+    const isValid = validateInput();
+    if (!isValid) {
+      showError('Validation Error', 'Please correct the errors in the form.');
+      return;
+    }
     if (isDuplicateEmployee()) {
       showError('Oops!', 'Employee already exists.');
       return;
     }
     onSubmit(employee);
-    showSuccess('Success', isEdit ? 'Employee updated successfully.' : 'Employee added successfully.');
+    showSuccess('Success', 'Employee added successfully.');
     onClose();
   };
 
   const handleUpdateConfirm = async () => {
-    if (!validateInput()) return;
+    const isValid = validateInput();
+    if (!isValid) {
+      showError('Validation Error', 'Please correct the errors in the form.');
+      return;
+    }
     if (isDuplicateEmployee()) {
       showError('Oops!', 'Employee already exists.');
       return;
     }
-    const result = await showConfirmation('Are you sure you want to update this employee?');
-    if (result.isConfirmed) {
-      onSubmit(employee);
-      showSuccess('Success', 'Employee updated successfully.');
-      onClose();
-    }
+    onSubmit(employee);
+    showSuccess('Success', 'Employee added successfully.');
+    onClose();
   };
 
   return {
