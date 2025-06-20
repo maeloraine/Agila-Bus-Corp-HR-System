@@ -32,7 +32,7 @@ export default function LoginForm({
         <div style={{ flex: 1 }}></div>
         <form onSubmit={handleSubmit} className={styles.form}>
           <img
-            src="/assets/images/agila logo.png"
+            src="/assets/images/AgilaBusLogo.png"
             alt="Agila Bus Corporation Logo"
             width={150}
             height={150}
