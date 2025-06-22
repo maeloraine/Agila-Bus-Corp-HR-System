@@ -1,11 +1,7 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable prettier/prettier */
 import { IsString, IsNotEmpty,IsNumberString } from 'class-validator';
 
 export class LoginDto {
-  @IsNumberString()
-  @IsNotEmpty()
-  roleId: number;
 
   @IsString()
   @IsNotEmpty()

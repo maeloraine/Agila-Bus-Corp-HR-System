@@ -13,10 +13,8 @@ async function bootstrap() {
         },
     });
     await app.startAllMicroservices();
-    await app.listen(4000);
-    console.log('STMP_USER:', process.env.STMP_USER);
-    console.log('STMP_PASS:', process.env.STMP_PASS ? '*****' : 'MISSING!');
-    console.log('Auth service is running on http://localhost:4000');
+    const port = process.env.PORT ? Number(process.env.PORT) : 4000;
+    await app.listen(port);
 }
 bootstrap().catch(err => {
     console.error('Microservice failed to start:', err);

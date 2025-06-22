@@ -3,17 +3,19 @@
 import { useRouter } from 'next/navigation';
 import styles from './SecurityQuestions.module.css';
 import { useSecurityQuestionsLogic } from './SecurityQuestionsLogic';
+import React, { Suspense } from 'react';
 
-export default function SecurityQuestionsPage() {
+function SecurityQuestionsForm() {
   const router = useRouter();
   const {
-    question, // new: single question from backend or mock
+    question,
     answer,
     errors,
-    showError,
     handleAnswerChange,
     handleSubmit,
   } = useSecurityQuestionsLogic();
+
+  const showError = Boolean(errors);
 
   return (
     <div className={styles.base}>
@@ -23,7 +25,7 @@ export default function SecurityQuestionsPage() {
 
         <form onSubmit={handleSubmit} noValidate>
           <label className={styles.label}>Your Security Question</label>
-          <div className={styles.input} style={{border: 'none' }}>
+          <div className={styles.input} style={{ border: 'none' }}>
             {question || 'Loading...'}
           </div>
 
@@ -32,7 +34,7 @@ export default function SecurityQuestionsPage() {
             id="answer"
             type="text"
             placeholder="Answer"
-            className={`${styles.input} ${errors.answer ? styles.fieldError : ''}`}
+            className={`${styles.input} ${errors ? styles.fieldError : ''}`}
             value={answer}
             onChange={(e) => handleAnswerChange(e.target.value)}
           />
@@ -57,5 +59,13 @@ export default function SecurityQuestionsPage() {
         </a>
       </div>
     </div>
+  );
+}
+
+export default function SecurityQuestionsPage() {
+  return (
+    <Suspense fallback={<div className={styles.base}>Loading...</div>}>
+      <SecurityQuestionsForm />
+    </Suspense>
   );
 }

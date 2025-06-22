@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -9,7 +10,6 @@ export function useSecurityQuestionsLogic() {
   const [answer, setAnswer] = useState('');
   const [errors, setErrors] = useState('');
   const [submitting, setSubmitting] = useState(false);
-
   const searchParams = useSearchParams();
   const router = useRouter();
   const email = searchParams.get('email');
@@ -18,7 +18,7 @@ export function useSecurityQuestionsLogic() {
   useEffect(() => {
     if (!email) return;
     const fetchQuestion = async () => {
-      const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+      const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
       const res = await fetch(`${API_BASE_URL}/auth/request-security-question`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -53,7 +53,7 @@ export function useSecurityQuestionsLogic() {
     }
 
     try {
-      const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+      const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
       const res = await fetch(`${API_BASE_URL}/auth/validate-security-answer`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
