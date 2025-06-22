@@ -26,7 +26,11 @@ export const InterviewLogic = () => {
       department: 'Operations',
       position: 'Driver',
       email: 'juan.dela@example.com',
-      address: '123 Main Street',
+      houseStreetBarangay: '',
+      city: '',
+      stateProvinceRegion: '',
+      country: '',
+      zipCode: '',
       emergencyContactName: '',
       emergencyContactNo: '',
       basicPay: '',
@@ -34,7 +38,7 @@ export const InterviewLogic = () => {
       govtIdNo: '',
       licenseType: 'professional',
       licenseNo: '',
-      restrictionCodes: '',
+      restrictionCodes: [],
       expireDate: ''
     },
     {
@@ -48,7 +52,11 @@ export const InterviewLogic = () => {
       department: 'Human Resource',
       position: 'Supervisor',
       email: 'mark.reyes@example.com',
-      address: '456 Second Street',
+      houseStreetBarangay: '',
+      city: '',
+      stateProvinceRegion: '',
+      country: '',
+      zipCode: '',
       emergencyContactName: '',
       emergencyContactNo: '',
       basicPay: '',
@@ -56,7 +64,7 @@ export const InterviewLogic = () => {
       govtIdNo: '',
       licenseType: '',
       licenseNo: '',
-      restrictionCodes: '',
+      restrictionCodes: [],
       expireDate: ''
     },
     {
@@ -70,7 +78,11 @@ export const InterviewLogic = () => {
       department: 'Inventory',
       position: 'Warehouse Staff',
       email: 'analiza@gmail.com',
-      address: '199 Commonwealth Quezon City',
+      houseStreetBarangay: '',
+      city: '',
+      stateProvinceRegion: '',
+      country: '',
+      zipCode: '',
       emergencyContactName: '',
       emergencyContactNo: '',
       basicPay: '',
@@ -78,7 +90,7 @@ export const InterviewLogic = () => {
       govtIdNo: '',
       licenseType: '',
       licenseNo: '',
-      restrictionCodes: '',
+      restrictionCodes: [],
       expireDate: ''
     }
   ]);

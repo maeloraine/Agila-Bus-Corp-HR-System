@@ -85,6 +85,8 @@ const EmployeeModal: React.FC<EmployeeModalProps> = (props) => {
 
   const [hasChanges, setHasChanges] = useState(false);
 
+  const restrictionOptions = ['A', 'A1', 'B', 'B1', 'B2', 'C', 'D', 'BE', 'CE'];
+
   const handleSubmitWrapper = () => {
     if (!validateGovernmentIds()) return;
     handleSubmit();
@@ -95,7 +97,7 @@ const EmployeeModal: React.FC<EmployeeModalProps> = (props) => {
     handleUpdateConfirm();
   };
 
-  const handleChangeWrapper = (field: keyof Employee, value: string) => {
+  const handleChangeWrapper = (field: keyof Employee, value: string | string []) => {
     if (!hasChanges && value !== props.defaultValue?.[field]) {
       setHasChanges(true);
     }
@@ -188,6 +190,28 @@ const EmployeeModal: React.FC<EmployeeModalProps> = (props) => {
                 disabled={props.isReadOnly}
               />
               {fieldErrors.birthdate && <p className={styles.errorText}>{fieldErrors.birthdate}</p>}
+
+              {/* Emergency Contact */}
+              <h4>Emergency Contact</h4>
+              <label className={styles.label}>Full Name</label>
+              <input
+                className={`${styles.inputField} ${fieldErrors.emergencyContactName ? styles.inputError : ''}`}
+                value={employee.emergencyContactName}
+                onChange={(e) => handleChangeWrapper('emergencyContactName', e.target.value)}
+                placeholder="Enter full name"
+                disabled={props.isReadOnly}
+              />
+              {fieldErrors.emergencyContactName && <p className={styles.errorText}>{fieldErrors.emergencyContactName}</p>}
+
+              <label className={styles.label}>Contact No.</label>
+              <input
+                className={`${styles.inputField} ${fieldErrors.emergencyContactNo ? styles.inputError : ''}`}
+                value={employee.emergencyContactNo}
+                onChange={(e) => handleChangeWrapper('emergencyContactNo', e.target.value)}
+                placeholder="Enter 11-digit contact no."
+                disabled={props.isReadOnly}
+              />
+              {fieldErrors.emergencyContactNo && <p className={styles.errorText}>{fieldErrors.emergencyContactNo}</p>}
             </div>
 
             <div className={styles.contactInfo}>
@@ -212,40 +236,56 @@ const EmployeeModal: React.FC<EmployeeModalProps> = (props) => {
               />
               {fieldErrors.contact && <p className={styles.errorText}>{fieldErrors.contact}</p>}
 
-              <label className={styles.label}>Address</label>
+              <label className={styles.label}>House No./Street/Barangay</label>
               <input
-                className={`${styles.inputField} ${fieldErrors.address ? styles.inputError : ''}`}
-                value={employee.address}
-                onChange={(e) => handleChangeWrapper('address', e.target.value)}
-                placeholder="Enter address"
+                className={`${styles.inputField} ${fieldErrors.houseStreetBarangay ? styles.inputError : ''}`}
+                value={employee.houseStreetBarangay}
+                onChange={(e) => handleChangeWrapper('houseStreetBarangay', e.target.value)}
+                placeholder="Enter house no./ street/ barangay"
                 disabled={props.isReadOnly}
               />
-              {fieldErrors.address && <p className={styles.errorText}>{fieldErrors.address}</p>}
+              {fieldErrors.houseStreetBarangay && <p className={styles.errorText}>{fieldErrors.houseStreetBarangay}</p>}
+
+              <label className={styles.label}>City</label>
+              <input
+                className={`${styles.inputField} ${fieldErrors.city ? styles.inputError : ''}`}
+                value={employee.city}
+                onChange={(e) => handleChangeWrapper('city', e.target.value)}
+                placeholder="Enter city"
+                disabled={props.isReadOnly}
+              />
+              {fieldErrors.city && <p className={styles.errorText}>{fieldErrors.city}</p>}
+
+              <label className={styles.label}>State/Province/Region</label>
+              <input
+                className={`${styles.inputField} ${fieldErrors.stateProvinceRegion ? styles.inputError : ''}`}
+                value={employee.stateProvinceRegion}
+                onChange={(e) => handleChangeWrapper('stateProvinceRegion', e.target.value)}
+                placeholder="Enter state/ province/ region"
+                disabled={props.isReadOnly}
+              />
+              {fieldErrors.stateProvinceRegion && <p className={styles.errorText}>{fieldErrors.stateProvinceRegion}</p>}
+              
+              <label className={styles.label}>Country</label>
+              <input
+                className={`${styles.inputField} ${fieldErrors.country ? styles.inputError : ''}`}
+                value={employee.country}
+                onChange={(e) => handleChangeWrapper('country', e.target.value)}
+                placeholder="Enter country"
+                disabled={props.isReadOnly}
+              />
+              {fieldErrors.country && <p className={styles.errorText}>{fieldErrors.country}</p>}
+
+              <label className={styles.label}>Zip Code</label>
+              <input
+                className={`${styles.inputField} ${fieldErrors.zipCode ? styles.inputError : ''}`}
+                value={employee.zipCode}
+                onChange={(e) => handleChangeWrapper('zipCode', e.target.value)}
+                placeholder="Enter zip code"
+                disabled={props.isReadOnly}
+              />
+              {fieldErrors.zipCode && <p className={styles.errorText}>{fieldErrors.zipCode}</p>}
             </div>
-          </div>
-
-          {/* Emergency Contact */}
-          <div className={styles.contactInfo}>
-            <h4>Emergency Contact</h4>
-            <label className={styles.label}>Full Name</label>
-            <input
-              className={`${styles.inputField} ${fieldErrors.emergencyContactName ? styles.inputError : ''}`}
-              value={employee.emergencyContactName}
-              onChange={(e) => handleChangeWrapper('emergencyContactName', e.target.value)}
-              placeholder="Enter full name"
-              disabled={props.isReadOnly}
-            />
-            {fieldErrors.emergencyContactName && <p className={styles.errorText}>{fieldErrors.emergencyContactName}</p>}
-
-            <label className={styles.label}>Contact No.</label>
-            <input
-              className={`${styles.inputField} ${fieldErrors.emergencyContactNo ? styles.inputError : ''}`}
-              value={employee.emergencyContactNo}
-              onChange={(e) => handleChangeWrapper('emergencyContactNo', e.target.value)}
-              placeholder="Enter 11-digit contact no."
-              disabled={props.isReadOnly}
-            />
-            {fieldErrors.emergencyContactNo && <p className={styles.errorText}>{fieldErrors.emergencyContactNo}</p>}
           </div>
 
           {/* Work Experience Table */}
@@ -456,10 +496,10 @@ const EmployeeModal: React.FC<EmployeeModalProps> = (props) => {
             <select
               className={`${styles.inputField} ${fieldErrors.department ? styles.inputError : ''}`}
               value={employee.department}
-              onChange={(e) => handleChangeWrapper('department', e.target.value)}
-              disabled={props.isReadOnly}
+              // onChange={(e) => handleChangeWrapper('department', e.target.value)}
+              disabled
             >
-              <option value="">Select department</option>
+              <option value="">Departments</option>
               <option value="Accounting">Accounting</option>
               <option value="Human Resource">Human Resource</option>
               <option value="Inventory">Inventory</option>
@@ -504,11 +544,18 @@ const EmployeeModal: React.FC<EmployeeModalProps> = (props) => {
                             onChange={(e) => setTempGovId({ ...tempGovId, idType: e.target.value })}
                           >
                             <option value="">Select ID Type</option>
-                            <option value="SSS">SSS</option>
-                            <option value="Pag-IBIG">Pag-IBIG</option>
-                            <option value="PhilHealth">PhilHealth</option>
-                            <option value="TIN">TIN</option>
-                            <option value="UMID">UMID</option>
+                            {['SSS', 'Pag-IBIG', 'PhilHealth', 'TIN', 'UMID'].map((type) => {
+                              const isDisabled = governmentIds.some((id, idx) =>
+                                id.idType === type &&
+                                // allow editing the same one
+                                editingGovIdIndex !== idx
+                              );
+                              return (
+                                <option key={type} value={type} disabled={isDisabled}>
+                                  {type}
+                                </option>
+                              );
+                            })}
                           </select>
                         </td>
                         <td>
@@ -527,7 +574,7 @@ const EmployeeModal: React.FC<EmployeeModalProps> = (props) => {
                     ) : (
                       <>
                         <td>{id.idType}</td>
-                        <td>{id.idNumber}</td>
+                        <td>{id.idNumber.replace(/.(?=.{4})/g, '*')}</td>
                         {!props.isReadOnly && (
                           <td className={styles.actionCell}>
                             <button className={styles.editButton} onClick={() => editGovernmentID(index)}><i className="ri-edit-2-line" /></button>
@@ -563,7 +610,7 @@ const EmployeeModal: React.FC<EmployeeModalProps> = (props) => {
               <thead>
                 <tr>
                   <th>No.</th>
-                  <th>Institute</th>
+                  <th>Reason</th>
                   <th>Amount</th>
                   <th>Date</th>
                   {!props.isReadOnly && <th>Actions</th>}
@@ -638,26 +685,41 @@ const EmployeeModal: React.FC<EmployeeModalProps> = (props) => {
                 />
                 {fieldErrors.licenseNo && <p className={styles.errorText}>{fieldErrors.licenseNo}</p>}
 
-                <label className={styles.label}>Restriction Code</label>
-                <select
-                  id="restrictionCodes"
-                  value={employee.restrictionCodes}
-                  onChange={(e) => handleChangeWrapper('restrictionCodes', e.target.value)}
-                  disabled={props.isReadOnly}
-                  className={`${styles.inputField} ${fieldErrors.restrictionCodes ? styles.inputError : ''}`}
-                >
-                  <option value="">Select Restriction Code</option>
-                  <option value="A">A : Motorcycle (L1, L2, L3)</option>
-                  <option value="A1">A1 : Tricycle (L4, L5, L6, L7)</option>
-                  <option value="B">B : Passenger Car (M1)</option>
-                  <option value="B1">B1 : Van or Jeepney (M2)</option>
-                  <option value="B2">B2 : Light Commercial Vehicle (N1)</option>
-                  <option value="C">C : Heavy Commercial Vehicle (N2, N3)</option>
-                  <option value="D">D : Passenger Bus (M3)</option>
-                  <option value="BE">BE : Light Articulated Vehicle (O1, O2)</option>
-                  <option value="CE">CE : Heavy Articulated Vehicle (O3, O4)</option>
-                </select>
-                {fieldErrors.restrictionCodes && <p className={styles.errorText}>{fieldErrors.restrictionCodes}</p>}
+                <label>Restriction Codes</label>
+                <div className={styles.checkboxGroup}>
+                  {[
+                    'A : Motorcycle (L1, L2, L3)',
+                    'A1 : Tricycle (L4, L5, L6, L7)',
+                    'B : Passenger Car (M1)',
+                    'B1 : Van or Jeepney (M2)',
+                    'B2 : Light Commercial Vehicle (N1)',
+                    'C : Heavy Commercial Vehicle (N2, N3)',
+                    'D : Passenger Bus (M3)',
+                    'BE : Light Articulated Vehicle (O1, O2)',
+                    'CE : Heavy Articulated Vehicle (O3, O4)'
+                  ].map((code) => (
+                    <label key={code} className={styles.checkboxItem}>
+                      <input
+                        type="checkbox"
+                        value={code}
+                        checked={employee.restrictionCodes.includes(code)}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          const updated = e.target.checked
+                            ? [...employee.restrictionCodes, value]
+                            : employee.restrictionCodes.filter((c) => c !== value);
+                          handleChangeWrapper('restrictionCodes', updated);
+                        }}
+                        className={styles.styledCheckbox}
+                        disabled={props.isReadOnly}
+                      />
+                      {code}
+                    </label>
+                  ))}
+                </div>
+                {fieldErrors.restrictionCodes && (
+                  <p className={styles.errorText}>{fieldErrors.restrictionCodes}</p>
+                )}
 
                 <label className={styles.label}>Expiration Date</label>
                 <input

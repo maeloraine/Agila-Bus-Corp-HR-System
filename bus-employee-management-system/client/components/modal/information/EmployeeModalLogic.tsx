@@ -10,7 +10,11 @@ export interface Employee {
   birthdate: string;
   email: string;
   contact: string;
-  address: string;
+  houseStreetBarangay: string;
+  city: string;
+  stateProvinceRegion: string;
+  country: string;
+  zipCode: string;
   emergencyContactName: string;
   emergencyContactNo: string;
   status: string;
@@ -22,7 +26,7 @@ export interface Employee {
   govtIdNo: string;
   licenseType: string;
   licenseNo: string;
-  restrictionCodes: string;
+  restrictionCodes: string[];
   expireDate: string;
 }
 
@@ -54,7 +58,11 @@ export const useEmployeeModal = (
     birthdate: '',
     email: '',
     contact: '',
-    address: '',
+    houseStreetBarangay: '',
+    city: '',
+    stateProvinceRegion: '',
+    country: '',
+    zipCode: '',
     emergencyContactName: '',
     emergencyContactNo: '',
     status: '',
@@ -66,7 +74,7 @@ export const useEmployeeModal = (
     govtIdNo: '',
     licenseType: 'professional',
     licenseNo: '',
-    restrictionCodes: '',
+    restrictionCodes: [],
     expireDate: '',
     ...defaultValue,
   });
@@ -80,7 +88,11 @@ export const useEmployeeModal = (
     if (!employee.birthdate || !isAtLeast18(employee.birthdate)) errors.birthdate = 'Must be at least 18 years old.';
     if (!employee.email || !isValidEmail(employee.email)) errors.email = 'Invalid email format.';
     if (!isValidContact(employee.contact) || !isValidPhilippineContact(employee.contact)) errors.contact = 'Invalid format.';
-    if (!employee.address) errors.address = 'Required';
+    if (!employee.houseStreetBarangay) errors.houseStreetBarangay = 'Required';
+    if (!employee.city) errors.city = 'Required';
+    if (!employee.stateProvinceRegion) errors.stateProvinceRegion = 'Required';
+    if (!employee.country) errors.country = 'Required';
+    if (!employee.zipCode) errors.zipCode = 'Required';
     if (!employee.emergencyContactName) errors.emergencyContactName = 'Required';
     if (!employee.emergencyContactNo || !/^(09)\d{9}$/.test(employee.emergencyContactNo)) errors.emergencyContactNo = 'Invalid format.';
     if (!employee.status) errors.status = 'Required';
@@ -89,14 +101,17 @@ export const useEmployeeModal = (
     if (!employee.position.trim()) errors.position = 'Required';
     if (!employee.basicPay || isNaN(Number(employee.basicPay))) errors.basicPay = 'Required and must be numeric';
     if (employee.expireDate && isPastDate(employee.expireDate)) errors.expireDate = 'Expiry date cannot be in the past.';
-    if (!employee.licenseNo && employee.position.toLowerCase() === 'driver') errors.licenseNo = 'Required for drivers';
+    if (!employee.licenseNo && employee.position.toLowerCase() === 'driver') errors.licenseNo = 'Required';
     if (employee.position.toLowerCase() === 'driver') {
       if (!employee.licenseNo) {
         errors.licenseNo = 'Required for drivers';
       }
 
-      if (employee.restrictionCodes !== 'D') {
-        errors.restrictionCodes = 'Not sufficient to operate a passenger bus';
+      if (
+        employee.position.toLowerCase() === 'driver' &&
+        !employee.restrictionCodes.includes('D')
+      ) {
+        errors.restrictionCodes = 'Restriction Code D is required to operate a passenger bus';
       }
 
       if (employee.expireDate && isPastDate(employee.expireDate)) {
@@ -126,7 +141,7 @@ export const useEmployeeModal = (
   const handleSubmit = async () => {
     const isValid = validateInput();
     if (!isValid) {
-      showError('Validation Error', 'Please correct the errors in the form.');
+      showError('Error', 'Please correct the errors in the form.');
       return;
     }
     if (isDuplicateEmployee()) {
