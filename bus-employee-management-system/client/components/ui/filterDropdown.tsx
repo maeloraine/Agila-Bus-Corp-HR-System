@@ -7,7 +7,7 @@ export interface FilterOption {
 }
 
 // Types of filter fields we support
-export type FilterFieldType = 'dateRange' | 'checkbox' | 'radio';
+export type FilterFieldType = 'dateRange' | 'checkbox' | 'radio' | 'numberRange';
 
 // Definition for a single filter section
 export interface FilterSection {

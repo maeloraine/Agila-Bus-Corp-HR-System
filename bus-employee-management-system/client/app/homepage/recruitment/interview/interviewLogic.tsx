@@ -1,119 +1,87 @@
-import { useState } from 'react';
+'use client';
+
+import { useState, useMemo } from 'react'; // Import useMemo
 import { showSuccess, showConfirmation } from '@/app/utils/swal';
-import { Employee } from '@/components/modal/information/EmployeeModalLogic';
 import { FilterSection } from '@/components/ui/filterDropdown';
 
+export interface InterviewSchedule {
+  candidateName: string;
+  position: string;
+  interviewDate: string;
+  interviewTime: string;
+  interviewer: string;
+  interviewStatus: 'Not Scheduled' | 'Scheduled' | 'Completed' | 'Cancelled';
+  notes?: string;
+}
+
 export const InterviewLogic = () => {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [interviewStatusFilter, setInterviewStatusFilter] = useState('');
+  const [selectedInterview, setSelectedInterview] = useState<InterviewSchedule | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
-  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('');
-  const [departmentFilter, setDepartmentFilter] = useState('');
-  const [positionFilter, setPositionFilter] = useState('');
   const [isReadOnlyView, setIsReadOnlyView] = useState(false);
 
+  // State for managing the open action dropdown index
+  const [openActionDropdownIndex, setOpenActionDropdownIndex] = useState<number | null>(null);
 
-  const [employees, setEmployees] = useState<Employee[]>([
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10); // Default page size
+
+  const [interviewSchedules, setInterviewSchedules] = useState<InterviewSchedule[]>([
     {
-      status: 'Active',
-      firstName: 'Juan',
-      middleName: 'Cruz',
-      lastName: 'Dela',
-      birthdate: '1995-05-10',
-      contact: '09171234567',
-      dateHired: '2023-01-15',
-      department: 'Operations',
+      candidateName: 'Juan Dela Cruz',
       position: 'Driver',
-      email: 'juan.dela@example.com',
-      houseStreetBarangay: '',
-      city: '',
-      stateProvinceRegion: '',
-      country: '',
-      zipCode: '',
-      emergencyContactName: '',
-      emergencyContactNo: '',
-      basicPay: '',
-      govtIdType: '',
-      govtIdNo: '',
-      licenseType: 'professional',
-      licenseNo: '',
-      restrictionCodes: [],
-      expireDate: ''
+      interviewDate: '2023-01-20',
+      interviewTime: '10:00 AM',
+      interviewer: 'Maria Santos',
+      interviewStatus: 'Scheduled',
+      notes: 'Initial interview for driving skills.'
     },
     {
-      status: 'On Leave',
-      firstName: 'Mark',
-      middleName: 'Antonio',
-      lastName: 'Reyes',
-      birthdate: '1990-02-20',
-      contact: '09181234567',
-      dateHired: '2023-03-10',
-      department: 'Human Resource',
+      candidateName: 'Mark Reyes',
       position: 'Supervisor',
-      email: 'mark.reyes@example.com',
-      houseStreetBarangay: '',
-      city: '',
-      stateProvinceRegion: '',
-      country: '',
-      zipCode: '',
-      emergencyContactName: '',
-      emergencyContactNo: '',
-      basicPay: '',
-      govtIdType: '',
-      govtIdNo: '',
-      licenseType: '',
-      licenseNo: '',
-      restrictionCodes: [],
-      expireDate: ''
+      interviewDate: '2023-03-15',
+      interviewTime: '02:00 PM',
+      interviewer: 'Ricardo Lim',
+      interviewStatus: 'Not Scheduled',
+      notes: 'Follow-up interview for management experience.'
     },
     {
-      status: 'Active',
-      firstName: 'Ana',
-      middleName: 'Liza',
-      lastName: 'Santos',
-      birthdate: '1992-08-12',
-      contact: '09221234567',
-      dateHired: '2022-11-05',
-      department: 'Inventory',
+      candidateName: 'Ana Santos',
       position: 'Warehouse Staff',
-      email: 'analiza@gmail.com',
-      houseStreetBarangay: '',
-      city: '',
-      stateProvinceRegion: '',
-      country: '',
-      zipCode: '',
-      emergencyContactName: '',
-      emergencyContactNo: '',
-      basicPay: '',
-      govtIdType: '',
-      govtIdNo: '',
-      licenseType: '',
-      licenseNo: '',
-      restrictionCodes: [],
-      expireDate: ''
-    }
+      interviewDate: '2022-11-10',
+      interviewTime: '09:00 AM',
+      interviewer: 'Jose Rizal',
+      interviewStatus: 'Completed',
+      notes: 'Final interview, awaiting feedback.'
+    },
+    {
+      candidateName: 'Roberto Chua',
+      position: 'Dispatcher',
+      interviewDate: '2023-05-25',
+      interviewTime: '11:00 AM',
+      interviewer: 'Maria Santos',
+      interviewStatus: 'Scheduled',
+      notes: 'Interview for logistics coordination.'
+    },
   ]);
 
-  // Filter sections
-  const [filteredEmployees, setFilteredEmployees] = useState<Employee[]>(employees);
+  // This state will be updated by handleApplyFilters and acts as the base for text filtering and pagination
+  const [filteredSchedulesAfterAdvancedFilters, setFilteredSchedulesAfterAdvancedFilters] = useState<InterviewSchedule[]>(interviewSchedules);
 
-  const uniqueDepartments = Array.from(new Set(employees.map(emp => emp.department)));
-  const uniquePositions = Array.from(new Set(employees.map(emp => emp.position)));
+  // Derived unique options for filters (using useMemo for efficiency)
+  const uniquePositions = useMemo(() => Array.from(new Set(interviewSchedules.map(schedule => schedule.position))), [interviewSchedules]);
+  const uniqueInterviewers = useMemo(() => Array.from(new Set(interviewSchedules.map(schedule => schedule.interviewer))), [interviewSchedules]);
 
   const filterSections: FilterSection[] = [
     {
-      id: "dateRange",
+      id: "interviewDateRange",
       title: "Date Range",
       type: "dateRange",
       defaultValue: { from: "", to: "" }
     },
-    // {
-    //   id: "department",
-    //   title: "Department",
-    //   type: "checkbox",
-    //   options: uniqueDepartments.map(dept => ({ id: dept.toLowerCase(), label: dept }))
-    // },
     {
       id: "position",
       title: "Position",
@@ -121,12 +89,18 @@ export const InterviewLogic = () => {
       options: uniquePositions.map(pos => ({ id: pos.toLowerCase(), label: pos }))
     },
     {
+      id: "interviewer",
+      title: "Interviewer",
+      type: "checkbox",
+      options: uniqueInterviewers.map(interviewer => ({ id: interviewer.toLowerCase(), label: interviewer }))
+    },
+    {
       id: "sortBy",
       title: "Sort By",
       type: "radio",
       options: [
-        { id: "name", label: "Name" },
-        { id: "date", label: "Date Hired" }
+        { id: "name", label: "Candidate Name" },
+        { id: "date", label: "Interview Date" }
       ],
       defaultValue: "name"
     },
@@ -143,30 +117,25 @@ export const InterviewLogic = () => {
   ];
 
   const handleApplyFilters = (filterValues: Record<string, any>) => {
-    let newData = [...employees];
-
-    // Status
-    if (filterValues.status && filterValues.status.length > 0) {
-      newData = newData.filter(item => filterValues.status.includes(item.status));
-    }
-
-    // Department
-    if (filterValues.department && filterValues.department.length > 0) {
-      newData = newData.filter(item => filterValues.department.includes(item.department.toLowerCase()));
-    }
+    let newData = [...interviewSchedules]; // Start with the full list
 
     // Position
     if (filterValues.position && filterValues.position.length > 0) {
       newData = newData.filter(item => filterValues.position.includes(item.position.toLowerCase()));
     }
 
-    // Date range
-    const fromDate = filterValues.dateRange?.from ? new Date(filterValues.dateRange.from) : null;
-    const toDate = filterValues.dateRange?.to ? new Date(filterValues.dateRange.to) : null;
+    // Interviewer
+    if (filterValues.interviewer && filterValues.interviewer.length > 0) {
+      newData = newData.filter(item => filterValues.interviewer.includes(item.interviewer.toLowerCase()));
+    }
+
+    // Interview Date Range
+    const fromDate = filterValues.interviewDateRange?.from ? new Date(filterValues.interviewDateRange.from) : null;
+    const toDate = filterValues.interviewDateRange?.to ? new Date(filterValues.interviewDateRange.to) : null;
     if (fromDate || toDate) {
       newData = newData.filter(item => {
-        const hiredDate = new Date(item.dateHired);
-        return (!fromDate || hiredDate >= fromDate) && (!toDate || hiredDate <= toDate);
+        const scheduleDate = new Date(item.interviewDate);
+        return (!fromDate || scheduleDate >= fromDate) && (!toDate || scheduleDate <= toDate);
       });
     }
 
@@ -174,82 +143,103 @@ export const InterviewLogic = () => {
     const sortBy = filterValues.sortBy;
     const sortOrder = filterValues.order === 'desc' ? -1 : 1;
     if (sortBy === 'name') {
-      newData.sort((a, b) => `${a.lastName}, ${a.firstName}`.localeCompare(`${b.lastName}, ${b.firstName}`) * sortOrder);
+      newData.sort((a, b) => a.candidateName.localeCompare(b.candidateName) * sortOrder);
     } else if (sortBy === 'date') {
-      newData.sort((a, b) => (new Date(a.dateHired).getTime() - new Date(b.dateHired).getTime()) * sortOrder);
+      newData.sort((a, b) => (new Date(a.interviewDate).getTime() - new Date(b.interviewDate).getTime()) * sortOrder);
     }
 
-    setFilteredEmployees(newData);
+    setFilteredSchedulesAfterAdvancedFilters(newData); // Update the state after applying advanced filters
+    setCurrentPage(1); // Reset to first page after applying new filters
   };
 
-  const filteredByText = filteredEmployees.filter(emp => {
-    const fullName = `${emp.firstName} ${emp.middleName} ${emp.lastName}`.toLowerCase();
-    return (
-      (!statusFilter || emp.status === statusFilter) &&
-      (!departmentFilter || emp.department === departmentFilter) &&
-      (!positionFilter || emp.position === positionFilter) &&
-      (!searchTerm || fullName.includes(searchTerm.toLowerCase()))
-    );
-  });
-
-  const handleAdd = (newEmployee: Employee) => {
-    const updatedList = [...employees, newEmployee];
-    setEmployees(updatedList);
-    setFilteredEmployees(updatedList);
-    showSuccess('Success', 'Employee added successfully.');
-  };
-
-  const handleEdit = (updatedEmployee: Employee) => {
-    if (!selectedEmployee) return;
-    const updatedList = employees.map(emp =>
-      emp.firstName === selectedEmployee.firstName &&
-      emp.middleName === selectedEmployee.middleName &&
-      emp.lastName === selectedEmployee.lastName
-        ? updatedEmployee
-        : emp
-    );
-    setEmployees(updatedList);
-    setFilteredEmployees(updatedList);
-    showSuccess('Success', 'Employee updated successfully.');
-  };
-
-  const handleDeleteRequest = async (employee: Employee) => {
-    const result = await showConfirmation('Are you sure you want to delete this employee?');
-    if (result.isConfirmed) {
-      const updatedList = employees.filter(
-        emp => emp.firstName !== employee.firstName ||
-               emp.middleName !== employee.middleName ||
-               emp.lastName !== employee.lastName
+  // This `filteredByText` now applies search term and status filters on top of advanced filters
+  const filteredByText = useMemo(() => {
+    return filteredSchedulesAfterAdvancedFilters.filter(schedule => {
+      const candidateFullName = schedule.candidateName.toLowerCase();
+      return (
+        (!interviewStatusFilter || schedule.interviewStatus === interviewStatusFilter) &&
+        (!searchTerm || candidateFullName.includes(searchTerm.toLowerCase()))
       );
-      setEmployees(updatedList);
-      setFilteredEmployees(updatedList);
-      showSuccess('Success', 'Employee deleted successfully.');
+    });
+  }, [filteredSchedulesAfterAdvancedFilters, interviewStatusFilter, searchTerm]);
+
+  // Pagination logic applied to the `filteredByText` result
+  const paginatedInterviewSchedules = useMemo(() => {
+    const start = (currentPage - 1) * pageSize;
+    return filteredByText.slice(start, start + pageSize);
+  }, [filteredByText, currentPage, pageSize]);
+
+  const totalPages = Math.ceil(filteredByText.length / pageSize);
+
+
+  const handleAdd = (newSchedule: InterviewSchedule) => {
+    const updatedList = [...interviewSchedules, newSchedule];
+    setInterviewSchedules(updatedList);
+    setFilteredSchedulesAfterAdvancedFilters(updatedList); // Update the base for filtering
+    showSuccess('Success', 'Interview scheduled successfully.');
+  };
+
+  const handleEdit = (updatedSchedule: InterviewSchedule) => {
+    if (!selectedInterview) return;
+    const updatedList = interviewSchedules.map((schedule) =>
+      schedule.candidateName === selectedInterview.candidateName &&
+      schedule.interviewDate === selectedInterview.interviewDate &&
+      schedule.interviewTime === selectedInterview.interviewTime
+        ? updatedSchedule
+        : schedule
+    );
+    setInterviewSchedules(updatedList);
+    setFilteredSchedulesAfterAdvancedFilters(updatedList); // Update the base for filtering
+    showSuccess('Success', 'Interview updated successfully.');
+  };
+
+  const handleDeleteRequest = async (scheduleToDelete: InterviewSchedule) => {
+    const result = await showConfirmation('Are you sure you want to delete this interview schedule?');
+    if (result.isConfirmed) {
+      const updatedList = interviewSchedules.filter(
+        (schedule) =>
+          schedule.candidateName !== scheduleToDelete.candidateName ||
+          schedule.interviewDate !== scheduleToDelete.interviewDate ||
+          schedule.interviewTime !== scheduleToDelete.interviewTime
+      );
+      setInterviewSchedules(updatedList);
+      setFilteredSchedulesAfterAdvancedFilters(updatedList); // Update the base for filtering
+      showSuccess('Success', 'Interview schedule deleted successfully.');
     }
+  };
+
+  // Function to toggle action dropdown visibility
+  const toggleActionDropdown = (index: number | null) => {
+    setOpenActionDropdownIndex(openActionDropdownIndex === index ? null : index);
   };
 
   return {
+    interviewSchedules, // Keep raw data for mutation operations
+    paginatedInterviewSchedules, // The final paginated and filtered data for rendering
+    searchTerm,
+    setSearchTerm,
+    interviewStatusFilter,
+    setInterviewStatusFilter,
+    selectedInterview,
+    setSelectedInterview,
     showAddModal,
     setShowAddModal,
     showEditModal,
     setShowEditModal,
-    selectedEmployee,
-    setSelectedEmployee,
-    employees,
-    filteredEmployees: filteredByText,
-    searchTerm,
-    setSearchTerm,
-    statusFilter,
-    setStatusFilter,
-    departmentFilter,
-    setDepartmentFilter,
-    positionFilter,
-    setPositionFilter,
+    isReadOnlyView,
+    setIsReadOnlyView,
     handleAdd,
     handleEdit,
     handleDeleteRequest,
-    isReadOnlyView,
-    setIsReadOnlyView,
     filterSections,
     handleApplyFilters,
+    openActionDropdownIndex,
+    toggleActionDropdown,
+    // Pagination exports
+    currentPage,
+    setCurrentPage,
+    pageSize,
+    setPageSize,
+    totalPages
   };
 };

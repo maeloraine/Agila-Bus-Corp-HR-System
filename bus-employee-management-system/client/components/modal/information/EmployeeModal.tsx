@@ -678,7 +678,7 @@ const EmployeeModal: React.FC<EmployeeModalProps> = (props) => {
                 <label className={styles.label}>License No.</label>
                 <input
                   className={`${styles.inputField} ${fieldErrors.licenseNo ? styles.inputError : ''}`}
-                  value={employee.licenseNo}
+                  value={employee.licenseNo.replace(/.(?=.{4})/g, '*')}
                   onChange={(e) => handleChangeWrapper('licenseNo', e.target.value)}
                   placeholder="Enter license no."
                   disabled={props.isReadOnly}

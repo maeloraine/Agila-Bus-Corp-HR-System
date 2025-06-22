@@ -109,7 +109,7 @@ export const useEmployeeModal = (
 
       if (
         employee.position.toLowerCase() === 'driver' &&
-        !employee.restrictionCodes.includes('D')
+        !employee.restrictionCodes.includes('D : Passenger Bus (M3)')
       ) {
         errors.restrictionCodes = 'Restriction Code D is required to operate a passenger bus';
       }

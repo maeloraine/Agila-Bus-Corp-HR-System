@@ -2,17 +2,18 @@
 
 import React from 'react';
 import styles from './candidate.module.css';
-import { useCandidateLogic } from './candidateLogic';
+import { Candidate, useCandidateLogic } from './candidateLogic';
 import CandidateModal from '@/components/modal/recruitment/CandidateModal';
 import FeedbackModal from '@/components/modal/recruitment/FeedbackModal';
-import PaginationComponent from '@/components/ui/pagination';
-import FilterDropDown, { FilterSection } from '@/components/ui/filterDropdown';
+import FilterDropDown from '@/components/ui/filterDropdown';
 import "@/styles/filters.css";
+import "@/styles/pagination.css";
+import PaginationComponent from '@/components/ui/pagination';
+
 
 export default function CandidatePage() {
   const {
     candidates,
-    filteredCandidates,
     searchTerm,
     setSearchTerm,
     applicationStatusFilter,
@@ -34,7 +35,9 @@ export default function CandidatePage() {
     handleDeleteRequest,
     filterSections,
     handleApplyFilters,
-    paginatedCandidates,
+    openActionDropdownIndex,
+    toggleActionDropdown,
+    paginatedCandidates, // This is the actual paginated and filtered data
     currentPage,
     setCurrentPage,
     pageSize,
@@ -61,6 +64,7 @@ export default function CandidatePage() {
             <option value="">Interview Status</option>
             <option value="Not Scheduled">Not Scheduled</option>
             <option value="Scheduled">Scheduled</option>
+            <option value="Completed">Completed</option> {/* Corrected duplicated value */}
           </select>
 
           <div className={styles.search}>
@@ -103,42 +107,80 @@ export default function CandidatePage() {
               </tr>
             </thead>
             <tbody>
-              {paginatedCandidates.map((c, index) => (
-                <tr key={`${c.firstName}-${c.lastName}-${index}`}>
+              {paginatedCandidates.map((c: Candidate, index: number) => (
+                <tr key={`${c.firstName}-${c.lastName}-${index}`}
+                >
                   <td className={styles.firstColumn}>{(currentPage - 1) * pageSize + index + 1}</td>
                   <td>{`${c.firstName} ${c.middleName} ${c.lastName}`}</td>
                   <td>{c.position}</td>
                   <td>{c.sourceOfHire}</td>
                   <td>{c.applicationDate}</td>
                   <td>{c.department}</td>
-                  <td>{c.applicationStatus}</td>
-                  <td>{c.interviewStatus}</td>
+                  <td>
+                    <span className={`${styles.applicationStatus} ${c.applicationStatus === 'Pending' ? styles['app-pending'] : c.applicationStatus === 'Processing' ? styles['app-processing'] : styles['app-hired']}`}>
+                      {c.applicationStatus}
+                    </span>
+                  </td>
+                  <td>
+                    <span className={`${styles.interviewStatus} ${
+                        c.interviewStatus === 'Scheduled' ? styles['interview-scheduled'] :
+                        c.interviewStatus === 'Not Scheduled' ? styles['interview-not-scheduled'] :
+                        c.interviewStatus === 'Completed' ? styles['interview-completed'] :
+                        styles['interview-cancelled']
+                      }`}>
+                      {c.interviewStatus}
+                    </span>
+                  </td>
+
+                  {/* ACTION COLUMN AND CELLS */}
                   <td className={styles.actionCell}>
-                    <button className={styles.viewButton}
-                      onClick={() => { 
-                        setSelectedCandidate(c); 
-                        setIsReadOnlyView(true); 
-                        setShowEditModal(true); }}>
-                        <i className="ri-eye-line" />
+                    {/* The main action button */}
+                    <button
+                      className={styles.mainActionButton}
+                      onClick={() => toggleActionDropdown(index)}
+                    >
+                      <i className="ri-more-2-fill" />
                     </button>
-                    <button className={styles.feedbackButton}
-                      onClick={() => {
-                        setSelectedCandidate(c);
-                        setShowFeedbackModal(true);
-                      }}>
-                      <i className='ri-feedback-line'/>
-                    </button>
-                    <button className={styles.editButton}
-                      onClick={() => { 
-                        setSelectedCandidate(c); 
-                        setIsReadOnlyView(false); 
-                        setShowEditModal(true); }}>
-                        <i className="ri-edit-2-line" />
-                    </button>
-                    <button className={styles.deleteButton}
-                      onClick={() => handleDeleteRequest(c)}>
-                      <i className="ri-delete-bin-line" />
-                    </button>
+
+                    {/* Action dropdown container, conditionally rendered */}
+                    {openActionDropdownIndex === index && (
+                      <div className={styles.actionDropdown}>
+                        <button className={styles.viewButton}
+                          onClick={() => {
+                            setSelectedCandidate(c);
+                            setIsReadOnlyView(true);
+                            setShowEditModal(true);
+                            toggleActionDropdown(null);
+                          }}>
+                            <i className="ri-eye-line" /> View
+                        </button>
+                        <button className={styles.feedbackButton}
+                          onClick={() => {
+                            setSelectedCandidate(c);
+                            setShowFeedbackModal(true);
+                            toggleActionDropdown(null);
+                          }}> 
+                          <i className='ri-feedback-line'/> Feedback
+                        </button>
+                        <button className={styles.editButton}
+                          onClick={() => {
+                            setSelectedCandidate(c);
+                            setIsReadOnlyView(false);
+                            setShowEditModal(true);
+                            toggleActionDropdown(null);
+                          }}>
+                            <i className="ri-edit-2-line" /> Edit
+                        </button>
+                        <button className={styles.deleteButton}
+                          onClick={() => {
+                            handleDeleteRequest(c);
+                            toggleActionDropdown(null);
+                          }}>
+                          <i className="ri-delete-bin-line" /> Delete
+                        </button>
+                      </div>
+                    )}
+                    {/* END OF ACTION COLUMN AND CELLS */}
                   </td>
                 </tr>
               ))}
@@ -157,6 +199,7 @@ export default function CandidatePage() {
             setCurrentPage(1); // reset to page 1 when size changes
           }}
         /> 
+
 
         {/* Modals */}
         {showAddModal && (

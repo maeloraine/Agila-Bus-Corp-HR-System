@@ -3,8 +3,8 @@
 import React from "react";
 import styles from './employee.module.css';
 import { EmployeeLogic } from './employeeLogic';
+import PaginationComponent from "@/components/ui/pagination";
 import EmployeeModal from '@/components/modal/information/EmployeeModal';
-import PaginationComponent from '@/components/ui/pagination';
 import FilterDropDown, { FilterSection } from '@/components/ui/filterDropdown';
 import "@/styles/filters.css";
 
@@ -29,12 +29,15 @@ export default function EmployeePage() {
     employees,
     filterSections,
     handleApplyFilters,
+    // Import the new state and function for the action dropdown
+    openActionDropdownIndex,
+    toggleActionDropdown,
     paginatedEmployees,
     currentPage,
     setCurrentPage,
     pageSize,
     setPageSize,
-    totalPages
+    totalPages,
   } = EmployeeLogic();
 
   return (
@@ -66,7 +69,7 @@ export default function EmployeePage() {
             />
           </div>
 
-           {/* Filter Button with Dropdown */}
+            {/* Filter Button with Dropdown */}
           <div className="filter">
             <FilterDropDown
               sections={filterSections}
@@ -101,36 +104,62 @@ export default function EmployeePage() {
               {paginatedEmployees.map((emp, index) => (
                 <tr key={`${emp.firstName}-${emp.lastName}-${index}`}>
                   <td className={styles.firstColumn}>{(currentPage - 1) * pageSize + index + 1}</td>
-                  <td>{emp.status}</td>
+                  <td>
+                    <span className={`${styles.empStatus} ${
+                        emp.status === 'Active' ? styles['status-Active'] :
+                        emp.status === 'Resigned' ? styles['status-Resigned'] :
+                        emp.status === 'On Leave' ? styles['status-onLeave'] :
+                        styles['interview-cancelled']
+                      }`}>
+                      {emp.status}
+                    </span>
+                  </td>
                   <td>{`${emp.firstName} ${emp.middleName} ${emp.lastName}`}</td>
                   <td>{emp.dateHired}</td>
                   <td>{emp.department}</td>
                   <td>{emp.position}</td>
+
+                  {/* ACTION COLUMN AND CELLS - Implemented using the reference */}
                   <td className={styles.actionCell}>
+                    {/* The main action button */}
                     <button
-                      className={styles.viewButton}
-                      onClick={() => {
-                        setSelectedEmployee(emp);
-                        setIsReadOnlyView(true);
-                        setShowEditModal(true);
-                      }}
-                    > <i className="ri-eye-line"/>
+                      className={styles.mainActionButton}
+                      onClick={() => toggleActionDropdown(index)}
+                    >
+                      <i className="ri-more-2-fill" />
                     </button>
 
-                    <button
-                      className={styles.editButton}
-                      onClick={() => {
-                        setSelectedEmployee(emp);
-                        setIsReadOnlyView(false);
-                        setShowEditModal(true);
-                      }}
-                    > <i className="ri-edit-2-line"/> 
-                    </button>
-                    <button
-                      className={styles.deleteButton}
-                      onClick={() => handleDeleteRequest(emp)}
-                    > <i className="ri-delete-bin-line"/>
-                    </button>
+                    {/* Action dropdown container, conditionally rendered */}
+                    {openActionDropdownIndex === index && (
+                      <div className={styles.actionDropdown}>
+                        <button className={styles.viewButton}
+                          onClick={() => {
+                            setSelectedEmployee(emp);
+                            setIsReadOnlyView(true);
+                            setShowEditModal(true);
+                            toggleActionDropdown(null); // Close dropdown
+                          }}>
+                          <i className="ri-eye-line"/> View
+                        </button>
+
+                        <button className={styles.editButton}
+                          onClick={() => {
+                            setSelectedEmployee(emp);
+                            setIsReadOnlyView(false);
+                            setShowEditModal(true);
+                            toggleActionDropdown(null); // Close dropdown
+                          }}>
+                          <i className="ri-edit-2-line"/> Edit
+                        </button>
+                        <button className={styles.deleteButton}
+                          onClick={() => {
+                            handleDeleteRequest(emp);
+                            toggleActionDropdown(null); // Close dropdown
+                          }}>
+                          <i className="ri-delete-bin-line"/> Delete
+                        </button> 
+                      </div>
+                    )}
                   </td>
                 </tr>
               ))}
@@ -160,16 +189,7 @@ export default function EmployeePage() {
           />
         )}
 
-        {showEditModal && selectedEmployee && (
-          <EmployeeModal
-            isEdit={true}
-            defaultValue={selectedEmployee}
-            existingEmployees={employees}
-            onClose={() => setShowEditModal(false)}
-            onSubmit={handleEdit}
-          />
-        )}
-
+        {/* Combined Edit/View Modal */}
         {showEditModal && selectedEmployee && (
           <EmployeeModal
             isEdit={!isReadOnlyView}
@@ -180,7 +200,6 @@ export default function EmployeePage() {
             onSubmit={handleEdit}
           />
         )}
-        
       </div>
     </div>
   );

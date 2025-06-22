@@ -3,21 +3,22 @@
 import React from 'react';
 import styles from './department.module.css';
 import "@/styles/filters.css"
-import PaginationComponent from '@/components/ui/pagination';
+import "@/styles/pagination.css"
 import DepartmentModal from '@/components/modal/information/DepartmentModalLogic';
 import { DepartmentLogic } from './departmentLogic';
+import PaginationComponent from '@/components/ui/pagination';
 
 const DepartmentPage = () => {
   const {
     filteredDepartments,
+    searchTerm,
+    setSearchTerm,
     paginatedDepartments,
     currentPage,
     setCurrentPage,
     pageSize,
     setPageSize,
     totalPages,
-    searchTerm,
-    setSearchTerm,
     employeeFilter,
     setEmployeeFilter,
     showAddModal,
@@ -30,6 +31,8 @@ const DepartmentPage = () => {
     handleAdd,
     handleEdit,
     handleDeleteRequest,
+    openActionDropdownIndex,
+    toggleActionDropdown,
   } = DepartmentLogic();
 
   return (
@@ -92,19 +95,36 @@ const DepartmentPage = () => {
                   <td>mm-dd-yyyy hh:mm</td>
                   <td>mm-dd-yyyy hh:mm</td>
                   <td className={styles.actionCell}>
+                    {/* The main action button */}
                     <button
-                      className={styles.editButton}
-                      onClick={() => {
-                        setSelectedDept(dept.name);
-                        setShowEditModal(true);
-                      }}
-                    > <i className='ri-edit-2-line'/>
+                      className={styles.mainActionButton} // You might need to define this style
+                      onClick={() => toggleActionDropdown(index)}
+                    >
+                      <i className="ri-more-2-fill" />
                     </button>
-                    <button
-                      className={styles.deleteButton}
-                      onClick={() => handleDeleteRequest(dept.name)}
-                    > <i className='ri-delete-bin-line' />
-                    </button>
+
+                    {/* Action dropdown container, conditionally rendered */}
+                    {openActionDropdownIndex === index && (
+                      <div className={styles.actionDropdown}>
+                        <button
+                          className={styles.editButton}
+                          onClick={() => {
+                            setSelectedDept(dept.name);
+                            setShowEditModal(true);
+                            toggleActionDropdown(null); // Close dropdown after action
+                          }}
+                        > <i className='ri-edit-2-line'/> Edit
+                        </button>
+                        <button
+                          className={styles.deleteButton}
+                          onClick={() => {
+                            handleDeleteRequest(dept.name);
+                            toggleActionDropdown(null); // Close dropdown after action
+                          }}
+                        > <i className='ri-delete-bin-line' /> Delete
+                        </button>
+                      </div>
+                    )}
                   </td>
                 </tr>
               ))}

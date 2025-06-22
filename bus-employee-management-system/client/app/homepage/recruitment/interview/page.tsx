@@ -3,13 +3,42 @@
 import React from "react";
 import styles from './interview.module.css';
 import { InterviewLogic } from './interviewLogic';
-// import InterviewModal from '@/components/modal/onboarding/InterviewModal';
+import InterviewModal from '@/components/modal/recruitment/InterviewModal';
 import FilterDropdown from "@/components/ui/filterDropdown";
-import PaginationComponent from "@/components/ui/pagination";
 import "@/styles/filters.css";
+import "@/styles/pagination.css";
+import PaginationComponent from '@/components/ui/pagination'; // Import PaginationComponent
 
 export default function InterviewScheduling() {
-  
+  const {
+    paginatedInterviewSchedules, // Changed from filteredInterviewSchedules to paginatedInterviewSchedules
+    searchTerm,
+    setSearchTerm,
+    interviewStatusFilter,
+    setInterviewStatusFilter,
+    selectedInterview,
+    setSelectedInterview,
+    showAddModal,
+    setShowAddModal,
+    showEditModal,
+    setShowEditModal,
+    isReadOnlyView,
+    setIsReadOnlyView,
+    handleAdd,
+    handleEdit,
+    handleDeleteRequest,
+    filterSections,
+    handleApplyFilters,
+    openActionDropdownIndex,
+    toggleActionDropdown,
+    // Pagination states and functions
+    currentPage,
+    setCurrentPage,
+    pageSize,
+    setPageSize,
+    totalPages
+  } = InterviewLogic();
+
   return (
     <div className={styles.base}>
       <div className={styles.interviewContainer}>
@@ -17,35 +46,41 @@ export default function InterviewScheduling() {
 
         {/* Status Filter */}
         <div className={styles.headerSection}>
-          <select className={styles.statusfilterDropdown}>
-            <option value="" defaultChecked>Interview Status</option>
-            <option value="notScheduled">Not scheduled</option>
+          <select
+            className={styles.statusfilterDropdown}
+            value={interviewStatusFilter}
+            onChange={(e) => setInterviewStatusFilter(e.target.value)}
+          >
+            <option value="">Interview Status</option>
+            <option value="Not Scheduled">Not Scheduled</option>
             <option value="Scheduled">Scheduled</option>
+            <option value="Completed">Completed</option>
+            <option value="Cancelled">Cancelled</option>
           </select>
 
           {/* Search */}
           <div className={styles.search}>
-            <i className='ri-search-line'/>
+            <i className='ri-search-line' />
             <input
               type="text"
               placeholder="Search here..."
-              // value={searchTerm}
-              // onChange={(e) => setSearchTerm(e.target.value)}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
 
-           {/* Filter Button with Dropdown */}
+          {/* Filter Button with Dropdown */}
           <div className="filter">
-            {/* <FilterDropDown
+            <FilterDropdown
               sections={filterSections}
               onApply={handleApplyFilters}
-            /> */}
+            />
           </div>
 
-          <button className={styles.scheduleInterviewButton}>
-            <i className="ri-calendar-schedule-line"/>
+          <button className={styles.scheduleInterviewButton} onClick={() => setShowAddModal(true)}>
+            <i className="ri-calendar-schedule-line" />
             Schedule Interview
-            </button>
+          </button>
         </div>
 
         {/* Interview Schedules Table */}
@@ -62,71 +97,101 @@ export default function InterviewScheduling() {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td className={styles.firstColumn}>1</td>
-                <td>Scheduled</td>
-                <td>Juan Dela Cruz</td>
-                <td>Driver</td>
-                <td>2023-01-15</td>
-                <td className={styles.actionCell}>
-                  <button className={styles.editButton}>
-                    <i className="ri-edit-2-line"/>
-                  </button>
-                  <button className={styles.deleteButton}>
-                    <i className="ri-delete-bin-line"/>
-                  </button>
-                </td>
-              </tr>
-              <tr>
-                <td className={styles.firstColumn}>2</td>
-                <td>Not Scheduled</td>
-                <td>Mark Reyes</td>
-                <td>Supervisor</td>
-                <td>2023-03-10</td>
-                <td className={styles.actionCell}>
-                  <button className={styles.editButton}>
-                    <i className="ri-edit-2-line"/>
-                  </button>
-                  <button className={styles.deleteButton}>
-                    <i className="ri-delete-bin-line"/>
-                  </button>
-                </td>
-              </tr>
-              <tr>
-                <td className={styles.firstColumn}>3</td>
-                <td>Not Scheduled</td>
-                <td>Ana Santos</td>
-                <td>Warehouse Staff</td>
-                <td>2022-11-05</td>
-                <td className={styles.actionCell}>
-                  <button className={styles.editButton}>
-                    <i className="ri-edit-2-line"/>
-                  </button>
-                  <button className={styles.deleteButton}>
-                    <i className="ri-delete-bin-line"/>
-                  </button>
-                </td>
-              </tr>
+              {paginatedInterviewSchedules.map((schedule, index: number) => ( // Added type for index
+                <tr key={`${schedule.candidateName}-${index}`}>
+                  <td className={styles.firstColumn}>{(currentPage - 1) * pageSize + index + 1}</td> {/* Adjusted index for pagination */}
+                  <td>
+                    <span className={`${styles.interviewStatus} ${
+                        schedule.interviewStatus === 'Scheduled' ? styles['interview-scheduled'] :
+                        schedule.interviewStatus === 'Not Scheduled' ? styles['interview-not-scheduled'] :
+                        schedule.interviewStatus === 'Completed' ? styles['interview-completed'] :
+                        styles['interview-cancelled']
+                      }`}>
+                      {schedule.interviewStatus}
+                    </span>
+                  </td>
+                  <td>{schedule.candidateName}</td>
+                  <td>{schedule.position}</td>
+                  <td>{schedule.interviewDate}</td>
+                  <td className={styles.actionCell}>
+                    {/* The main action button */}
+                    <button
+                      className={styles.mainActionButton}
+                      onClick={() => toggleActionDropdown(index)}
+                    >
+                      <i className="ri-more-2-fill" />
+                    </button>
+
+                    {/* Action dropdown container, conditionally rendered */}
+                    {openActionDropdownIndex === index && (
+                      <div className={styles.actionDropdown}>
+                        <button className={styles.viewButton}
+                          onClick={() => {
+                            setSelectedInterview(schedule);
+                            setIsReadOnlyView(true);
+                            setShowEditModal(true);
+                            toggleActionDropdown(null);
+                          }}>
+                          <i className="ri-eye-line" /> View
+                        </button>
+                        <button className={styles.editButton}
+                          onClick={() => {
+                            setSelectedInterview(schedule);
+                            setIsReadOnlyView(false);
+                            setShowEditModal(true);
+                            toggleActionDropdown(null);
+                          }}>
+                          <i className="ri-edit-2-line" /> Edit
+                        </button>
+                        <button className={styles.deleteButton}
+                          onClick={() => {
+                            handleDeleteRequest(schedule);
+                            toggleActionDropdown(null);
+                          }}>
+                          <i className="ri-delete-bin-line" /> Delete
+                        </button>
+                      </div>
+                    )}
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
 
-        {/* Pagination */}
-        <div className="pagination">
-            <button className="page-btn">
-              <i className="ri-arrow-left-s-line"></i>
-            </button>
-            <button className="page-btn active">1</button>
-            <button className="page-btn">2</button>
-            <button className="page-btn">3</button>
-            <button className="page-btn">4</button>
-            <button className="page-btn">5</button>
-            <button className="page-btn">
-              <i className="ri-arrow-right-s-line"></i>
-            </button>
-        </div>
-
+        {/* Pagination Component */}
+        <PaginationComponent
+          currentPage={currentPage}
+          totalPages={totalPages}
+          pageSize={pageSize}
+          onPageChange={(page) => setCurrentPage(page)}
+          onPageSizeChange={(size) => {
+            setPageSize(size);
+            setCurrentPage(1); // Reset to page 1 when size changes
+          }}
+        />
       </div>
+
+      {/* Modals */}
+      {showAddModal && (
+        <InterviewModal
+          isEdit={false}
+          existingSchedules={paginatedInterviewSchedules} // Pass relevant schedules if needed for uniqueness
+          onClose={() => setShowAddModal(false)}
+          onSubmit={handleAdd}
+        />
+      )}
+
+      {showEditModal && selectedInterview && (
+        <InterviewModal
+          isEdit={!isReadOnlyView}
+          isReadOnly={isReadOnlyView}
+          defaultValue={selectedInterview}
+          existingSchedules={paginatedInterviewSchedules} // Pass relevant schedules if needed for uniqueness
+          onClose={() => setShowEditModal(false)}
+          onSubmit={handleEdit}
+        />
+      )}
     </div>
   );
 }
