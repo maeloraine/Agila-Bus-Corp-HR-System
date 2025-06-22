@@ -13,33 +13,54 @@ exports.AuthService = void 0;
 const common_1 = require("@nestjs/common");
 const argon2 = require("argon2");
 const jwt_1 = require("@nestjs/jwt");
-const client_1 = require("@prisma/client");
-const prisma = new client_1.PrismaClient();
 let AuthService = class AuthService {
     jwtService;
+    users = [
+        {
+            id: 1,
+            username: 'admin123',
+            role: 'Admin',
+            password: '',
+        },
+        {
+            id: 2,
+            username: 'hr123',
+            role: 'HR Manager',
+            password: '',
+        },
+        {
+            id: 3,
+            username: 'accountant123',
+            role: 'Accountant',
+            password: '',
+        },
+    ];
     constructor(jwtService) {
         this.jwtService = jwtService;
     }
-    async validateUser(roleId, employeeId, password) {
-        const user = await prisma.user.findUnique({
-            where: { employeeId }
-        });
-        if (!user)
-            return null;
-        const passwordMatch = await argon2.verify(user.password, password);
-        if (!passwordMatch)
-            return null;
-        if (user.mustChangePassword) {
-            throw new common_1.ForbiddenException('Password must be changed');
+    async onModuleInit() {
+        for (const user of this.users) {
+            user.password = await argon2.hash(user.username === 'admin123' ? 'Password@123' :
+                user.username === 'hr123' ? 'Hr@12345' : 'Account@123', { type: argon2.argon2id });
         }
-        if (user.roleId === roleId) {
+    }
+    async validateUser(role, employeeID, password) {
+        const user = await (async () => {
+            for (const u of this.users) {
+                if (u.username === employeeID && await argon2.verify(u.password, password)) {
+                    return u;
+                }
+            }
+            return undefined;
+        })();
+        if (user) {
             const { password, ...result } = user;
             return result;
         }
         return null;
     }
     login(user) {
-        const payload = { employeeId: user.employeeId, sub: user.id, role: user.roleId };
+        const payload = { username: user.username, sub: user.id, role: user.role };
         return {
             access_token: this.jwtService.sign(payload),
         };

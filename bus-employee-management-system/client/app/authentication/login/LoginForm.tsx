@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 'use client';
 
 import Link from "next/link";
@@ -6,17 +5,20 @@ import styles from "./login.module.css";
 
 interface LoginFormProps {
   formData: {
+    roleId: string;
     employeeId: string;
     password: string;
   };
   errors: {
+    roleId: string;
     employeeId: string;
     password: string;
     general: string;
   };
   isSubmitting: boolean;
-  handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
   handleSubmit: (e: React.FormEvent) => void;
+  roles: { id: number; name: string }[];
 }
 
 export default function LoginForm({
@@ -25,6 +27,7 @@ export default function LoginForm({
   isSubmitting,
   handleChange,
   handleSubmit,
+  roles,
 }: LoginFormProps) {
   return (
     <div className={styles.container}>
@@ -49,6 +52,32 @@ export default function LoginForm({
               {errors.general}
             </div>
           )}
+          <label htmlFor="roleId" className={styles.label}>
+            Role
+          </label>
+          <select
+            id="roleId"
+            name="roleId"
+            value={formData.roleId}
+            onChange={handleChange}
+            required
+            className={`${styles.input} ${errors.roleId ? styles.inputError : ''}`}
+          >
+            <option value="" disabled>
+              Select your role
+            </option>
+            {roles.map(role => (
+              <option key={role.id} value={role.id}>
+                {role.name}
+              </option>
+            ))}
+          </select>
+          {errors.roleId && (
+            <p className={styles.errorText}>
+              {errors.roleId}
+            </p>
+          )}
+          
           <label htmlFor="employeeId" className={styles.label}>
             Employee ID
           </label>

@@ -1,30 +1,59 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import LoginForm from "./LoginForm";
 import { useEffect } from "react";
-import { logout } from "@/app/utils/logout";
 
 export default function LoginPage() {
   const router = useRouter();
   const [formData, setFormData] = useState({
+    roleId: '',
     employeeId: '',
     password: ''
   });
   const [errors, setErrors] = useState({
+    roleId: '',
     employeeId: '',
     password: '',
     general: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [roles, setRoles] = useState<{ id: number; name: string }[]>([]);
 
   useEffect(() => {
-    logout();
+    const fetchRoles = async () => {
+      const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+      console.log('Using API base:', API_BASE_URL);
+      try {
+        const response = await fetch(`${API_BASE_URL}/roles`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch roles');
+        }
+
+        const data = await response.json();
+        setRoles(data);
+      } catch (error) {
+        console.error('Error fetching roles:', error);
+        setErrors(prev => ({
+          ...prev,
+          general: 'Failed to load roles. Please try again later.'
+        }));
+      }
+    };
+
+    fetchRoles();
   }, []);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
@@ -42,10 +71,16 @@ export default function LoginPage() {
   const validateForm = () => {
     let valid = true;
     const newErrors = {
+      roleId: '',
       employeeId: '',
       password: '',
       general: ''
     };
+
+    if (!formData.roleId) {
+      newErrors.roleId = 'Please select your role';
+      valid = false;
+    }
 
     if (!formData.employeeId) {
       newErrors.employeeId = 'Employee ID is required';
@@ -75,46 +110,40 @@ export default function LoginPage() {
       setIsSubmitting(false);
       return;
     }
-
+    const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+    console.log('Using API base:', API_BASE_URL);
     try {
-      const response = await fetch('/api/auth/login', {
+      
+      const response = await fetch(`${API_BASE_URL}/auth/login`, {
+      // const response = await fetch(`http://localhost:3001/auth/login`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify(formData),
         credentials: 'include',
       });
 
-      const data = await response.json();
+      console.log('Response status:', formData);
+      let data = {};
+      try {
+        data = await response.json();
+      } catch {}
+
       if (response.ok) {
-        // Get the role from backend response
-        const role = data.role;
-        // Redirect map (from .env)
-        const redirectMap: Record<string, string> = {
-          'Admin': process.env.NEXT_PUBLIC_REDIRECT_HR!,
-          'HR Manager': process.env.NEXT_PUBLIC_REDIRECT_HR!,
-          'Accountant': process.env.NEXT_PUBLIC_REDIRECT_FINANCE!,
-          'Inventory Manager': process.env.NEXT_PUBLIC_REDIRECT_INVENTORY!,
-          'Operations Manager': process.env.NEXT_PUBLIC_REDIRECT_OPERATIONS!,
-          'Dispatcher': process.env.NEXT_PUBLIC_REDIRECT_OPERATIONS!,
-        };
-        const redirectUrl = redirectMap[role] || 'https://auth.agilabuscorp.me';
-        window.location.href = redirectUrl;
+        router.push('/homepage');
       } else if (response.status === 403) {
-        router.push(
-          `/authentication/new-password?first=true&employeeID=${encodeURIComponent(
-            formData.employeeId
-          )}`
-        );
+        router.push(`/authentication/new-password?first=true&employeeID=${encodeURIComponent(formData.employeeId)}`);
       } else {
         setErrors(prev => ({
           ...prev,
-          general: data.message || 'Invalid credentials. Please try again.',
+          general: (data as any).message || 'Invalid credentials. Please try again.'
         }));
       }
     } catch (error) {
       setErrors(prev => ({
         ...prev,
-        general: 'An error occurred. Please try again later.',
+        general: 'An error occurred. Please try again later.'
       }));
     } finally {
       setIsSubmitting(false);
@@ -128,6 +157,7 @@ export default function LoginPage() {
       isSubmitting={isSubmitting}
       handleChange={handleChange}
       handleSubmit={handleSubmit}
+      roles={roles}
     />
   );
 }

@@ -1,17 +1,15 @@
-/* eslint-disable @next/next/no-img-element */
-/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import "@/styles/sidebar.css";
-// import { useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { logout } from '@/app/utils/logout';
 
 const Sidebar = () => {
     const pathname = usePathname();
-    // const router = useRouter();
+    const router = useRouter();
     const [activeItem, setActiveItem] = useState<string | null>(null);
     const [expandedMenus, setExpandedMenus] = useState({
         attendance: false,
@@ -110,7 +108,8 @@ const Sidebar = () => {
 
     const handleLogout = async () => {
         await logout();
-        window.location.href = '/authentication/login'; // Ensures middleware and browser see the cookie is gone
+        // Optionally, clear any local state here
+        router.push('/authentication/login'); // redirect to login page
     };
 
 

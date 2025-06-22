@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client';
 
 import React from 'react';
@@ -98,24 +97,10 @@ const DepartmentPage = () => {
                   <td className={styles.actionCell}>
                     {/* The main action button */}
                     <button
-<<<<<<< Updated upstream
                       className={styles.mainActionButton} // You might need to define this style
                       onClick={() => toggleActionDropdown(index)}
                     >
                       <i className="ri-more-2-fill" />
-=======
-                      className={styles.editButton}
-                      onClick={() => {
-                        setSelectedDept(dept);
-                        setShowEditModal(true);
-                      }}
-                    > <i className='ri-edit-2-line'/>
-                    </button>
-                    <button
-                      className={styles.deleteButton}
-                      onClick={() => handleDeleteRequest(dept.id)}
-                    > <i className='ri-delete-bin-line' />
->>>>>>> Stashed changes
                     </button>
 
                     {/* Action dropdown container, conditionally rendered */}
@@ -171,7 +156,7 @@ const DepartmentPage = () => {
         {showEditModal && (
           <DepartmentModal
             isEdit={true}
-            defaultValue={selectedDept?.name}
+            defaultValue={selectedDept}
             existingDepartments={departments.map((d) => d.name)}
             onClose={() => setShowEditModal(false)}
             onSubmit={handleEdit}

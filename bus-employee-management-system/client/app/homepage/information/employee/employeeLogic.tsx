@@ -1,9 +1,4 @@
-<<<<<<< Updated upstream
 import { useState, useEffect, useRef, useMemo } from 'react'; // Import useEffect and useRef
-=======
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState, useMemo } from 'react';
->>>>>>> Stashed changes
 import { showSuccess, showConfirmation } from '@/app/utils/swal';
 import { Employee } from '@/components/modal/information/EmployeeModalLogic';
 import { FilterSection } from '@/components/ui/filterDropdown';

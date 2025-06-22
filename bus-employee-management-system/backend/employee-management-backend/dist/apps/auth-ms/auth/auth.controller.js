@@ -22,49 +22,27 @@ const crypto = require("crypto");
 const date_fns_1 = require("date-fns");
 const email_service_1 = require("../email/email.service");
 const generators_1 = require("../utils/generators");
-const jwt_1 = require("@nestjs/jwt");
 const prisma = new client_1.PrismaClient();
 let AuthController = class AuthController {
     authService;
     emailService;
-    jwtService;
-    constructor(authService, emailService, jwtService) {
+    constructor(authService, emailService) {
         this.authService = authService;
         this.emailService = emailService;
-        this.jwtService = jwtService;
     }
-    async login(loginDto, res, req) {
-        const user = await this.authService.validateUser(loginDto.employeeId, loginDto.password);
+    async login(loginDto, res) {
+        const user = await this.authService.validateUser(Number(loginDto.roleId), loginDto.employeeId, loginDto.password);
         if (!user) {
             throw new common_1.UnauthorizedException('Invalid credentials');
-        }
-        const role = await this.authService.getRole(user);
-        if (!role) {
-            throw new common_1.BadRequestException('Role not found for user');
         }
         const { access_token } = this.authService.login(user);
         res.cookie('jwt', access_token, {
             httpOnly: true,
-            secure: false,
-            sameSite: 'none',
-            path: '/',
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
             maxAge: 3600 * 1000,
         });
-        return { message: 'Login successful', token: access_token, role: role.name };
-    }
-    async verify(req, res) {
-        const authHeader = req.headers.authorization;
-        if (!authHeader || !authHeader.startsWith('Bearer')) {
-            throw new common_1.UnauthorizedException('No token provided');
-        }
-        const token = authHeader.split(' ')[1];
-        try {
-            const payload = this.jwtService.verify(token);
-            return res.status(200).json({ valid: true, user: payload });
-        }
-        catch (error) {
-            return res.status(401).json({ valid: false, message: 'Invalid token' });
-        }
+        return { message: 'Login successful' };
     }
     async register(body) {
         const { employeeId, roleId, email, birthdate, firstName, lastName, phone, streetAddress, city, province, zipCode, country, securityQuestionId, securityAnswer } = body;
@@ -77,7 +55,7 @@ let AuthController = class AuthController {
         const securityAns = body.securityAnswer ?? '';
         const AnswerHash = await argon2.hash(securityAns, { type: argon2.argon2id });
         const user = await prisma.user.create({
-            data: { employeeId, roleId, password: passwordhash, email, securityQuestionId, securityAnswer: AnswerHash },
+            data: { employeeId, roleId, password: passwordhash, email, birthdate, firstName, lastName, phone, streetAddress, city, province, zipCode, country, securityQuestionId, securityAnswer: AnswerHash },
         });
         await this.emailService.sendWelcomeEmail(user.email, user.employeeId, tempPassword, firstName);
         return {
@@ -86,6 +64,15 @@ let AuthController = class AuthController {
                 employeeID: user.employeeId,
                 role: user.roleId,
                 email: user.email,
+                birthdate: user.birthdate,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                phone: user.phone,
+                streetAddress: user.streetAddress,
+                city: user.city,
+                province: user.province,
+                zipCode: user.zipCode,
+                country: user.country,
                 securityQuestion: user.securityQuestionId,
                 securityAnswerHash: user.securityAnswer,
                 message: 'User Registered. Email Sent'
@@ -182,20 +169,10 @@ __decorate([
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Res)({ passthrough: true })),
-    __param(2, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [login_dto_1.LoginDto, Object, Object]),
+    __metadata("design:paramtypes", [login_dto_1.LoginDto, Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "login", null);
-__decorate([
-    (0, common_1.Post)('verify'),
-    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
-    __param(0, (0, common_1.Req)()),
-    __param(1, (0, common_1.Res)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
-    __metadata("design:returntype", Promise)
-], AuthController.prototype, "verify", null);
 __decorate([
     (0, common_1.Post)('register'),
     (0, common_1.HttpCode)(common_1.HttpStatus.CREATED),
@@ -247,7 +224,6 @@ __decorate([
 exports.AuthController = AuthController = __decorate([
     (0, common_1.Controller)('auth'),
     __metadata("design:paramtypes", [auth_ms_service_1.AuthService,
-        email_service_1.EmailService,
-        jwt_1.JwtService])
+        email_service_1.EmailService])
 ], AuthController);
 //# sourceMappingURL=auth.controller.js.map

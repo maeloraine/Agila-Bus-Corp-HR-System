@@ -1,21 +1,16 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/require-await */
 /* eslint-disable prettier/prettier */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 // Imports for NestJS, DTOs, services, and utilities
-import { Controller, Post, Body, HttpCode, HttpStatus, Req, Res, UnauthorizedException, BadRequestException } from '@nestjs/common';
+import { Controller, Post, Body, HttpCode, HttpStatus, Res, UnauthorizedException, BadRequestException } from '@nestjs/common';
 import { AuthService } from '../auth-ms.service';
 import { LoginDto } from './dto/login.dto';
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 import * as argon2 from 'argon2';
 import * as crypto from 'crypto';
 import { addMinutes } from 'date-fns';
 import { EmailService } from '../email/email.service';
 import { generateRandomPassword } from '../utils/generators';
-import { JwtService } from '@nestjs/jwt';
 
 // Initialize a single instance of PrismaClient.
 const prisma = new PrismaClient(); // <-- Only need one Prisma client
@@ -26,58 +21,32 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly emailService: EmailService,
-    private readonly jwtService: JwtService, // Inject JwtService for JWT operations.
   ) {}
 
   /**
    * Handles user login.
-   * Validates credentials, generates a JWT, and   sets it as an HTTP-only cookie.
+   * Validates credentials, generates a JWT, and sets it as an HTTP-only cookie.
    */
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  async login(@Body() loginDto: LoginDto, @Res({ passthrough: true }) res: Response, @Req() req: Request) {
+  async login(@Body() loginDto: LoginDto, @Res({ passthrough: true }) res: Response) {
     // Validate the user's role, employeeID, and password.
-    const user = await this.authService.validateUser(loginDto.employeeId, loginDto.password);
+    const user = await this.authService.validateUser(Number(loginDto.roleId), loginDto.employeeId, loginDto.password);
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
     }
-    const role = await this.authService.getRole(user); // Fetch user roles.
-    if (!role) {
-      throw new BadRequestException('Role not found for user');
-    }
-    const { access_token} = this.authService.login(user);
 
+    const { access_token } = this.authService.login(user);
     // Set the access token as an HTTP-only cookie for security.
     res.cookie('jwt', access_token, {
-      httpOnly: true,
-      secure: false, // Always true in production (HTTPS)
-      sameSite: 'none', // Required for cross-site cookies
-      path: '/',
-      maxAge: 3600 * 1000,
+      httpOnly: true, // Cookie cannot be accessed by client-side JavaScript.
+      secure: process.env.NODE_ENV === 'production', // Cookie sent only over HTTPS in production.
+      sameSite: 'strict', // Mitigates CSRF attacks.
+      maxAge: 3600 * 1000, // Cookie expiry: 1 hour.
     });
-    return { message: 'Login successful', token: access_token, role: role.name }; // Return success message and user role.
+    return { message: 'Login successful' };
   }
 
-  /**
-   * Handles jwt verfication.
-  */
-  @Post('verify')
-  @HttpCode(HttpStatus.OK)
-  async verify(@Req() req: Request, @Res() res: Response) {
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer')) {
-      throw new UnauthorizedException('No token provided');
-    }
-    const token = authHeader.split(' ')[1]; // Extract the token from the header.
-
-    try { 
-      const payload = this.jwtService.verify(token); // Verify the token using JwtService.
-      return res.status(200).json({ valid: true, user:payload }); // Return the payload if valid.
-    } catch (error) {
-      return res.status(401).json({ valid: false, message: 'Invalid token' }); // Return error if token is invalid.
-    }
-  }
-  
   /**
    * Handles new user registration.
    * Checks for existing users, hashes the password, stores the new user, and sends a welcome email.
@@ -114,7 +83,7 @@ export class AuthController {
     const AnswerHash = await argon2.hash(securityAns, { type: argon2.argon2id }); // Hash the security answer.
 
     const user = await prisma.user.create({
-      data: { employeeId, roleId, password: passwordhash, email, securityQuestionId, securityAnswer: AnswerHash },
+      data: { employeeId, roleId, password: passwordhash, email, birthdate, firstName, lastName, phone, streetAddress, city, province, zipCode, country, securityQuestionId, securityAnswer: AnswerHash },
     });
 
     await this.emailService.sendWelcomeEmail(user.email, user.employeeId, tempPassword, firstName); // Send welcome email with temporary password.
@@ -125,6 +94,15 @@ export class AuthController {
         employeeID: user.employeeId,
         role: user.roleId,
         email: user.email,
+        birthdate: user.birthdate,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        phone: user.phone,
+        streetAddress: user.streetAddress,
+        city: user.city,
+        province: user.province,
+        zipCode: user.zipCode,
+        country: user.country,
         securityQuestion: user.securityQuestionId,
         securityAnswerHash: user.securityAnswer, // Note: This returns the hash
         message: 'User Registered. Email Sent'

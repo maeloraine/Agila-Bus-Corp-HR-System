@@ -1,15 +1,12 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable prettier/prettier */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable prettier/prettier */
 import { ForbiddenException, Injectable, OnModuleInit } from '@nestjs/common';
 import * as argon2 from 'argon2';
 import { JwtService } from '@nestjs/jwt';
-// import { PrismaClient } from '@prisma/client'
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@prisma/client'
 
   const prisma = new PrismaClient();
 @Injectable()
@@ -17,7 +14,7 @@ export class AuthService{
 
   constructor(private readonly jwtService: JwtService) {}
 
-  async validateUser( employeeId: string, password: string): Promise<any> {
+  async validateUser(roleId: number, employeeId: string, password: string): Promise<any> {
     const user = await prisma.user.findUnique({
       where: { employeeId }
     });
@@ -27,31 +24,22 @@ export class AuthService{
     if (!passwordMatch) return null;
 
     if (user.mustChangePassword) {
+      // You could throw a custom error, or return a special object if you prefer
       throw new ForbiddenException('Password must be changed');
+      // or:
+      // return { mustChangePassword: true, employeeId: user.employeeId };
     }
 
-    const { password: pwd, ...result } = user;
-    return result;
-
-  }
-
-  async getRole(user:any) {
-    try {
-      const role = await prisma.role.findUnique({
-        where: { id: user.roleId },
-        select: { name: true },
-
-      });
-      return role;
-    } catch (error) {
-      console.error('Error fetching roles:', error);
-      throw new Error('Failed to fetch roles');
+    if (user.roleId === roleId) {
+      const { password, ...result } = user;
+      return result;
     }
+    return null;
   }
+
 
   login(user: any) {
-
-    const payload = { employeeId: user.employeeId, sub: user.id};
+    const payload = { employeeId: user.employeeId, sub: user.id, role: user.roleId };
     return {
       access_token: this.jwtService.sign(payload),
     };

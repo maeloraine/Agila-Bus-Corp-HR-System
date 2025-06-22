@@ -20,7 +20,7 @@ let AuthService = class AuthService {
     constructor(jwtService) {
         this.jwtService = jwtService;
     }
-    async validateUser(employeeId, password) {
+    async validateUser(roleId, employeeId, password) {
         const user = await prisma.user.findUnique({
             where: { employeeId }
         });
@@ -32,24 +32,14 @@ let AuthService = class AuthService {
         if (user.mustChangePassword) {
             throw new common_1.ForbiddenException('Password must be changed');
         }
-        const { password: pwd, ...result } = user;
-        return result;
-    }
-    async getRole(user) {
-        try {
-            const role = await prisma.role.findUnique({
-                where: { id: user.roleId },
-                select: { name: true },
-            });
-            return role;
+        if (user.roleId === roleId) {
+            const { password, ...result } = user;
+            return result;
         }
-        catch (error) {
-            console.error('Error fetching roles:', error);
-            throw new Error('Failed to fetch roles');
-        }
+        return null;
     }
     login(user) {
-        const payload = { employeeId: user.employeeId, sub: user.id };
+        const payload = { employeeId: user.employeeId, sub: user.id, role: user.roleId };
         return {
             access_token: this.jwtService.sign(payload),
         };

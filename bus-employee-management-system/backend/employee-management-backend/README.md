@@ -118,11 +118,9 @@ https://pris.ly/d/getting-started
 
 
 
-## Backend Dependencies Installation Commands 
+## Backend Commands Used
 
 ```NestJs Installation (For creating a project only):
-NestJs Installation (For creating a project only):
-
 npm i -g @nestjs/cli`
 nest new employee-management-backend
 mkdir -p apps/gateway`
@@ -132,8 +130,6 @@ nest generate app auth-ms`
 nest generate controller auth --flat --path=apps/auth-ms/src`
 ```
 ```NestJs Installation (From Repo):
-NestJs Installation (From Repo - Pag nag pull ka ito gawin mo):
-
 npm install @nestjs/microservices
 npx tsc --build
 npm install @nestjs/config
@@ -143,25 +139,8 @@ npm i dotenv
 npm install @nestjs/throttler@latest
 npm install @nestjs/jwt @nestjs/passport passport passport-jwt cookie`
 npm install --save-dev @types/cookie
-npm install --save-dev nodemon
-npm install --save-dev ts-node
-
 
 ```
-
-```PrismaORM Installation:
-PrismaORM Installation:
-
-npm install @prisma/client`
-npm install --save-dev prisma
-npm install date-fns
-npm install --save-dev cpx
-
-```
------------------------------------------------------------------------------------------
-
-
-## Backend Commands To Run Services (MAG KAKAHIWALAY NG TERMINAL PER SERVICE)
 ```NestJs Run:
 For Gateway App:
   npm run build:gateway`
@@ -171,11 +150,12 @@ For Auth Microservice:
   npm run build:auth-ms`
   npm run start:auth-ms`
 ```
+```PrismaORM Installation:
+npm install @prisma/client`
+npm install --save-dev prisma
+npm install date-fns
 
------------------------------------------------------------------------------------------
-
-## DB Stuffs Commands (No need to run this)
-
+```
 
 ```PrismaORM Generating Project:
 npx prisma init
@@ -190,8 +170,3 @@ npx prisma generate
 ```PrismaORM RESET DB:
 npx prisma migrate reset
 ```
-```PrismaORM Seeding DB:
-npx prisma db seed
-```
-
-

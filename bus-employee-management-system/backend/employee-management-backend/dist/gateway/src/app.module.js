@@ -16,7 +16,6 @@ const axios_1 = require("@nestjs/axios");
 const config_1 = require("@nestjs/config");
 const app_config_1 = require("./config/app.config");
 const auth_config_1 = require("./config/auth.config");
-const roles_controller_1 = require("./auth/roles.controller");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -40,7 +39,7 @@ exports.AppModule = AppModule = __decorate([
                 },
             ]),
         ],
-        controllers: [app_controller_1.AppController, roles_controller_1.RolesController],
+        controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],
     })
 ], AppModule);

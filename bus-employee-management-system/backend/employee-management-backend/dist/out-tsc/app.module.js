@@ -26,7 +26,6 @@ exports.AppModule = AppModule = __decorate([
             config_1.ConfigModule.forRoot({
                 isGlobal: true,
                 load: [app_config_1.default, auth_config_1.default],
-                envFilePath: 'apps/gateway/.env',
             }),
             axios_1.HttpModule,
             auth_module_1.AuthModule,

@@ -9,8 +9,6 @@ import { ConfigModule } from '@nestjs/config';
 import appConfig from './config/app.config';
 import authConfig from './config/auth.config';
 import { RolesController } from './auth/roles.controller';
-import { DepartmentController } from './hr-service/information/department/department.controller';
-
 
 
 
@@ -19,7 +17,6 @@ import { DepartmentController } from './hr-service/information/department/depart
     ConfigModule.forRoot({
       isGlobal: true,
       load: [appConfig, authConfig],
-      envFilePath: 'apps/gateway/.env', // (relative to process.cwd())
     }),
     HttpModule,
     AuthModule,
@@ -35,7 +32,7 @@ import { DepartmentController } from './hr-service/information/department/depart
       },
     ]),
   ],
-  controllers: [AppController, RolesController, DepartmentController], // Register AuthController
-  providers: [AppService], // Register AuthService
+  controllers: [AppController, RolesController],
+  providers: [AppService],
 })
 export class AppModule {}

@@ -14,15 +14,12 @@ const passport_1 = require("@nestjs/passport");
 const auth_ms_service_1 = require("./auth-ms.service");
 const auth_controller_1 = require("./auth/auth.controller");
 const jwt_strategy_1 = require("./auth/jwt.strategy");
-const email_module_1 = require("./email/email.module");
-const roles_controller_1 = require("./roles/roles.controller");
 let AuthMsModule = class AuthMsModule {
 };
 exports.AuthMsModule = AuthMsModule;
 exports.AuthMsModule = AuthMsModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            email_module_1.EmailModule,
             config_1.ConfigModule.forRoot({ isGlobal: true, envFilePath: 'apps/auth-ms/.env' }),
             passport_1.PassportModule,
             jwt_1.JwtModule.registerAsync({
@@ -30,6 +27,8 @@ exports.AuthMsModule = AuthMsModule = __decorate([
                 useFactory: (config) => {
                     const secret = config.get('JWT_SECRET');
                     const expiresIn = config.get('JWT_EXPIRATION');
+                    console.log('JWT_SECRET:', secret);
+                    console.log('JWT_EXPIRATION:', expiresIn);
                     if (!secret) {
                         throw new Error('JWT_SECRET is not defined in .env');
                     }
@@ -41,7 +40,7 @@ exports.AuthMsModule = AuthMsModule = __decorate([
                 inject: [config_1.ConfigService],
             }),
         ],
-        controllers: [auth_controller_1.AuthController, roles_controller_1.RolesController],
+        controllers: [auth_controller_1.AuthController],
         providers: [auth_ms_service_1.AuthService, jwt_strategy_1.JwtStrategy],
     })
 ], AuthMsModule);
