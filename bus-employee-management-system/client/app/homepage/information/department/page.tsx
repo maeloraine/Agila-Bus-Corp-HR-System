@@ -156,7 +156,7 @@ const DepartmentPage = () => {
         {showEditModal && (
           <DepartmentModal
             isEdit={true}
-            defaultValue={selectedDept}
+            defaultValue={selectedDept?.name}
             existingDepartments={departments.map((d) => d.name)}
             onClose={() => setShowEditModal(false)}
             onSubmit={handleEdit}

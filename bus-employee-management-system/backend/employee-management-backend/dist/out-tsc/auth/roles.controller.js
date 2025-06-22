@@ -13,14 +13,18 @@ exports.RolesController = void 0;
 const common_1 = require("@nestjs/common");
 const axios_1 = require("@nestjs/axios");
 const rxjs_1 = require("rxjs");
+const config_1 = require("@nestjs/config");
 let RolesController = class RolesController {
     httpService;
-    constructor(httpService) {
+    configService;
+    constructor(httpService, configService) {
         this.httpService = httpService;
+        this.configService = configService;
     }
     async getRoles() {
         try {
-            const response = await (0, rxjs_1.firstValueFrom)(this.httpService.get('http://localhost:4000/roles'));
+            const authServiceUrl = this.configService.get('auth.authServiceUrl');
+            const response = await (0, rxjs_1.firstValueFrom)(this.httpService.get(`${authServiceUrl}/roles`));
             return response.data;
         }
         catch (error) {
@@ -38,6 +42,7 @@ __decorate([
 ], RolesController.prototype, "getRoles", null);
 exports.RolesController = RolesController = __decorate([
     (0, common_1.Controller)('roles'),
-    __metadata("design:paramtypes", [axios_1.HttpService])
+    __metadata("design:paramtypes", [axios_1.HttpService,
+        config_1.ConfigService])
 ], RolesController);
 //# sourceMappingURL=roles.controller.js.map

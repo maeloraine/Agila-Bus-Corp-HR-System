@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client';
 
 import { useState } from 'react';
@@ -8,6 +9,7 @@ export function useNewPasswordLogic() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showError, setShowError] = useState(false);
   const [apiError, setApiError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -15,83 +17,74 @@ export function useNewPasswordLogic() {
   const token = searchParams.get('token');
   const employeeId = searchParams.get('employeeID');
 
+  const validateForm = () => {
+    let isValid = true;
+    setPasswordError('');
+    setShowError(false);
+
+    if (!newPassword || !confirmPassword) {
+      setPasswordError('Both fields are required.');
+      isValid = false;
+    } else if (newPassword !== confirmPassword) {
+      setShowError(true);
+      isValid = false;
+    } else if (
+      !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-[\]{}|;:,.<>?])[A-Za-z\d!@#$%^&*()_+\-[\]{}|;:,.<>?]{8,20}$/.test(newPassword)
+    ) {
+      setPasswordError(
+        'Password must be 8-20 characters with at least one uppercase, one lowercase, one number, and one special character'
+      );
+      isValid = false;
+    }
+
+    return isValid;
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setApiError('');
-    setShowError(false);
 
-    if (newPassword !== confirmPassword) {
-      setShowError(true);
-      return;
-    }
+    if (!validateForm()) return;
 
-    if (!token && !employeeId) {
-      setApiError('Reset token or employee ID not found. Please use the link from your email, or try again.');
-      return;
-    }
+    try {
+      const endpoint = token
+        ? `/auth/reset-password`
+        : `/auth/first-password-reset`;
 
-   // Validate scenario
-    if (token) {
-      // Forgot Password (reset using token)
-      try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/auth/reset-password`,
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ token, newPassword }),
-          }
-        );
-        const data = await response.json();
+      const payload = token
+        ? { token, newPassword }
+        : { employeeId, newPassword };
 
-        if (response.ok) {
-          setSuccessMsg('Password reset successfully! Redirecting to login...');
-          setTimeout(() => router.push('/authentication/login'), 2000);
-        } else {
-          setApiError(data.message || 'An error occurred while updating the password.');
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}${endpoint}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
         }
-      } catch (error) {
-        setApiError('An error occurred while updating the password. Please try again later.');
-      }
-    } else if (employeeId) {
-      // First-Time Forced Reset
-      try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/auth/first-password-reset`,
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ employeeId, newPassword }),
-          }
-        );
-        const data = await response.json();
+      );
 
-        if (response.ok) {
-          setSuccessMsg('Password set successfully! Redirecting to login...');
-          setTimeout(() => router.push('/authentication/login'), 2000);
-        } else {
-          setApiError(data.message || 'An error occurred while updating the password.');
-        }
-      } catch (error) {
-        setApiError('An error occurred while updating the password. Please try again later.');
+      const data = await response.json();
+
+      if (response.ok) {
+        setSuccessMsg('Password updated successfully! Redirecting to login...');
+        setTimeout(() => router.push('/authentication/login'), 2000);
+      } else {
+        setApiError(data.message || 'An error occurred while updating the password.');
       }
-    } else {
-      setApiError('Invalid password reset link. Please use the link from your email or contact support.');
+    } catch {
+      setApiError('An error occurred while updating the password. Please try again later.');
     }
   };
+
   return {
     newPassword,
     confirmPassword,
     setNewPassword,
     setConfirmPassword,
     showError,
+    passwordError,
     handleSubmit,
     apiError,
   };
 }
-// This code is a custom hook for managing the logic of a "New Password" page in a React application.
-
